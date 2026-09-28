@@ -26,32 +26,28 @@ Each task is tagged with when it pays off:
 - **Depends on:** a few photos. Start with 3 to 5 sample photos from github.com/tpsatish95/OCR-on-Indus-Seals on day one, then switch to the D1 set when it lands.
 - **Deliverable:** `src/indus/segment.py`, plus a notebook showing boxes drawn on photos.
 - **Done when:** on 3 clear photos, most signs get their own box, ordered right to left.
-- **Effort:** 1.5 to 2 days. The trickiest task in the schedule.
 
 ### A2. Identify each cut-out sign · Oct 6
 - **What:** compare each cut-out against the 417 template drawings and return the closest matches. A direct comparison, no neural network yet. This is the baseline.
 - **Depends on:** only `data/raw/sign_templates/`. Does not need A1: build and test on distorted copies of the templates.
 - **Deliverable:** `src/indus/classify.py`, returning the top 5 guesses per cut-out.
 - **Done when:** given a slightly rotated or blurred template, the right sign appears in the top 5.
-- **Effort:** 1 day.
 
 ### A3. Join into one pipeline · Oct 6
 - **What:** photo in, A1 finds signs, A2 identifies them, ordered list of Mahadevan IDs out.
 - **Depends on:** A1, A2.
 - **Deliverable:** `src/indus/pipeline.py`, plus a demo notebook.
 - **Done when:** one command turns a photo into a sign sequence.
-- **Effort:** half a day.
 
 ### A4. Measure accuracy · Oct 6
 - **What:** run the pipeline on the D2 ground-truth photos, report top-1 and top-5 sign accuracy.
 - **Depends on:** A3, D2.
 - **Deliverable:** one results table in `reports/`.
-- **Effort:** half a day. A low number is fine; it is the baseline we improve on.
+- **Note:** a low number is fine; it is the baseline we improve on.
 
 ### A5. Record the demo · Oct 6
 - **What:** 30 to 45 second screen recording: photo in, boxes appear, IDs come out.
 - **Depends on:** A3.
-- **Effort:** 1 hour.
 
 **If A1 runs into trouble:** draw boxes by hand on 2 or 3 demo photos, run A2 on those, and say on the slide that automatic detection is in progress.
 
@@ -64,31 +60,27 @@ Each task is tagged with when it pays off:
 - **Depends on:** `indus.data.load_sequences()` (done).
 - **Deliverable:** `notebooks/b1_descriptive.ipynb`, 2 plots in `reports/figures/`.
 - **Done when:** numbers match known facts: 8,359 signs, 568 distinct, 219 appearing once.
-- **Effort:** half a day.
 
 ### B2. Start and end signs · Oct 6
 - **What:** which signs open texts and which close them. Show the jar sign (Wells 740) is overwhelmingly a closing sign.
 - **Depends on:** the loader only. Can run alongside B1.
 - **Deliverable:** notebook section, one chart.
-- **Effort:** half a day.
 
 ### B3. Pair counts and transition matrix · Oct 6
 - **What:** count how often each sign follows each other sign, convert to probabilities ("given sign X, how likely is Y next").
 - **Depends on:** B1.
 - **Deliverable:** `src/indus/ngrams.py` (reusable, M3 needs it), plus a heatmap of the top signs.
 - **Done when:** every row of probabilities sums to 1, and top pairs are consistent with the IM77 table.
-- **Effort:** 1 day.
 
 ### B4. Reading direction from the data · Oct 6
 - **What:** compare how predictable the next sign is reading right to left versus left to right (conditional entropy both ways).
 - **Depends on:** B3.
 - **Deliverable:** one number per direction plus one sentence of interpretation.
-- **Effort:** half a day.
 
 ### B5. Smoothing · Stretch
 - **What:** Witten-Bell smoothing so unseen pairs don't get probability zero.
 - **Depends on:** B3.
-- **Effort:** half a day. M3 needs it soon after Oct 6.
+- **Note:** M3 needs it soon after Oct 6.
 
 ---
 
@@ -98,14 +90,14 @@ Each task is tagged with when it pays off:
 - **What:** 30 to 50 photos of real seals with a clear, readable row of signs. Sources: sample images in the 2017 OCR repo, harappa.com, indusscript.in, museum websites.
 - **Deliverable:** photos in `data/raw/seal_photos/`, plus `data/raw/seal_photos/sources.csv` with columns `filename, source_url, site, im77_text_number` (leave unknowns blank).
 - **Why it matters:** this is the real-world data the vision pipeline runs on. The M1 demo and the accuracy result both depend on it.
-- **Target:** Oct 3. **Effort:** 3 to 4 hours.
+- **Target:** Oct 3.
 
 ### D2. Ground truth for 10 to 15 photos · Oct 6
 - **What:** for each photo, the correct sign sequence, found by comparing each sign to the images in `data/raw/sign_templates/`. Where the IM77 text number is known, indusscript.in shows the official sequence.
 - **Depends on:** D1.
 - **Deliverable:** `data/raw/seal_photos/ground_truth.csv` with columns `filename, mahadevan_ids_reading_order` (IDs separated by spaces, first sign read first, i.e. the right-most sign on the seal).
 - **Why it matters:** this is what makes an accuracy number possible. Without it the pipeline can only be shown running, not measured.
-- **Target:** Oct 3. **Effort:** 3 hours.
+- **Target:** Oct 3.
 
 ---
 
@@ -116,7 +108,7 @@ Each task is tagged with when it pays off:
 - **Deliverable:** `scripts/make_synthetic.py`, writing to `data/processed/synthetic/<sign_id>/`, plus one grid image of examples in `reports/figures/` (usable on the Oct 6 slides).
 - **Done when:** running the script once regenerates the full set, and the example grid looks like plausible worn signs.
 - **Why it matters:** this is the training data for M1's learned classifier, the main step after Oct 6. It addresses the project's biggest data gap: we have only one drawing per sign.
-- **Target:** Oct 3. **Effort:** 3 to 5 hours.
+- **Target:** Oct 3.
 
 ---
 
@@ -126,12 +118,12 @@ Each task is tagged with when it pays off:
 - **What:** a half-page card each for: Rao et al. 2009 (Science), Yadav et al. 2010 (PLOS ONE), Farmer, Sproat and Witzel 2004, Palaniappan and Adhikari 2017 (arXiv), Ashraf and Sinha 2018 (PLOS ONE). For each: what they did, what data, and **the exact numbers they report**.
 - **Deliverable:** `docs/literature.md`.
 - **Why it matters:** gives every result we present a published number to compare against, and becomes the related-work section of the final report.
-- **Target:** Oct 3. **Effort:** 4 hours.
+- **Target:** Oct 3.
 
 ### D5. Presentation design · Oct 6
 - **What:** the slide template, and slide 1 (problem and data). Results slides get filled in together on Oct 5.
 - **Deliverable:** link to the shared slides in `docs/PLAN.md`.
-- **Target:** Oct 3. **Effort:** 2 hours.
+- **Target:** Oct 3.
 
 ---
 
