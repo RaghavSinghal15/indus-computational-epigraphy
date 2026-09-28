@@ -34,6 +34,72 @@ print(seqs[0])
 print(template_path(342))  # reference drawing of the jar sign
 ```
 
+## Working together (read before your first change)
+
+Five people work in this repo. These rules keep us from overwriting each other's work. They apply to everyone, including the repo owner.
+
+### The rules
+
+1. **Never push directly to `main`.** Every change goes in through a pull request (PR). `main` should always be in a working state.
+2. **One branch per task**, named `p<your number>-<task id>-<short description>`, e.g. `p1-a1-segmentation` or `p3-d1-seal-photos`.
+3. **Someone other than the author reviews and merges.** Nobody merges their own PR.
+4. **Stay inside your own task's files and folders** (see [`docs/TASKS.md`](docs/TASKS.md)). If you need to change shared code (`src/indus/data.py`, `tests/`), say so in the team chat first.
+5. **Never edit existing files in `data/raw/`.** Adding new files there is fine when that is your task (e.g. seal photos).
+6. **Run `pytest` before opening a PR.** All tests must pass.
+7. **Using an AI coding tool?** Make sure it has read `AGENTS.md`. You are responsible for everything it writes: read it before you commit it.
+
+### Step by step
+
+**1. Start a task** (always from an up-to-date `main`):
+
+```bash
+git checkout main
+git pull
+git checkout -b p3-d1-seal-photos
+```
+
+**2. Work and commit in small steps.** Commit whenever something works, not only at the end.
+
+```bash
+git status                       # see what changed; check nothing unexpected is there
+git add path/to/your/file        # add specific files, not everything
+git commit -m "D1: add first 10 seal photos"
+git push -u origin p3-d1-seal-photos   # first push of this branch; after that, just: git push
+```
+
+Start commit messages with your task ID (`A1:`, `B3:`, `D4:` ...) so the history shows who did what.
+
+**3. Open a pull request.** After pushing, GitHub shows a **Compare & pull request** button on the repo page. Use a title like `D1: seal photo dataset` and in the description write:
+- what you did
+- how you checked it works (tests passed, numbers you verified, a screenshot)
+- anything unfinished
+
+Then pick a reviewer on the right-hand side.
+
+**4. Reviewing someone else's PR.** Open the **Files changed** tab and check:
+- it does what its task in `docs/TASKS.md` says, and meets the "done when" check
+- nothing unrelated sneaked in (stray files, edits to someone else's folder, changes to `data/raw/`)
+- if it is code, pull the branch and run it: `git fetch`, `git checkout <branch-name>`, `pytest`
+
+Then either **Approve** or **Request changes** with a comment saying what to fix. Once approved, merge with **Squash and merge** (keeps `main`'s history to one clean commit per task) and click **Delete branch**.
+
+**5. When `main` moves on while you are still working**, bring its changes into your branch:
+
+```bash
+git checkout main
+git pull
+git checkout p3-d1-seal-photos
+git merge main
+```
+
+If git reports a **conflict**, it means you and someone else changed the same lines. Don't guess: post in the team chat and sort it out with that person.
+
+### Never
+
+- `git push --force` on `main`, or on anyone else's branch
+- commit passwords, API keys or tokens
+- commit large generated files (models, the synthetic image set); those belong in `data/processed/`, which git ignores
+
 ## Layout
 
 ```
@@ -43,7 +109,8 @@ src/indus/         shared code; data.py loads every dataset
 notebooks/         exploration, one per task
 tests/             sanity checks on the data
 reports/figures/   plots for slides and the report
-docs/PLAN.md       tracks, deadlines, what's next
+docs/PLAN.md       direction, Oct 6 outline, what's next
+docs/TASKS.md      who does what until Oct 6
 AGENTS.md          context for AI coding tools (read by Claude Code and Codex)
 ```
 

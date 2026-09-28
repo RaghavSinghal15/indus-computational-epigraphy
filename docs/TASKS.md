@@ -169,19 +169,4 @@ The longest chain is **A1 → A3 → A5**, which is why A1 starts on day one.
 
 ## How to work without colliding
 
-1. **Never push straight to `main`.** Make a branch named after your person number and task, e.g. `p3-d1-seal-photos`.
-2. Push your branch and open a pull request on GitHub. Someone other than the author reviews and merges it.
-3. Write only inside your own task's files and folders.
-4. Before using any AI coding tool on this repo, make sure it has read `AGENTS.md`.
-5. Run `pytest` before opening a pull request. All tests must still pass.
-
-```bash
-git checkout main
-git pull
-git checkout -b p3-d1-seal-photos
-# ... do the work ...
-git add <your files>
-git commit -m "D1: add 32 seal photos and sources.csv"
-git push -u origin p3-d1-seal-photos
-# then open the pull request on GitHub
-```
+Branches, pull requests, reviews and the step-by-step git commands are in the **Working together** section of the [README](../README.md#working-together-read-before-your-first-change). Read it before your first change.
