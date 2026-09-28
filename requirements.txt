@@ -1,0 +1,18 @@
+# Core
+numpy>=1.26
+pandas>=2.1
+matplotlib>=3.8
+scikit-learn>=1.4
+
+# Vision (M1)
+opencv-python>=4.9
+pillow>=10.0
+torch>=2.2
+torchvision>=0.17
+
+# Workflow
+jupyter>=1.0
+pytest>=8.0
+
+# Our own code, installed in editable mode so `import indus` works everywhere
+-e .

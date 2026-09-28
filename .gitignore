@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Large or regenerable outputs (keep small figures you want in slides)
+data/processed/*
+!data/processed/.gitkeep
+*.pt
+*.pth
+*.ckpt
+runs/
+wandb/
+
+# Seal photos can get large: commit only what is needed, note sources in data/README.md
+data/raw/seal_photos/large/
