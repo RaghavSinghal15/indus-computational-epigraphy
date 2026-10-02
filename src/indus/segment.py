@@ -46,6 +46,10 @@ EDGE_BAND_FRAC = 0.12         # ignore top/bottom 12% when building the profile
 SMOOTH_FRAC = 0.10            # profile smoothing window
 MIN_SIGN_WIDTH_FRAC = 0.35    # two valleys can't be closer than this
 VALLEY_PROMINENCE_FRAC = 0.18 # how deep a dip must be to count as a gap
+MAX_SIGN_WIDTH_FRAC = 0.9     # a piece wider than this is probably two touching signs
+SPLIT_DIP_FRAC = 0.7          # ...split it at its lowest column if that is below 70% of its peak
+MIN_SIGN_INK_FRAC = 0.005     # a slice with fewer carved pixels than 0.005 * height^2 is empty
+                              # (0.02 dropped small thin signs like the jar; no change on the 22 photos)
 
 
 @dataclass
@@ -123,8 +127,38 @@ def _cuts_through_a_sign(mask: np.ndarray, x: int) -> bool:
     return False
 
 
+def _split_wide_pieces(cuts: list[int], profile: np.ndarray, h: int) -> list[int]:
+    """Add cuts inside pieces too wide to be one sign.
+
+    Touching signs leave only a shallow dip in the column profile, too shallow
+    to pass the prominence test. But a piece much wider than one sign almost
+    certainly holds two, so we cut it at its lowest point anyway, as long as
+    that point is a real dip (well below the piece's peak). Repeats until no
+    piece is too wide or no dip is left.
+    """
+    max_width = int(MAX_SIGN_WIDTH_FRAC * h)
+    margin = int(MIN_SIGN_WIDTH_FRAC * h)          # don't cut off a sliver at either end
+    cuts = list(cuts)
+    changed = True
+    while changed:
+        changed = False
+        for x0, x1 in zip(cuts[:-1], cuts[1:]):
+            if x1 - x0 <= max_width or x1 - x0 <= 2 * margin:
+                continue
+            inner = profile[x0 + margin:x1 - margin]
+            x = x0 + margin + int(np.argmin(inner))
+            if profile[x] < SPLIT_DIP_FRAC * profile[x0:x1].max():
+                cuts = sorted(cuts + [x])
+                changed = True
+                break                               # cuts changed; start the scan again
+    return cuts
+
+
 def find_sign_boxes(
-    image: np.ndarray, mirrored: bool = False, protect_hollow_signs: bool = False
+    image: np.ndarray,
+    mirrored: bool = False,
+    protect_hollow_signs: bool = False,
+    split_wide_boxes: bool = True,
 ) -> list[Box]:
     """Boxes around each sign in a text-row image, in reading order.
 
@@ -140,6 +174,11 @@ def find_sign_boxes(
     It is OFF by default: on the 22 sample photos the main error is merging
     neighbouring signs, and this rule merges more (fewer boxes on 6 photos,
     clearly better on 2). Decide properly once D2 ground truth can measure it.
+
+    `split_wide_boxes=True` (default) cuts any piece wider than 0.9 x the row
+    height at its deepest dip, since it probably holds two touching signs. On
+    the samples it fixed a merge on photo 96 and changed nothing else of note.
+    A lower limit (0.6) also cut real multi-stroke signs like "||||" in half.
     """
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     scale = WORKING_HEIGHT / gray.shape[0]
@@ -157,15 +196,16 @@ def find_sign_boxes(
         distance=max(1, int(MIN_SIGN_WIDTH_FRAC * h)),
         prominence=VALLEY_PROMINENCE_FRAC * profile.max(),
     )
-    valleys = valleys.tolist()
-    if protect_hollow_signs:
-        valleys = [v for v in valleys if not _cuts_through_a_sign(mask, v)]
-    cuts = [0, *valleys, w]
+    cuts = [0, *valleys.tolist(), w]
+    if split_wide_boxes:
+        cuts = _split_wide_pieces(cuts, profile, h)
+    if protect_hollow_signs:   # checked last, so it also vetoes cuts made by the split
+        cuts = [0, *[x for x in cuts[1:-1] if not _cuts_through_a_sign(mask, x)], w]
 
     boxes = []
     for x0, x1 in zip(cuts[:-1], cuts[1:]):
         piece = mask[:, x0:x1] > 0
-        if piece.sum() < 0.02 * h * h:        # nearly empty slice: not a sign
+        if piece.sum() < MIN_SIGN_INK_FRAC * h * h:   # nearly empty slice: not a sign
             continue
         cols = np.where(piece.any(axis=0))[0]
         rows = np.where(piece.any(axis=1))[0]
