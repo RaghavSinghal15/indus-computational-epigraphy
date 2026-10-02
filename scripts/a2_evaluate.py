@@ -1,13 +1,17 @@
 """Measure A2 template matching and draw its top-5 guesses on the sample photos.
 
 Usage:
-    python scripts/make_synthetic.py      # once, creates data/processed/synthetic/
+    python scripts/make_synthetic.py           # once: distorted drawings
+    python scripts/make_carved_synthetic.py    # once: photo-like carved renders
     python scripts/a2_evaluate.py
 
-1. Synthetic accuracy: classifies every image in data/processed/synthetic/
-   (50 distorted copies of each of the 417 templates) and prints top-1 and
-   top-5 accuracy plus the most common confusions. This is a BEST CASE: the
-   test images are made from the templates themselves.
+1. Synthetic accuracy, on each set that exists, with top-1, top-5 and the most
+   common confusions:
+   - data/processed/synthetic/: 50 distorted copies of each template drawing.
+     A BEST CASE: the test images are the templates, slightly changed.
+   - data/processed/synthetic_carved/: 50 renders of each sign as carved,
+     lit stone (src/indus/render.py), read the way real photos are read.
+     Much closer to the real difficulty.
 2. Real photos: no ground truth yet (needs D2), so it saves a figure for
    checking by eye: reports/figures/a2_top5_samples.png. Each row is one
    cut-out sign, its stroke mask, then the 5 best templates with their numbers.
@@ -23,6 +27,7 @@ from indus.data import REPO_ROOT, template_path
 from indus.segment import find_sign_boxes, load_image
 
 SYNTHETIC = REPO_ROOT / "data" / "processed" / "synthetic"
+CARVED = REPO_ROOT / "data" / "processed" / "synthetic_carved"
 SAMPLES = REPO_ROOT / "data" / "raw" / "seal_samples_ocr2017"
 FIGURE = REPO_ROOT / "reports" / "figures" / "a2_top5_samples.png"
 # Rows where A1's boxes looked clean by eye, so the figure shows A2 and not A1 errors.
@@ -30,26 +35,27 @@ SAMPLE_IDS = [28, 49, 69, 826, 888]
 TILE = 60
 
 
-def synthetic_accuracy() -> None:
-    if not SYNTHETIC.exists():
-        print("No synthetic data. Run: python scripts/make_synthetic.py")
+def synthetic_accuracy(folder, read_image, classify, label: str) -> None:
+    """Top-1 / top-5 accuracy of `classify` on every image under `folder`/<sign_id>/."""
+    if not folder.exists():
+        print(f"No {label} data in {folder.relative_to(REPO_ROOT)}; run its make_ script first.")
         return
     top1 = top5 = total = 0
     confusions = Counter()
-    for folder in sorted(SYNTHETIC.iterdir(), key=lambda p: int(p.name)):
-        true_id = int(folder.name)
-        for path in sorted(folder.glob("*.png")):
-            guesses = [m.mahadevan_id for m in classify_drawing(cv2.imread(str(path), cv2.IMREAD_GRAYSCALE))]
+    for sign_dir in sorted(folder.iterdir(), key=lambda p: int(p.name)):
+        true_id = int(sign_dir.name)
+        for path in sorted(sign_dir.glob("*.png")):
+            guesses = [m.mahadevan_id for m in classify(read_image(path))]
             total += 1
             top1 += guesses[0] == true_id
             top5 += true_id in guesses
             if guesses[0] != true_id:
                 confusions[(true_id, guesses[0])] += 1
-    print(f"Synthetic images: {total}")
+    print(f"{label}: {total} images")
     print(f"  top-1 accuracy: {top1 / total:.1%}")
     print(f"  top-5 accuracy: {top5 / total:.1%}")
     print("  most common confusions (true -> guessed: count):")
-    for (t, g), n in confusions.most_common(10):
+    for (t, g), n in confusions.most_common(5):
         print(f"    {t} -> {g}: {n}")
 
 
@@ -86,5 +92,7 @@ def sample_figure() -> None:
 
 
 if __name__ == "__main__":
-    synthetic_accuracy()
+    synthetic_accuracy(SYNTHETIC, lambda p: cv2.imread(str(p), cv2.IMREAD_GRAYSCALE),
+                       classify_drawing, "Distorted drawings")
+    synthetic_accuracy(CARVED, load_image, classify_crop, "Carved renders")
     sample_figure()
