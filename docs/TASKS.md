@@ -88,14 +88,17 @@ Each task is tagged with when it pays off:
 
 ### D1. Build the seal photo dataset · Oct 6
 - **What:** 30 to 50 photos of real seals with a clear, readable row of signs. Sources: sample images in the 2017 OCR repo, harappa.com, indusscript.in, museum websites.
-- **Deliverable:** photos in `data/raw/seal_photos/`, plus `data/raw/seal_photos/sources.csv` with columns `filename, source_url, site, im77_text_number` (leave unknowns blank).
+- **Deliverable:** photos in `data/raw/seal_photos/`, plus `data/raw/seal_photos/sources.csv` with columns `filename, source_url, site, im77_text_number, object_type` (leave unknowns blank). `object_type` is `seal` or `impression`.
+- **Seal or impression?** The seal is the carved stone; it is mirrored. The impression is what it leaves when pressed into clay; it reads correctly, right to left. Publications often show both side by side, seal first. Tell them apart by the surface: a seal is stone, often chipped at the edges, with the signs and animal **cut into** it; an impression is smooth clay or plaster, usually lighter, with everything **standing out** from it. When both exist, keep the impression.
 - **Why it matters:** this is the real-world data the vision pipeline runs on. The M1 demo and the accuracy result both depend on it.
 - **Target:** Oct 3.
 
 ### D2. Ground truth for 10 to 15 photos · Oct 6
 - **What:** for each photo, the correct sign sequence, found by comparing each sign to the images in `data/raw/sign_templates/`. Where the IM77 text number is known, indusscript.in shows the official sequence.
 - **Depends on:** D1.
-- **Deliverable:** `data/raw/seal_photos/ground_truth.csv` with columns `filename, mahadevan_ids_reading_order` (IDs separated by spaces, first sign read first, i.e. the right-most sign on the seal).
+- **Deliverable:** `data/raw/seal_photos/ground_truth.csv` with columns `filename, mahadevan_ids_reading_order, confidence` (IDs separated by spaces, first sign read first; `?` for a sign you can't read; `confidence` is `sure` or `unsure`).
+- **Which end is the first sign?** Always write the sequence as read on the **impression**: start at its right-most sign and go left. For a photo of the seal itself, the first sign read is the **left-most** one (or flip the photo horizontally and then read right to left). The templates are drawn as signs appear on impressions, so compare them against the impression, or against a flipped seal photo.
+- **Exact matches are not expected.** The templates are idealised drawings and real carvings vary. Pick the closest template and mark it `unsure` if in doubt. Skip blurry or damaged photos: 10 clear ones are worth more than 40 bad ones.
 - **Why it matters:** this is what makes an accuracy number possible. Without it the pipeline can only be shown running, not measured.
 - **Target:** Oct 3.
 
