@@ -12,6 +12,7 @@ Everything in `raw/` is treated as read-only. Derived files go in `processed/`, 
 | `raw/im77_bigrams.csv` | 2,730 adjacent sign pairs with counts | Mahadevan (1 to 417) | IM77 web app, indusscript.in (Indus Research Centre, RMRL), Tables tab, parsed from its PDF export | RMRL. Keep repo private; check terms before any public release |
 | `raw/im77_trigrams.csv` | 3,681 sign triples with counts | Mahadevan | Same as above | Same as above |
 | `raw/sign_mapping_parpola_wells_mahadevan.csv` | 397 Parpola signs, each with its Wells and Mahadevan codes. Covers 359 of 417 Mahadevan signs. Many-to-many in places. | All three | `features/` folder of github.com/mayig/indus-valley-script-corpus. One developer's hand mapping, not an authoritative concordance. | MIT |
+| `raw/seal_samples_ocr2017/` | 22 photos of seal text rows (text row only, not whole seals), for developing A1. No ground truth. | n/a | github.com/tpsatish95/OCR-on-Indus-Seals (Palaniappan and Adhikari 2017); see the folder's README | Apache 2.0 |
 | `raw/sign_templates/N.png` | 417 reference drawings, one per Mahadevan sign, 150x150 grayscale | Mahadevan | Kaggle, storesource/im-417-150, from Mahadevan (1977) pp. 32-34 | Apache 2.0 |
 
 ## Known limitations
