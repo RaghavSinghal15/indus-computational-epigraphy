@@ -3,6 +3,7 @@ numpy>=1.26
 pandas>=2.1
 matplotlib>=3.8
 scikit-learn>=1.4
+scipy>=1.11
 
 # Vision (M1)
 opencv-python>=4.9
