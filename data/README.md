@@ -13,6 +13,7 @@ Everything in `raw/` is treated as read-only. Derived files go in `processed/`, 
 | `raw/im77_trigrams.csv` | 3,681 sign triples with counts | Mahadevan | Same as above | Same as above |
 | `raw/sign_mapping_parpola_wells_mahadevan.csv` | 397 Parpola signs, each with its Wells and Mahadevan codes. Covers 359 of 417 Mahadevan signs. Many-to-many in places. | All three | `features/` folder of github.com/mayig/indus-valley-script-corpus. One developer's hand mapping, not an authoritative concordance. | MIT |
 | `raw/seal_samples_ocr2017/` | 22 photos of seal text rows (text row only, not whole seals), for developing A1. No ground truth. | n/a | github.com/tpsatish95/OCR-on-Indus-Seals (Palaniappan and Adhikari 2017); see the folder's README | Apache 2.0 |
+| `raw/cisi_seals/` | 244 real Mohenjo-daro seal photos (impression + seal) with verified sign sequences, the CISI-to-IM77 concordance (1,542 objects), and indusscript.in's 417 sign drawings. Load with `indus.data.load_labelled_seals()`. See the folder's README. | Mahadevan | Photos: CISI Vol. 1 (Joshi & Parpola 1987, IGNCA scan). Sequences: indusscript.in (Mahadevan & RMRL) | ASI/CISI editors and RMRL. Private repo only |
 | `raw/sign_templates/N.png` | 417 reference drawings, one per Mahadevan sign, 150x150 grayscale | Mahadevan | Kaggle, storesource/im-417-150, from Mahadevan (1977) pp. 32-34 | Apache 2.0 |
 
 ## Known limitations

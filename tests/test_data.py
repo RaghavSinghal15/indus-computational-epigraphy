@@ -53,3 +53,19 @@ def test_mapping_links_jar_across_schemes():
 
 def test_all_417_templates_present():
     assert all(template_path(i).exists() for i in range(1, 418))
+
+
+def test_labelled_seals_reading_order_and_photos():
+    from indus.data import load_labelled_seals
+    df = load_labelled_seals()
+    assert len(df) >= 200
+    # reading order is the reverse of the impression's left-to-right order
+    assert all(r == l[::-1] for r, l in zip(df["signs_reading"], df["signs_ltr"]))
+    # jar sign (Mahadevan 342) ends texts: often last in reading order, never first
+    last = sum(s[-1] == "342" for s in df["signs_reading"])
+    first = sum(s[0] == "342" for s in df["signs_reading"])
+    assert last > 50 and first == 0
+    # every listed photo exists, and almost every seal has an impression photo
+    import os
+    assert all(os.path.exists(p) for p in df["impression_photo"] if p)
+    assert (df["impression_photo"] != "").mean() > 0.95

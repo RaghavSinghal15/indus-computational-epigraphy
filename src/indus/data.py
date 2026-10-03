@@ -29,6 +29,7 @@ BIGRAMS_FILE = RAW / "im77_bigrams.csv"
 TRIGRAMS_FILE = RAW / "im77_trigrams.csv"
 MAPPING_FILE = RAW / "sign_mapping_parpola_wells_mahadevan.csv"
 TEMPLATES_DIR = RAW / "sign_templates"
+CISI_DIR = RAW / "cisi_seals"
 
 
 def load_sequences(order: str = "reading") -> list[list[int]]:
@@ -84,3 +85,21 @@ def wells_to_mahadevan() -> dict[int, set[int]]:
 def template_path(mahadevan_id: int) -> Path:
     """Path to the 150x150 grayscale reference drawing for a Mahadevan sign (1..417)."""
     return TEMPLATES_DIR / f"{mahadevan_id}.png"
+
+
+def load_labelled_seals() -> pd.DataFrame:
+    """Real seal photos with known sign sequences (Mohenjo-daro, CISI Vol. 1 + IM77).
+
+    One row per seal. Adds two list columns:
+      signs_reading: Mahadevan IDs in reading order (right to left on the impression)
+      signs_ltr:     the same signs left to right, as they appear on the impression photo
+    IDs are strings because the source marks doubtful signs with "*" (e.g. "*342")
+    and illegible ones as "0"; see data/raw/cisi_seals/README.md.
+    Photo paths are made absolute.
+    """
+    df = pd.read_csv(CISI_DIR / "labelled_seals_M.csv", dtype=str).fillna("")
+    df["signs_reading"] = df["signs_reading_order"].str.split()
+    df["signs_ltr"] = df["signs_impression_left_to_right"].str.split()
+    for col in ("impression_photo", "seal_photo"):
+        df[col] = df[col].map(lambda p: str(CISI_DIR / p) if p else "")
+    return df
