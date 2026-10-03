@@ -212,7 +212,9 @@ def find_sign_boxes(
         bx0, bx1 = x0 + cols[0], x0 + cols[-1] + 1
         by0, by1 = rows[0], rows[-1] + 1
         # scale back to the original image's pixel coordinates
-        boxes.append(Box(*(int(round(v / scale)) for v in (bx0, by0, bx1, by1))))
+        X0, Y0, X1, Y1 = (int(round(v / scale)) for v in (bx0, by0, bx1, by1))
+        # rounding back to the original size can collapse a thin box to zero width or height
+        boxes.append(Box(X0, Y0, max(X1, X0 + 1), max(Y1, Y0 + 1)))
 
     # Boxes were collected left to right. An impression reads right to left;
     # a mirrored photo of the seal itself reads left to right.

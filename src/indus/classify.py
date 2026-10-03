@@ -123,6 +123,8 @@ def classify_crop(crop_bgr: np.ndarray, mirrored: bool = False, k: int = 5) -> l
     itself shows every sign mirrored, so set `mirrored=True` for those and the
     crop is flipped back before comparing.
     """
+    if crop_bgr.size == 0:                       # empty crop: nothing to match
+        return rank_templates(np.zeros(SIZE * SIZE, np.float32), k)
     strokes = strokes_from_photo(crop_bgr)
     if mirrored:
         strokes = strokes[:, ::-1]               # flip left-right
