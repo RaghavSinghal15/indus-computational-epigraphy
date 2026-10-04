@@ -31,3 +31,6 @@ wandb/
 
 # Seal photos can get large: commit only what is needed, note sources in data/README.md
 data/raw/seal_photos/large/
+
+#docs 
+Indus_Epigraphy_AI_Project_Proposal.docx
