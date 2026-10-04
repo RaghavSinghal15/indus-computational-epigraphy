@@ -5,7 +5,6 @@ __pycache__/
 .pytest_cache/
 build/
 dist/
-
 # Environments
 .venv/
 venv/
@@ -32,5 +31,6 @@ wandb/
 # Seal photos can get large: commit only what is needed, note sources in data/README.md
 data/raw/seal_photos/large/
 
-#docs 
+# Local project proposal (keep available without committing it)
+/docs/Indus_Epigraphy_AI_Project_Proposal.docx
 Indus_Epigraphy_AI_Project_Proposal.docx
