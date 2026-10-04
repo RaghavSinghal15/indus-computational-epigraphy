@@ -1,245 +1,329 @@
-cisi_label,im77,impression_photo,seal_photo,caption_confident,signs_impression_left_to_right,signs_reading_order,n_signs,source
-M-1,1067,photos/M-1_a.jpg,photos/M-1_A.jpg,1,98 402 267 51 397,397 51 267 402 98,5,hover
-M-3,2225,photos/M-3_a.jpg,photos/M-3_A.jpg,1,341 87 212,212 87 341,3,hover
-M-5,2247,photos/M-5_a.jpg,photos/M-5_A.jpg,1,*342 348 67 65 123 150,150 123 65 67 348 *342,6,hover
-M-6,2422,photos/M-6_a.jpg,photos/M-6_A.jpg,1,391 286 125 83,83 125 286 391,4,hover
-M-7,1011,photos/M-7_a.jpg,photos/M-7_A.jpg,1,169 407 17 342 9 296 67 99 267,267 99 67 296 9 342 17 407 169,9,hover
-M-8,1038,photos/M-8_a.jpg,photos/M-8_A.jpg,0,336 17 244,244 17 336,3,reader
-M-9,2615,photos/M-9_a.jpg,photos/M-9_A.jpg,1,87 261 87 180 307,307 180 87 261 87,5,hover
-M-10,1006,photos/M-10_a.jpg,photos/M-10_A.jpg,0,169 124 155 87 89 336 65 389 99 81 233,233 81 99 389 65 336 89 87 155 124 169,11,hover
-M-13,1069,photos/M-13_a.jpg,photos/M-13_A.jpg,1,402 180 28,28 180 402,3,hover
-M-14,1022,photos/M-14_a.jpg,photos/M-14_A.jpg,1,342 367 204 99 267,267 99 204 367 342,5,hover
-M-15,2177,photos/M-15_a.jpg,photos/M-15_A.jpg,1,1 342 48 99 267,267 99 48 342 1,5,hover
-M-16,1037,photos/M-16_a.jpg,photos/M-16_A.jpg,1,391 19 96 409,409 96 19 391,4,hover
-M-17,1035,photos/M-17_a.jpg,photos/M-17_A.jpg,1,162 109 99 381 219,219 381 99 109 162,5,hover
-M-18,1548,photos/M-18_a.jpg,photos/M-18_A.jpg,1,318 342 121,121 342 318,3,hover
-M-19,1085,photos/M-19_a.jpg,photos/M-19_A.jpg,1,0 99 267,267 99 0,3,hover
-M-20,1054,photos/M-20_a.jpg,photos/M-20_A.jpg,1,169 106 99 267 89 89 230 253,253 230 89 89 267 99 106 169,8,reader lowmargin
-M-21,2103,photos/M-21_a.jpg,photos/M-21_A.jpg,1,175 98 342 201 150 87 99 267,267 99 87 150 201 342 98 175,8,reader lowmargin
-M-22,1023,photos/M-22_a.jpg,photos/M-22_A.jpg,1,342 294 48 59 87 53 *99 *267,*267 *99 53 87 59 48 294 342,8,reader lowmargin
-M-24,2694,photos/M-24_a.jpg,photos/M-24_A.jpg,1,1 342 67 65 99 303 17,17 303 99 65 67 342 1,7,reader
-M-25,1056,photos/M-25_a.jpg,photos/M-25_A.jpg,1,245 245 75 336 249,249 336 75 245 245,5,reader
-M-26,2074,photos/M-26_a.jpg,photos/M-26_A.jpg,1,1 342 228 123 150,150 123 228 342 1,5,reader
-M-27,2084,photos/M-27_a.jpg,photos/M-27_A.jpg,1,224 65 387 343 329 287 102,102 287 329 343 387 65 224,7,reader
-M-28,2178,photos/M-28_a.jpg,photos/M-28_A.jpg,0,307 400 342 347 403 173 99 267,267 99 173 403 347 342 400 307,8,reader lowmargin
-M-29,2033,photos/M-29_a.jpg,photos/M-29_A.jpg,1,342 121 67 65 389 99 59 233 204,204 233 59 99 389 65 67 121 342,9,reader
-M-30,2396,photos/M-30_a.jpg,photos/M-30_A.jpg,0,342 358 112 204 67 65 389,389 65 67 204 112 358 342,7,reader
-M-31,2576,photos/M-31_a.jpg,photos/M-31_A.jpg,1,342 81 253 72 123 391,391 123 72 253 81 342,6,reader
-M-32,2180,photos/M-32_a.jpg,photos/M-32_A.jpg,1,162 102 99 267,267 99 102 162,4,reader lowmargin
-M-33,1042,photos/M-33_a.jpg,photos/M-33_A.jpg,1,342 87 296 325 72 99 34,34 99 72 325 296 87 342,7,reader
-M-34,1058,photos/M-34_a.jpg,photos/M-34_A.jpg,1,342 193 48 99 169 396 400,400 396 169 99 48 193 342,7,reader
-M-35,2333,photos/M-35_a.jpg,photos/M-35_A.jpg,1,342 169 249 72 70 99 4,4 99 70 72 249 169 342,7,reader lowmargin
-M-36,2455,photos/M-36_a.jpg,photos/M-36_A.jpg,1,342 58 244 59 87 99 402 303 191,191 303 402 99 87 59 244 58 342,9,reader
-M-38,1087,photos/M-38_a.jpg,photos/M-38_A.jpg,1,342 149 130 51 59 87 67 65 99 162 28 244 87,87 244 28 162 99 65 67 87 59 51 130 149 342,13,reader lowmargin
-M-39,1544,photos/M-39_a.jpg,photos/M-39_A.jpg,1,0 336 67 65 98 99 56 50,50 56 99 98 65 67 336 0,8,reader
-M-40,1051,,photos/M-40_A.jpg,,163 99 254 178 106,106 178 254 99 163,5,reader
-M-41,2271,photos/M-41_a.jpg,photos/M-41_A.jpg,1,342 244 67 72 65 99 169 28 391,391 28 169 99 65 72 67 244 342,9,reader
-M-42,1096,photos/M-42_a.jpg,photos/M-42_A.jpg,1,254 216 67 99 267,267 99 67 216 254,5,reader lowmargin
-M-43,2584,photos/M-43_a.jpg,photos/M-43_A.jpg,0,342 53 70 99 121 399,399 121 99 70 53 342,6,reader
-M-45,1552,photos/M-45_a.jpg,photos/M-45_A.jpg,1,245 245 379 98 99 180 403 87,87 403 180 99 98 379 245 245,8,reader
-M-47,1098,photos/M-47_a.jpg,photos/M-47_A.jpg,1,342 347 65 99 267,267 99 65 347 342,5,reader lowmargin
-M-48,1186,photos/M-48_a.jpg,photos/M-48_A.jpg,1,162 391 230 123 402 293,293 402 123 230 391 162,6,reader
-M-49,1047,photos/M-49_a.jpg,photos/M-49_A.jpg,1,0 216 67 59 87 99 180 175 237 54,54 237 175 180 99 87 59 67 216 0,10,reader lowmargin
-M-50,1557,photos/M-50_a.jpg,photos/M-50_A.jpg,1,342 194 112 89 336 67 53 99 0,0 99 53 67 336 89 112 194 342,9,reader
-M-51,1555,photos/M-51_a.jpg,photos/M-51_A.jpg,1,342 53 230 175 65 343 162 17,17 162 343 65 175 230 53 342,8,reader
-M-52,1540,photos/M-52_a.jpg,photos/M-52_A.jpg,1,342 294 87 59 171 65 387 99 206 341,341 206 99 387 65 171 59 87 294 342,10,reader
-M-53,2128,photos/M-53_a.jpg,photos/M-53_A.jpg,1,1 342 59 109 99 180 54 293 17,17 293 54 180 99 109 59 342 1,9,reader lowmargin
-M-54,2307,photos/M-54_a.jpg,photos/M-54_A.jpg,1,66 67 89 336 53 99 391,391 99 53 336 89 67 66,7,reader
-M-55,2511,photos/M-55_a.jpg,photos/M-55_A.jpg,1,*342 347 230 253 97 150,150 97 253 230 347 *342,6,reader
-M-56,2406,photos/M-56_a.jpg,photos/M-56_A.jpg,0,342 284 87 65 123 216 256 403,403 256 216 123 65 87 284 342,8,reader
-M-57,2340,photos/M-57_a.jpg,photos/M-57_A.jpg,1,60 87 59 53 99 152,152 99 53 59 87 60,6,reader
-M-58,2680,photos/M-58_a.jpg,photos/M-58_A.jpg,1,342 230 204 99 267,267 99 204 230 342,5,reader lowmargin
-M-59,1029,photos/M-59_a.jpg,photos/M-59_A.jpg,1,402 102 344 123 293,293 123 344 102 402,5,reader
-M-60,2124,photos/M-60_a.jpg,photos/M-60_A.jpg,1,*12 86,86 *12,2,reader
-M-64,2524,photos/M-64_a.jpg,photos/M-64_A.jpg,1,211 89 336 123 59 104,104 59 123 336 89 211,6,reader
-M-65,2440,photos/M-65_a.jpg,photos/M-65_A.jpg,1,211 59 86 97 336 197,197 336 97 86 59 211,6,reader
-M-69,1095,photos/M-69_a.jpg,photos/M-69_A.jpg,1,342 389 70 123 150,150 123 70 389 342,5,reader
-M-70,1048,photos/M-70_a.jpg,photos/M-70_A.jpg,1,60 87 100 162 150,150 162 100 87 60,5,reader lowmargin
-M-72,2085,photos/M-72_a.jpg,photos/M-72_A.jpg,1,342 51 336 17 102 99 267,267 99 102 17 336 51 342,7,reader lowmargin
-M-73,1046,photos/M-73_a.jpg,photos/M-73_A.jpg,1,176 211 311,311 211 176,3,reader
-M-74,2353,photos/M-74_a.jpg,photos/M-74_A.jpg,1,*252 197 336 17,17 336 197 *252,4,reader
-M-75,1019,photos/M-75_a.jpg,photos/M-75_A.jpg,1,211 59 104 99 267,267 99 104 59 211,5,reader lowmargin
-M-80,2635,photos/M-80_a.jpg,photos/M-80_A.jpg,0,15 102 123 402 267,267 402 123 102 15,5,reader lowmargin
-M-81,1180,photos/M-81_a.jpg,photos/M-81_A.jpg,1,254 222 67 99 245 245 155,155 245 245 99 67 222 254,7,reader
-M-82,2451,photos/M-82_a.jpg,photos/M-82_A.jpg,1,342 62 99 57 216 162,162 216 57 99 62 342,6,reader
-M-83,2267,photos/M-83_a.jpg,photos/M-83_A.jpg,1,162 114 306,306 114 162,3,reader lowmargin
-M-84,1108,photos/M-84_a.jpg,photos/M-84_A.jpg,1,342 349 67 97 402 293,293 402 97 67 349 342,6,reader
-M-85,2365,photos/M-85_a.jpg,photos/M-85_A.jpg,1,211 72 343 160 80,80 160 343 72 211,5,reader lowmargin
-M-86,2208,photos/M-86_a.jpg,photos/M-86_A.jpg,1,211 89 336 70 99 391 328,328 391 99 70 336 89 211,7,reader
-M-87,2148,photos/M-87_a.jpg,photos/M-87_A.jpg,1,176 304 41,41 304 176,3,reader
-M-88,1075,photos/M-88_a.jpg,photos/M-88_A.jpg,1,254 326 72,72 326 254,3,reader
-M-91,2429,photos/M-91_a.jpg,photos/M-91_A.jpg,1,342 8 53 59 87 99 267 51 173,173 51 267 99 87 59 53 8 342,9,reader
-M-92,2407,photos/M-92_a.jpg,photos/M-92_A.jpg,1,342 53 230 175 99 381 159,159 381 99 175 230 53 342,7,reader
-M-93,2305,photos/M-93_a.jpg,photos/M-93_A.jpg,1,15 102 67 343 50,50 343 67 102 15,5,reader
-M-94,2594,photos/M-94_a.jpg,photos/M-94_A.jpg,0,342 162 249 59 102,102 59 249 162 342,5,reader
-M-95,2657,photos/M-95_a.jpg,photos/M-95_A.jpg,1,162 102 99 32 319,319 32 99 102 162,5,reader
-M-96,2698,photos/M-96_a.jpg,photos/M-96_A.jpg,1,15 104,104 15,2,reader
-M-97,2549,photos/M-97_a.jpg,photos/M-97_A.jpg,1,15 130 51,51 130 15,3,reader
-M-98,2012,photos/M-98_a.jpg,photos/M-98_A.jpg,1,342 194 112 287,287 112 194 342,4,reader
-M-99,2475,photos/M-99_a.jpg,photos/M-99_A.jpg,1,342 415 99 402 30,30 402 99 415 342,5,reader
-M-100,1115,photos/M-100_a.jpg,photos/M-100_A.jpg,1,1 342 51 336 99 267,267 99 336 51 342 1,6,reader lowmargin
-M-101,1537,photos/M-101_a.jpg,photos/M-101_A.jpg,1,162 204 342 322 99 267,267 99 322 342 204 162,6,reader lowmargin
-M-102,1129,photos/M-102_a.jpg,photos/M-102_A.jpg,1,15 102 287 215,215 287 102 15,4,reader
-M-103,1076,photos/M-103_a.jpg,photos/M-103_A.jpg,1,162 104 99 391,391 99 104 162,4,reader
-M-104,2574,photos/M-104_a.jpg,photos/M-104_A.jpg,1,1 342 59 65 264,264 65 59 342 1,5,reader
-M-105,2337,photos/M-105_a.jpg,photos/M-105_A.jpg,1,*342 *347 387 70 344 123 293,293 123 344 70 387 *347 *342,7,reader
-M-106,2459,photos/M-106_a.jpg,photos/M-106_A.jpg,1,342 347 0 175,175 0 347 342,4,reader
-M-107,2563,photos/M-107_a.jpg,photos/M-107_A.jpg,1,342 193 99 59 125 127 233,233 127 125 59 99 193 342,7,reader lowmargin
-M-108,1110,photos/M-108_a.jpg,photos/M-108_A.jpg,1,176 176 391 59 125 53 216 391,391 216 53 125 59 391 176 176,8,reader
-M-109,1151,photos/M-109_a.jpg,photos/M-109_A.jpg,1,342 247 59 171 99 395 17,17 395 99 171 59 247 342,7,reader
-M-110,2031,photos/M-110_a.jpg,photos/M-110_A.jpg,1,*342 *292 99 267,267 99 *292 *342,4,reader lowmargin
-M-111,2029,photos/M-111_a.jpg,photos/M-111_A.jpg,0,*342 293 182 72 97 391 391,391 391 97 72 182 293 *342,7,reader
-M-112,2099,photos/M-112_a.jpg,photos/M-112_A.jpg,1,342 347 59 109 325 343 195 147,147 195 343 325 109 59 347 342,8,reader
-M-113,2115,photos/M-113_a.jpg,photos/M-113_A.jpg,1,342 87 403 343 123 293,293 123 343 403 87 342,6,reader
-M-114,2166,photos/M-114_a.jpg,photos/M-114_A.jpg,0,342 347 127 99 180 173,173 180 99 127 347 342,6,reader
-M-116,2481,photos/M-116_a.jpg,photos/M-116_A.jpg,1,342 8 48 403 103 99 267,267 99 103 403 48 8 342,7,reader lowmargin
-M-117,1105,photos/M-117_a.jpg,photos/M-117_A.jpg,1,211 89 336 59 389 121 99 391,391 99 121 389 59 336 89 211,8,reader
-M-118,1104,photos/M-118_a.jpg,photos/M-118_A.jpg,1,342 348 89 336 72 387 99 267,267 99 387 72 336 89 348 342,8,reader lowmargin
-M-119,2018,photos/M-119_a.jpg,photos/M-119_A.jpg,1,12 193 136 99 162 28 244 87 287 214,214 287 87 244 28 162 99 136 193 12,10,reader lowmargin
-M-121,1188,photos/M-121_a.jpg,photos/M-121_A.jpg,1,342 287 373 72 53,53 72 373 287 342,5,reader lowmargin
-M-122,2015,photos/M-122_a.jpg,photos/M-122_A.jpg,1,211 89 336,336 89 211,3,reader
-M-123,2702,photos/M-123_a.jpg,photos/M-123_A.jpg,0,176 3 402 155,155 402 3 176,4,reader
-M-124,1120,photos/M-124_a.jpg,photos/M-124_A.jpg,1,342 296 59 87,87 59 296 342,4,reader lowmargin
-M-126,2311,photos/M-126_a.jpg,photos/M-126_A.jpg,1,0 217 123 150,150 123 217 0,4,reader
-M-127,1119,photos/M-127_a.jpg,photos/M-127_A.jpg,1,224 342 65 342 48,48 342 65 342 224,5,reader
-M-128,2284,photos/M-128_a.jpg,photos/M-128_A.jpg,1,342 296 389 343 209 336,336 209 343 389 296 342,6,reader
-M-129,2193,photos/M-129_a.jpg,photos/M-129_A.jpg,1,211 72 67 65 343 202,202 343 65 67 72 211,6,reader
-M-130,2285,photos/M-130_a.jpg,photos/M-130_A.jpg,1,342 38 59 87 100 26,26 100 87 59 38 342,6,reader
-M-131,2263,photos/M-131_a.jpg,photos/M-131_A.jpg,1,342 162 249 343 162 373,373 162 343 249 162 342,6,reader
-M-132,2082,photos/M-132_a.jpg,photos/M-132_A.jpg,1,15 102 215,215 102 15,3,reader
-M-133,2052,photos/M-133_a.jpg,photos/M-133_A.jpg,1,254 216 67 59 51 381 186 327,327 186 381 51 59 67 216 254,8,reader
-M-134,2187,photos/M-134_a.jpg,photos/M-134_A.jpg,1,277 87 150,150 87 277,3,reader
-M-135,1168,photos/M-135_a.jpg,photos/M-135_A.jpg,1,211 89 336 86,86 336 89 211,4,reader
-M-136,2233,photos/M-136_a.jpg,photos/M-136_A.jpg,1,1 342 59 109 86 298 215,215 298 86 109 59 342 1,7,reader
-M-137,2261,photos/M-137_a.jpg,photos/M-137_A.jpg,1,392,392,1,reader
-M-138,2381,photos/M-138_a.jpg,photos/M-138_A.jpg,1,342 287 106,106 287 342,3,reader
-M-139,2185,photos/M-139_a.jpg,photos/M-139_A.jpg,1,89 375 66 344 203,203 344 66 375 89,5,reader
-M-140,2563,photos/M-140_a.jpg,photos/M-140_A.jpg,1,342 193 99 59 125 127 233,233 127 125 59 99 193 342,7,reader lowmargin
-M-142,2630,photos/M-142_a.jpg,photos/M-142_A.jpg,1,38 17 99 267,267 99 17 38,4,reader lowmargin
-M-143,2002,photos/M-143_a.jpg,photos/M-143_A.jpg,1,342 57 87 99 302 403,403 302 99 87 57 342,6,reader
-M-144,2048,photos/M-144_a.jpg,photos/M-144_A.jpg,1,342 8 171 67 99 267,267 99 67 171 8 342,6,reader lowmargin
-M-145,1118,photos/M-145_a.jpg,photos/M-145_A.jpg,1,342 176 25 286,286 25 176 342,4,reader
-M-146,1100,photos/M-146_a.jpg,photos/M-146_A.jpg,1,342 51 293 123 150,150 123 293 51 342,5,reader
-M-148,1245,photos/M-148_a.jpg,photos/M-148_A.jpg,1,342 267 221,221 267 342,3,reader
-M-149,1233,photos/M-149_a.jpg,photos/M-149_A.jpg,1,342 347 127 123 216,216 123 127 347 342,5,reader
-M-150,1236,photos/M-150_a.jpg,photos/M-150_A.jpg,1,342 375,375 342,2,reader
-M-151,2323,photos/M-151_a.jpg,photos/M-151_A.jpg,1,59 125 271,271 125 59,3,reader
-M-152,2102,photos/M-152_a.jpg,photos/M-152_A.jpg,1,342 348 99 267,267 99 348 342,4,reader lowmargin
-M-153,2361,photos/M-153_a.jpg,photos/M-153_A.jpg,1,81 19 54,54 19 81,3,reader
-M-155,1187,photos/M-155_a.jpg,photos/M-155_A.jpg,1,342 48 86,86 48 342,3,reader
-M-157,2022,photos/M-157_a.jpg,photos/M-157_A.jpg,1,342 287 373 72 53 97 391,391 97 53 72 373 287 342,7,reader
-M-158,2198,photos/M-158_a.jpg,photos/M-158_A.jpg,1,162 109 123 216,216 123 109 162,4,reader
-M-159,2355,photos/M-159_a.jpg,photos/M-159_A.jpg,1,342 113 343 302 198,198 302 343 113 342,5,reader
-M-160,2286,photos/M-160_a.jpg,photos/M-160_A.jpg,1,12 75 86 99 391 343,343 391 99 86 75 12,6,reader lowmargin
-M-161,2088,photos/M-161_a.jpg,photos/M-161_A.jpg,1,245 245 36 102,102 36 245 245,4,reader
-M-162,2486,photos/M-162_a.jpg,photos/M-162_A.jpg,1,342 347 403 217 102,102 217 403 347 342,5,reader
-M-163,1543,photos/M-163_a.jpg,photos/M-163_A.jpg,1,211 59 171 123 391,391 123 171 59 211,5,reader
-M-164,2403,photos/M-164_a.jpg,photos/M-164_A.jpg,1,342 25 124 99 267,267 99 124 25 342,5,reader lowmargin
-M-166,1080,photos/M-166_a.jpg,photos/M-166_A.jpg,1,162 406 67 387 99 267,267 99 387 67 406 162,6,reader lowmargin
-M-167,1297,photos/M-167_a.jpg,photos/M-167_A.jpg,1,*15 0 402 267,267 402 0 *15,4,reader lowmargin
-M-168,2442,photos/M-168_a.jpg,photos/M-168_A.jpg,1,86 49 336 343 123 293,293 123 343 336 49 86,6,reader
-M-169,1113,photos/M-169_a.jpg,photos/M-169_A.jpg,1,342 197 112 124 123 94,94 123 124 112 197 342,6,reader
-M-170,2237,photos/M-170_a.jpg,photos/M-170_A.jpg,1,342 296 169 124 155 87 343 267,267 343 87 155 124 169 296 342,8,reader lowmargin
-M-171,1149,photos/M-171_a.jpg,photos/M-171_A.jpg,1,169 124 342 296 72 389 123 150,150 123 389 72 296 342 124 169,8,reader
-M-172,1071,photos/M-172_a.jpg,photos/M-172_A.jpg,1,169 114 97 59 371 261,261 371 59 97 114 169,6,reader
-M-173,1161,photos/M-173_a.jpg,photos/M-173_A.jpg,1,342 327 293 182 389,389 182 293 327 342,5,reader
-M-174,1114,photos/M-174_a.jpg,photos/M-174_A.jpg,1,342 296 59 87 99 391,391 99 87 59 296 342,6,reader
-M-175,1291,photos/M-175_a.jpg,photos/M-175_A.jpg,1,0 99 267,267 99 0,3,reader lowmargin
-M-176,1193,photos/M-176_a.jpg,photos/M-176_A.jpg,1,*342 149,149 *342,2,reader
-M-177,2354,photos/M-177_a.jpg,photos/M-177_A.jpg,1,162 102 99 267,267 99 102 162,4,reader lowmargin
-M-178,1243,photos/M-178_a.jpg,photos/M-178_A.jpg,1,162 109,109 162,2,reader
-M-179,1220,photos/M-179_a.jpg,photos/M-179_A.jpg,1,162 102,102 162,2,reader
-M-180,2014,photos/M-180_a.jpg,photos/M-180_A.jpg,1,342 242,242 342,2,reader
-M-181,2490,photos/M-181_a.jpg,photos/M-181_A.jpg,1,211 47 99 180 210,210 180 99 47 211,5,reader
-M-182,2154,photos/M-182_a.jpg,photos/M-182_A.jpg,1,342 173,173 342,2,reader
-M-184,2634,photos/M-184_a.jpg,photos/M-184_A.jpg,1,1 342 9 264,264 9 342 1,4,reader
-M-186,2161,photos/M-186_a.jpg,photos/M-186_A.jpg,1,211 67,67 211,2,reader
-M-187,2382,photos/M-187_a.jpg,photos/M-187_A.jpg,1,15 106,106 15,2,reader
-M-188,1287,photos/M-188_a.jpg,photos/M-188_A.jpg,1,15 86,86 15,2,reader
-M-189,1195,photos/M-189_a.jpg,photos/M-189_A.jpg,1,130 342 48,48 342 130,3,reader
-M-190,1205,photos/M-190_a.jpg,photos/M-190_A.jpg,1,15 87 403 87,87 403 87 15,4,reader
-M-191,1288,photos/M-191_a.jpg,photos/M-191_A.jpg,1,1 28,28 1,2,reader
-M-192,1206,photos/M-192_a.jpg,photos/M-192_A.jpg,1,328 212 329,329 212 328,3,reader
-M-193,2113,photos/M-193_a.jpg,photos/M-193_A.jpg,1,15 106,106 15,2,reader
-M-194,2254,photos/M-194_a.jpg,photos/M-194_A.jpg,1,1 342 287 106,106 287 342 1,4,reader
-M-195,2415,photos/M-195_a.jpg,photos/M-195_A.jpg,1,180 175 249 87 287 264,264 287 87 249 175 180,6,reader
-M-196,2474,photos/M-196_a.jpg,photos/M-196_A.jpg,0,267 205 402 267 343,343 267 402 205 267,5,reader
-M-197,2371,photos/M-197_a.jpg,photos/M-197_A.jpg,1,14 2,2 14,2,reader
-M-198,2363,photos/M-198_a.jpg,photos/M-198_A.jpg,1,342 347 403 217 99 267,267 99 217 403 347 342,6,reader lowmargin
-M-199,2647,photos/M-199_a.jpg,photos/M-199_A.jpg,1,1 342 8 171 67 99 267,267 99 67 171 8 342 1,7,reader lowmargin
-M-200,1148,photos/M-200_a.jpg,photos/M-200_A.jpg,1,342 62 99 391,391 99 62 342,4,reader
-M-201,2678,photos/M-201_a.jpg,photos/M-201_A.jpg,1,12 124,124 12,2,reader lowmargin
-M-202,2625,photos/M-202_a.jpg,photos/M-202_A.jpg,1,176 68 86 123 391,391 123 86 68 176,5,reader
-M-203,1556,photos/M-203_a.jpg,photos/M-203_A.jpg,1,342 162 249 343 160 59,59 160 343 249 162 342,6,reader
-M-204,2623,photos/M-204_a.jpg,photos/M-204_A.jpg,1,342 124 99 267,267 99 124 342,4,reader lowmargin
-M-205,1221,photos/M-205_a.jpg,photos/M-205_A.jpg,1,375 294 97 391,391 97 294 375,4,reader
-M-207,2458,photos/M-207_a.jpg,photos/M-207_A.jpg,0,307 379,379 307,2,reader
-M-208,2047,photos/M-208_a.jpg,photos/M-208_A.jpg,1,211 67,67 211,2,reader
-M-209,2375,photos/M-209_a.jpg,photos/M-209_A.jpg,1,12 342 70,70 342 12,3,reader lowmargin
-M-210,2656,photos/M-210_a.jpg,photos/M-210_A.jpg,1,402 267 290,290 267 402,3,reader
-M-211,1214,photos/M-211_a.jpg,photos/M-211_A.jpg,1,1 342 8 59 99 86 319,319 86 99 59 8 342 1,7,reader
-M-213,1150,photos/M-213_a.jpg,photos/M-213_A.jpg,1,342 326 99 162 50,50 162 99 326 342,5,reader
-M-214,2571,photos/M-214_a.jpg,photos/M-214_A.jpg,1,176 81 391,391 81 176,3,reader
-M-217,2087,photos/M-217_a.jpg,photos/M-217_A.jpg,1,342 284 87 72,72 87 284 342,4,reader
-M-218,2175,photos/M-218_a.jpg,photos/M-218_A.jpg,1,176 59 190,190 59 176,3,reader
-M-219,2433,photos/M-219_a.jpg,photos/M-219_A.jpg,1,254 234,234 254,2,reader
-M-222,1194,photos/M-222_a.jpg,photos/M-222_A.jpg,1,83 49 51,51 49 83,3,reader
-M-224,2215,photos/M-224_a.jpg,photos/M-224_A.jpg,1,169 106,106 169,2,reader
-M-225,2199,photos/M-225_a.jpg,photos/M-225_A.jpg,1,68 99 286,286 99 68,3,reader
-M-226,2152,photos/M-226_a.jpg,photos/M-226_A.jpg,1,342 402 84 124,124 84 402 342,4,reader lowmargin
-M-227,2226,photos/M-227_a.jpg,photos/M-227_A.jpg,1,73,73,1,reader
-M-228,2502,photos/M-228_a.jpg,photos/M-228_A.jpg,1,342 244 67,67 244 342,3,reader
-M-230,1295,photos/M-230_a.jpg,photos/M-230_A.jpg,1,1 342 48 72,72 48 342 1,4,reader
-M-231,2444,photos/M-231_a.jpg,photos/M-231_A.jpg,1,176 342 8 171,171 8 342 176,4,reader
-M-232,2234,photos/M-232_a.jpg,photos/M-232_A.jpg,1,66 100 162 336,336 162 100 66,4,reader
-M-236,2123,photos/M-236_a.jpg,photos/M-236_A.jpg,1,211 89 336 67 72 387,387 72 67 336 89 211,6,reader lowmargin
-M-238,2534,photos/M-238_a.jpg,photos/M-238_A.jpg,1,342 387 72,72 387 342,3,reader
-M-239,2238,photos/M-239_a.jpg,photos/M-239_A.jpg,1,342 347 301 65 99 34,34 99 65 301 347 342,6,reader
-M-240,1324,photos/M-240_a.jpg,photos/M-240_A.jpg,1,211 67 59 87 99 267 238,238 267 99 87 59 67 211,7,reader
-M-241,1536,photos/M-241_a.jpg,photos/M-241_A.jpg,1,1 342 87 403 343 195 146,146 195 343 403 87 342 1,7,reader
-M-242,2216,photos/M-242_a.jpg,photos/M-242_A.jpg,1,342 338 99 180 175,175 180 99 338 342,5,reader
-M-243,2390,photos/M-243_a.jpg,photos/M-243_A.jpg,1,307 249 310 17 215,215 17 310 249 307,5,reader
-M-244,2399,photos/M-244_a.jpg,photos/M-244_A.jpg,1,254 216 *59 0,0 *59 216 254,4,reader
-M-245,2290,photos/M-245_a.jpg,photos/M-245_A.jpg,1,342 347 155 301 230 204 99 267,267 99 204 230 301 155 347 342,8,reader lowmargin
-M-246,1317,photos/M-246_a.jpg,photos/M-246_A.jpg,1,*342 204 65 72 99 267,267 99 72 65 204 *342,6,reader lowmargin
-M-247,2298,photos/M-247_a.jpg,photos/M-247_A.jpg,1,162 112 343 123 293,293 123 343 112 162,5,reader
-M-248,1310,photos/M-248_a.jpg,photos/M-248_A.jpg,1,342 8 171 99 336 249,249 336 99 171 8 342,6,reader
-M-249,2378,photos/M-249_a.jpg,photos/M-249_A.jpg,1,17 319 342 48 72 387,387 72 48 342 319 17,6,reader lowmargin
-M-250,1308,photos/M-250_a.jpg,photos/M-250_A.jpg,1,388 72 70,70 72 388,3,reader lowmargin
-M-251,2370,photos/M-251_a.jpg,photos/M-251_A.jpg,1,162 102 99 28 175,175 28 99 102 162,5,reader
-M-252,2423,photos/M-252_a.jpg,photos/M-252_A.jpg,1,176 10 245 245 121 97 10 75,75 10 97 121 245 245 10 176,8,reader
-M-253,2701,photos/M-253_a.jpg,photos/M-253_A.jpg,1,*254 216 387 99 402 398,398 402 99 387 216 *254,6,reader
-M-254,2090,photos/M-254_a.jpg,photos/M-254_A.jpg,1,130 51 162 106,106 162 51 130,4,reader
-M-255,2409,photos/M-255_a.jpg,photos/M-255_A.jpg,1,342 247 72,72 247 342,3,reader
-M-257,2314,photos/M-257_a.jpg,photos/M-257_A.jpg,1,87 342 123 293,293 123 342 87,4,reader
-M-259,2132,photos/M-259_a.jpg,photos/M-259_A.jpg,1,211 70 99 267,267 99 70 211,4,reader lowmargin
-M-260,2567,photos/M-260_a.jpg,photos/M-260_A.jpg,1,1 342 59 105 99 391,391 99 105 59 342 1,6,reader
-M-261,2535,photos/M-261_a.jpg,photos/M-261_A.jpg,1,*342 124 97 151,151 97 124 *342,4,reader
-M-262,2249,photos/M-262_a.jpg,photos/M-262_A.jpg,1,25 102,102 25,2,reader
-M-263,1336,photos/M-263_a.jpg,photos/M-263_A.jpg,1,1 342 176 175 86 215,215 86 175 176 342 1,6,reader
-M-264,2607,photos/M-264_a.jpg,photos/M-264_A.jpg,1,342 153 153,153 153 342,3,reader
-M-265,2155,photos/M-265_a.jpg,photos/M-265_A.jpg,1,1 342 96 409 124,124 409 96 342 1,5,reader lowmargin
-M-266,1306,photos/M-266_a.jpg,photos/M-266_A.jpg,1,224 342 53 65 72 98 99 81 244,244 81 99 98 72 65 53 342 224,9,reader lowmargin
-M-267,2257,photos/M-267_a.jpg,photos/M-267_A.jpg,1,342 244 15 99 139,139 99 15 244 342,5,reader
-M-268,2445,photos/M-268_a.jpg,photos/M-268_A.jpg,1,415 86 134 1 391,391 1 134 86 415,5,reader lowmargin
-M-269,2663,photos/M-269_a.jpg,photos/M-269_A.jpg,1,342 245 204,204 245 342,3,reader
-M-272,2554,photos/M-272_a.jpg,photos/M-272_A.jpg,1,99 284,284 99,2,chatgpt
-M-273,2673,photos/M-273_a.jpg,photos/M-273_A.jpg,1,326,326,1,chatgpt
-M-274,1342,photos/M-274_a.jpg,photos/M-274_A.jpg,1,342 347 78 70 344 186 87,87 186 344 70 78 347 342,7,reader lowmargin
-M-275,2131,photos/M-275_a.jpg,photos/M-275_A.jpg,1,1 342 347 341 264,264 341 347 342 1,5,reader
-M-277,2309,photos/M-277_a.jpg,photos/M-277_A.jpg,1,342 387 59 402 0,0 402 59 387 342,5,chatgpt
-M-278,2648,photos/M-278_a.jpg,photos/M-278_A.jpg,1,242 162 104 99 267,267 99 104 162 242,5,reader lowmargin
-M-280,1373,photos/M-280_a.jpg,photos/M-280_A.jpg,1,342 135 67 100 61 293 17,17 293 61 100 67 135 342,7,reader
-M-282,2304,photos/M-282_a.jpg,photos/M-282_A.jpg,1,15 25 402 267,267 402 25 15,4,chatgpt
-M-283,2127,photos/M-283_a.jpg,photos/M-283_A.jpg,1,162 114,114 162,2,chatgpt
-M-284,2195,photos/M-284_a.jpg,photos/M-284_A.jpg,1,342 347 192 0,0 192 347 342,4,chatgpt
-H-285,2406,,,1,342 284 87 65 123 216 256 403,403 256 216 123 65 87 284 342,8,reader
-M-285,1367,photos/M-285_a.jpg,photos/M-285_A.jpg,1,206 175 67 99 267,267 99 67 175 206,5,chatgpt
-M-286,2517,photos/M-286_a.jpg,photos/M-286_A.jpg,1,342 51 336,336 51 342,3,chatgpt
-M-290,2527,photos/M-290_a.jpg,photos/M-290_A.jpg,1,176 50 84,84 50 176,3,chatgpt
-M-292,1361,photos/M-292_a.jpg,photos/M-292_A.jpg,1,162 102 123 293,293 123 102 162,4,reader
-M-293,1360,photos/M-293_a.jpg,photos/M-293_A.jpg,1,12 173 343 263,263 343 173 12,4,chatgpt
-M-294,1376,photos/M-294_a.jpg,photos/M-294_A.jpg,1,342 59 102,102 59 342,3,chatgpt
-M-295,1386,photos/M-295_a.jpg,photos/M-295_A.jpg,1,242 1 342 0 99 267,267 99 0 342 1 242,6,reader lowmargin
-M-296,1387,photos/M-296_a.jpg,photos/M-296_A.jpg,1,242 211 59 123 286,286 123 59 211 242,5,chatgpt
-M-352,2152,photos/M-352_a.jpg,photos/M-352_A.jpg,0,342 402 84 124,124 84 402 342,4,reader lowmargin
+cisi_label,im77,impression_photo,seal_photo,signs_impression_left_to_right,signs_reading_order,n_signs,source,verified
+M-1,1067,photos/M-1_a.jpg,photos/M-1_A.jpg,98 402 267 51 397,397 51 267 402 98,5,hover,1
+M-3,2225,photos/M-3_a.jpg,photos/M-3_A.jpg,341 87 212,212 87 341,3,hover,1
+M-5,2247,photos/M-5_a.jpg,photos/M-5_A.jpg,*342 348 67 65 123 150,150 123 65 67 348 *342,6,hover,1
+M-6,2422,photos/M-6_a.jpg,photos/M-6_A.jpg,391 286 125 83,83 125 286 391,4,hover,1
+M-7,1011,photos/M-7_a.jpg,photos/M-7_A.jpg,169 407 17 342 9 296 67 99 267,267 99 67 296 9 342 17 407 169,9,hover,1
+M-8,1038,photos/M-8_a.jpg,photos/M-8_A.jpg,336 17 244,244 17 336,3,reader,1
+M-9,2615,photos/M-9_a.jpg,photos/M-9_A.jpg,87 261 87 180 307,307 180 87 261 87,5,hover,1
+M-10,1006,photos/M-10_a.jpg,photos/M-10_A.jpg,169 124 155 87 89 336 65 389 99 81 233,233 81 99 389 65 336 89 87 155 124 169,11,hover,1
+M-13,1069,photos/M-13_a.jpg,photos/M-13_A.jpg,402 180 28,28 180 402,3,hover,1
+M-14,1022,photos/M-14_a.jpg,photos/M-14_A.jpg,342 367 204 99 267,267 99 204 367 342,5,hover,1
+M-15,2177,photos/M-15_a.jpg,photos/M-15_A.jpg,1 342 48 99 267,267 99 48 342 1,5,hover,1
+M-16,1037,photos/M-16_a.jpg,photos/M-16_A.jpg,391 19 96 409,409 96 19 391,4,hover,1
+M-17,1035,photos/M-17_a.jpg,photos/M-17_A.jpg,162 109 99 381 219,219 381 99 109 162,5,hover,1
+M-18,1548,photos/M-18_a.jpg,photos/M-18_A.jpg,318 342 121,121 342 318,3,hover,1
+M-19,1085,photos/M-19_a.jpg,photos/M-19_A.jpg,0 99 267,267 99 0,3,hover,1
+M-20,1054,photos/M-20_a.jpg,photos/M-20_A.jpg,169 106 99 267 89 89 230 253,253 230 89 89 267 99 106 169,8,reader,1
+M-21,2103,photos/M-21_a.jpg,photos/M-21_A.jpg,175 98 342 201 150 87 99 267,267 99 87 150 201 342 98 175,8,reader,1
+M-22,1023,photos/M-22_a.jpg,photos/M-22_A.jpg,342 294 48 59 87 53 *99 *267,*267 *99 53 87 59 48 294 342,8,reader,1
+M-24,2694,photos/M-24_a.jpg,photos/M-24_A.jpg,1 342 67 65 99 303 17,17 303 99 65 67 342 1,7,reader,1
+M-25,1056,photos/M-25_a.jpg,photos/M-25_A.jpg,245 245 75 336 249,249 336 75 245 245,5,reader,1
+M-26,2074,photos/M-26_a.jpg,photos/M-26_A.jpg,1 342 228 123 150,150 123 228 342 1,5,reader,1
+M-27,2084,photos/M-27_a.jpg,photos/M-27_A.jpg,224 65 387 343 329 287 102,102 287 329 343 387 65 224,7,reader,1
+M-28,2178,photos/M-28_a.jpg,photos/M-28_A.jpg,307 400 342 347 403 173 99 267,267 99 173 403 347 342 400 307,8,reader,1
+M-29,2033,photos/M-29_a.jpg,photos/M-29_A.jpg,342 121 67 65 389 99 59 233 204,204 233 59 99 389 65 67 121 342,9,reader,1
+M-30,2396,photos/M-30_a.jpg,photos/M-30_A.jpg,342 358 112 204 67 65 389,389 65 67 204 112 358 342,7,reader,1
+M-31,2576,photos/M-31_a.jpg,photos/M-31_A.jpg,342 81 253 72 123 391,391 123 72 253 81 342,6,reader,1
+M-32,2180,photos/M-32_a.jpg,photos/M-32_A.jpg,162 102 99 267,267 99 102 162,4,reader,1
+M-33,1042,photos/M-33_a.jpg,photos/M-33_A.jpg,342 87 296 325 72 99 34,34 99 72 325 296 87 342,7,reader,1
+M-34,1058,photos/M-34_a.jpg,photos/M-34_A.jpg,342 193 48 99 169 396 400,400 396 169 99 48 193 342,7,reader,1
+M-35,2333,photos/M-35_a.jpg,photos/M-35_A.jpg,342 169 249 72 70 99 4,4 99 70 72 249 169 342,7,reader,1
+M-36,2455,photos/M-36_a.jpg,photos/M-36_A.jpg,342 58 244 59 87 99 402 303 191,191 303 402 99 87 59 244 58 342,9,reader,1
+M-38,1087,photos/M-38_a.jpg,photos/M-38_A.jpg,342 149 130 51 59 87 67 65 99 162 28 244 87,87 244 28 162 99 65 67 87 59 51 130 149 342,13,reader,1
+M-39,1544,photos/M-39_a.jpg,photos/M-39_A.jpg,0 336 67 65 98 99 56 50,50 56 99 98 65 67 336 0,8,reader,1
+M-40,1051,,photos/M-40_A.jpg,163 99 254 178 106,106 178 254 99 163,5,reader,1
+M-41,2271,photos/M-41_a.jpg,photos/M-41_A.jpg,342 244 67 72 65 99 169 28 391,391 28 169 99 65 72 67 244 342,9,reader,1
+M-42,1096,photos/M-42_a.jpg,photos/M-42_A.jpg,254 216 67 99 267,267 99 67 216 254,5,reader,1
+M-43,2584,photos/M-43_a.jpg,photos/M-43_A.jpg,342 53 70 99 121 399,399 121 99 70 53 342,6,reader,1
+M-45,1552,photos/M-45_a.jpg,photos/M-45_A.jpg,245 245 379 98 99 180 403 87,87 403 180 99 98 379 245 245,8,reader,1
+M-47,1098,photos/M-47_a.jpg,photos/M-47_A.jpg,342 347 65 99 267,267 99 65 347 342,5,reader,1
+M-48,1186,photos/M-48_a.jpg,photos/M-48_A.jpg,162 391 230 123 402 293,293 402 123 230 391 162,6,reader,1
+M-49,1047,photos/M-49_a.jpg,photos/M-49_A.jpg,0 216 67 59 87 99 180 175 237 54,54 237 175 180 99 87 59 67 216 0,10,reader,1
+M-50,1557,photos/M-50_a.jpg,photos/M-50_A.jpg,342 194 112 89 336 67 53 99 0,0 99 53 67 336 89 112 194 342,9,reader,1
+M-51,1555,photos/M-51_a.jpg,photos/M-51_A.jpg,342 53 230 175 65 343 162 17,17 162 343 65 175 230 53 342,8,reader,1
+M-52,1540,photos/M-52_a.jpg,photos/M-52_A.jpg,342 294 87 59 171 65 387 99 206 341,341 206 99 387 65 171 59 87 294 342,10,reader,1
+M-53,2128,photos/M-53_a.jpg,photos/M-53_A.jpg,1 342 59 109 99 180 54 293 17,17 293 54 180 99 109 59 342 1,9,reader,1
+M-54,2307,photos/M-54_a.jpg,photos/M-54_A.jpg,66 67 89 336 53 99 391,391 99 53 336 89 67 66,7,reader,1
+M-55,2511,photos/M-55_a.jpg,photos/M-55_A.jpg,*342 347 230 253 97 150,150 97 253 230 347 *342,6,reader,1
+M-56,2406,photos/M-56_a.jpg,photos/M-56_A.jpg,342 284 87 65 123 216 256 403,403 256 216 123 65 87 284 342,8,reader,1
+M-57,2340,photos/M-57_a.jpg,photos/M-57_A.jpg,60 87 59 53 99 152,152 99 53 59 87 60,6,reader,1
+M-58,2680,photos/M-58_a.jpg,photos/M-58_A.jpg,342 230 204 99 267,267 99 204 230 342,5,reader,1
+M-59,1029,photos/M-59_a.jpg,photos/M-59_A.jpg,402 102 344 123 293,293 123 344 102 402,5,reader,1
+M-60,2124,photos/M-60_a.jpg,photos/M-60_A.jpg,*12 86,86 *12,2,reader,1
+M-64,2524,photos/M-64_a.jpg,photos/M-64_A.jpg,211 89 336 123 59 104,104 59 123 336 89 211,6,reader,1
+M-65,2440,photos/M-65_a.jpg,photos/M-65_A.jpg,211 59 86 97 336 197,197 336 97 86 59 211,6,reader,1
+M-69,1095,photos/M-69_a.jpg,photos/M-69_A.jpg,342 389 70 123 150,150 123 70 389 342,5,reader,1
+M-70,1048,photos/M-70_a.jpg,photos/M-70_A.jpg,60 87 100 162 150,150 162 100 87 60,5,reader,1
+M-72,2085,photos/M-72_a.jpg,photos/M-72_A.jpg,342 51 336 17 102 99 267,267 99 102 17 336 51 342,7,reader,1
+M-73,1046,photos/M-73_a.jpg,photos/M-73_A.jpg,176 211 311,311 211 176,3,reader,1
+M-74,2353,photos/M-74_a.jpg,photos/M-74_A.jpg,*252 197 336 17,17 336 197 *252,4,reader,1
+M-75,1019,photos/M-75_a.jpg,photos/M-75_A.jpg,211 59 104 99 267,267 99 104 59 211,5,reader,1
+M-80,2635,photos/M-80_a.jpg,photos/M-80_A.jpg,15 102 123 402 267,267 402 123 102 15,5,reader,1
+M-81,1180,photos/M-81_a.jpg,photos/M-81_A.jpg,254 222 67 99 245 245 155,155 245 245 99 67 222 254,7,reader,1
+M-82,2451,photos/M-82_a.jpg,photos/M-82_A.jpg,342 62 99 57 216 162,162 216 57 99 62 342,6,reader,1
+M-83,2267,photos/M-83_a.jpg,photos/M-83_A.jpg,162 114 306,306 114 162,3,reader,1
+M-84,1108,photos/M-84_a.jpg,photos/M-84_A.jpg,342 349 67 97 402 293,293 402 97 67 349 342,6,reader,1
+M-85,2365,photos/M-85_a.jpg,photos/M-85_A.jpg,211 72 343 160 80,80 160 343 72 211,5,reader,1
+M-86,2208,photos/M-86_a.jpg,photos/M-86_A.jpg,211 89 336 70 99 391 328,328 391 99 70 336 89 211,7,reader,1
+M-87,2148,photos/M-87_a.jpg,photos/M-87_A.jpg,176 304 41,41 304 176,3,reader,1
+M-88,1075,photos/M-88_a.jpg,photos/M-88_A.jpg,254 326 72,72 326 254,3,reader,1
+M-91,2429,photos/M-91_a.jpg,photos/M-91_A.jpg,342 8 53 59 87 99 267 51 173,173 51 267 99 87 59 53 8 342,9,reader,1
+M-92,2407,photos/M-92_a.jpg,photos/M-92_A.jpg,342 53 230 175 99 381 159,159 381 99 175 230 53 342,7,reader,1
+M-93,2305,photos/M-93_a.jpg,photos/M-93_A.jpg,15 102 67 343 50,50 343 67 102 15,5,reader,1
+M-94,2594,photos/M-94_a.jpg,photos/M-94_A.jpg,342 162 249 59 102,102 59 249 162 342,5,reader,1
+M-95,2657,photos/M-95_a.jpg,photos/M-95_A.jpg,162 102 99 32 319,319 32 99 102 162,5,reader,1
+M-96,2698,photos/M-96_a.jpg,photos/M-96_A.jpg,15 104,104 15,2,reader,1
+M-97,2549,photos/M-97_a.jpg,photos/M-97_A.jpg,15 130 51,51 130 15,3,reader,1
+M-98,2012,photos/M-98_a.jpg,photos/M-98_A.jpg,342 194 112 287,287 112 194 342,4,reader,1
+M-99,2475,photos/M-99_a.jpg,photos/M-99_A.jpg,342 415 99 402 30,30 402 99 415 342,5,reader,1
+M-100,1115,photos/M-100_a.jpg,photos/M-100_A.jpg,1 342 51 336 99 267,267 99 336 51 342 1,6,reader,1
+M-101,1537,photos/M-101_a.jpg,photos/M-101_A.jpg,162 204 342 322 99 267,267 99 322 342 204 162,6,reader,1
+M-102,1129,photos/M-102_a.jpg,photos/M-102_A.jpg,15 102 287 215,215 287 102 15,4,reader,1
+M-103,1076,photos/M-103_a.jpg,photos/M-103_A.jpg,162 104 99 391,391 99 104 162,4,reader,1
+M-104,2574,photos/M-104_a.jpg,photos/M-104_A.jpg,1 342 59 65 264,264 65 59 342 1,5,reader,1
+M-105,2337,photos/M-105_a.jpg,photos/M-105_A.jpg,*342 *347 387 70 344 123 293,293 123 344 70 387 *347 *342,7,reader,1
+M-106,2459,photos/M-106_a.jpg,photos/M-106_A.jpg,342 347 0 175,175 0 347 342,4,reader,1
+M-107,2563,photos/M-107_a.jpg,photos/M-107_A.jpg,342 193 99 59 125 127 233,233 127 125 59 99 193 342,7,reader,1
+M-108,1110,photos/M-108_a.jpg,photos/M-108_A.jpg,176 176 391 59 125 53 216 391,391 216 53 125 59 391 176 176,8,reader,1
+M-109,1151,photos/M-109_a.jpg,photos/M-109_A.jpg,342 247 59 171 99 395 17,17 395 99 171 59 247 342,7,reader,1
+M-110,2031,photos/M-110_a.jpg,photos/M-110_A.jpg,*342 *292 99 267,267 99 *292 *342,4,reader,1
+M-111,2029,photos/M-111_a.jpg,photos/M-111_A.jpg,*342 293 182 72 97 391 391,391 391 97 72 182 293 *342,7,reader,1
+M-112,2099,photos/M-112_a.jpg,photos/M-112_A.jpg,342 347 59 109 325 343 195 147,147 195 343 325 109 59 347 342,8,reader,1
+M-113,2115,photos/M-113_a.jpg,photos/M-113_A.jpg,342 87 403 343 123 293,293 123 343 403 87 342,6,reader,1
+M-114,2166,photos/M-114_a.jpg,photos/M-114_A.jpg,342 347 127 99 180 173,173 180 99 127 347 342,6,reader,1
+M-116,2481,photos/M-116_a.jpg,photos/M-116_A.jpg,342 8 48 403 103 99 267,267 99 103 403 48 8 342,7,reader,1
+M-117,1105,photos/M-117_a.jpg,photos/M-117_A.jpg,211 89 336 59 389 121 99 391,391 99 121 389 59 336 89 211,8,reader,1
+M-118,1104,photos/M-118_a.jpg,photos/M-118_A.jpg,342 348 89 336 72 387 99 267,267 99 387 72 336 89 348 342,8,reader,1
+M-119,2018,photos/M-119_a.jpg,photos/M-119_A.jpg,12 193 136 99 162 28 244 87 287 214,214 287 87 244 28 162 99 136 193 12,10,reader,1
+M-121,1188,photos/M-121_a.jpg,photos/M-121_A.jpg,342 287 373 72 53,53 72 373 287 342,5,reader,1
+M-122,2015,photos/M-122_a.jpg,photos/M-122_A.jpg,211 89 336,336 89 211,3,reader,1
+M-123,2702,photos/M-123_a.jpg,photos/M-123_A.jpg,176 3 402 155,155 402 3 176,4,reader,1
+M-124,1120,photos/M-124_a.jpg,photos/M-124_A.jpg,342 296 59 87,87 59 296 342,4,reader,1
+M-126,2311,photos/M-126_a.jpg,photos/M-126_A.jpg,0 217 123 150,150 123 217 0,4,reader,1
+M-127,1119,photos/M-127_a.jpg,photos/M-127_A.jpg,224 342 65 342 48,48 342 65 342 224,5,reader,1
+M-128,2284,photos/M-128_a.jpg,photos/M-128_A.jpg,342 296 389 343 209 336,336 209 343 389 296 342,6,reader,1
+M-129,2193,photos/M-129_a.jpg,photos/M-129_A.jpg,211 72 67 65 343 202,202 343 65 67 72 211,6,reader,1
+M-130,2285,photos/M-130_a.jpg,photos/M-130_A.jpg,342 38 59 87 100 26,26 100 87 59 38 342,6,reader,1
+M-131,2263,photos/M-131_a.jpg,photos/M-131_A.jpg,342 162 249 343 162 373,373 162 343 249 162 342,6,reader,1
+M-132,2082,photos/M-132_a.jpg,photos/M-132_A.jpg,15 102 215,215 102 15,3,reader,1
+M-133,2052,photos/M-133_a.jpg,photos/M-133_A.jpg,254 216 67 59 51 381 186 327,327 186 381 51 59 67 216 254,8,reader,1
+M-134,2187,photos/M-134_a.jpg,photos/M-134_A.jpg,277 87 150,150 87 277,3,reader,1
+M-135,1168,photos/M-135_a.jpg,photos/M-135_A.jpg,211 89 336 86,86 336 89 211,4,reader,1
+M-136,2233,photos/M-136_a.jpg,photos/M-136_A.jpg,1 342 59 109 86 298 215,215 298 86 109 59 342 1,7,reader,1
+M-137,2261,photos/M-137_a.jpg,photos/M-137_A.jpg,392,392,1,reader,1
+M-138,2381,photos/M-138_a.jpg,photos/M-138_A.jpg,342 287 106,106 287 342,3,reader,1
+M-139,2185,photos/M-139_a.jpg,photos/M-139_A.jpg,89 375 66 344 203,203 344 66 375 89,5,reader,1
+M-140,2563,photos/M-140_a.jpg,photos/M-140_A.jpg,342 193 99 59 125 127 233,233 127 125 59 99 193 342,7,reader,1
+M-142,2630,photos/M-142_a.jpg,photos/M-142_A.jpg,38 17 99 267,267 99 17 38,4,reader,1
+M-143,2002,photos/M-143_a.jpg,photos/M-143_A.jpg,342 57 87 99 302 403,403 302 99 87 57 342,6,reader,1
+M-144,2048,photos/M-144_a.jpg,photos/M-144_A.jpg,342 8 171 67 99 267,267 99 67 171 8 342,6,reader,1
+M-145,1118,photos/M-145_a.jpg,photos/M-145_A.jpg,342 176 25 286,286 25 176 342,4,reader,1
+M-146,1100,photos/M-146_a.jpg,photos/M-146_A.jpg,342 51 293 123 150,150 123 293 51 342,5,reader,1
+M-148,1245,photos/M-148_a.jpg,photos/M-148_A.jpg,342 267 221,221 267 342,3,reader,1
+M-149,1233,photos/M-149_a.jpg,photos/M-149_A.jpg,342 347 127 123 216,216 123 127 347 342,5,reader,1
+M-150,1236,photos/M-150_a.jpg,photos/M-150_A.jpg,342 375,375 342,2,reader,1
+M-151,2323,photos/M-151_a.jpg,photos/M-151_A.jpg,59 125 271,271 125 59,3,reader,1
+M-152,2102,photos/M-152_a.jpg,photos/M-152_A.jpg,342 348 99 267,267 99 348 342,4,reader,1
+M-153,2361,photos/M-153_a.jpg,photos/M-153_A.jpg,81 19 54,54 19 81,3,reader,1
+M-155,1187,photos/M-155_a.jpg,photos/M-155_A.jpg,342 48 86,86 48 342,3,reader,1
+M-157,2022,photos/M-157_a.jpg,photos/M-157_A.jpg,342 287 373 72 53 97 391,391 97 53 72 373 287 342,7,reader,1
+M-158,2198,photos/M-158_a.jpg,photos/M-158_A.jpg,162 109 123 216,216 123 109 162,4,reader,1
+M-159,2355,photos/M-159_a.jpg,photos/M-159_A.jpg,342 113 343 302 198,198 302 343 113 342,5,reader,1
+M-160,2286,photos/M-160_a.jpg,photos/M-160_A.jpg,12 75 86 99 391 343,343 391 99 86 75 12,6,reader,1
+M-161,2088,photos/M-161_a.jpg,photos/M-161_A.jpg,245 245 36 102,102 36 245 245,4,reader,1
+M-162,2486,photos/M-162_a.jpg,photos/M-162_A.jpg,342 347 403 217 102,102 217 403 347 342,5,reader,1
+M-163,1543,photos/M-163_a.jpg,photos/M-163_A.jpg,211 59 171 123 391,391 123 171 59 211,5,reader,1
+M-164,2403,photos/M-164_a.jpg,photos/M-164_A.jpg,342 25 124 99 267,267 99 124 25 342,5,reader,1
+M-166,1080,photos/M-166_a.jpg,photos/M-166_A.jpg,162 406 67 387 99 267,267 99 387 67 406 162,6,reader,1
+M-167,1297,photos/M-167_a.jpg,photos/M-167_A.jpg,*15 0 402 267,267 402 0 *15,4,reader,1
+M-168,2442,photos/M-168_a.jpg,photos/M-168_A.jpg,86 49 336 343 123 293,293 123 343 336 49 86,6,reader,1
+M-169,1113,photos/M-169_a.jpg,photos/M-169_A.jpg,342 197 112 124 123 94,94 123 124 112 197 342,6,reader,1
+M-170,2237,photos/M-170_a.jpg,photos/M-170_A.jpg,342 296 169 124 155 87 343 267,267 343 87 155 124 169 296 342,8,reader,1
+M-171,1149,photos/M-171_a.jpg,photos/M-171_A.jpg,169 124 342 296 72 389 123 150,150 123 389 72 296 342 124 169,8,reader,1
+M-172,1071,photos/M-172_a.jpg,photos/M-172_A.jpg,169 114 97 59 371 261,261 371 59 97 114 169,6,reader,1
+M-173,1161,photos/M-173_a.jpg,photos/M-173_A.jpg,342 327 293 182 389,389 182 293 327 342,5,reader,1
+M-174,1114,photos/M-174_a.jpg,photos/M-174_A.jpg,342 296 59 87 99 391,391 99 87 59 296 342,6,reader,1
+M-175,1291,photos/M-175_a.jpg,photos/M-175_A.jpg,0 99 267,267 99 0,3,reader,1
+M-176,1193,photos/M-176_a.jpg,photos/M-176_A.jpg,*342 149,149 *342,2,reader,1
+M-177,2354,photos/M-177_a.jpg,photos/M-177_A.jpg,162 102 99 267,267 99 102 162,4,reader,1
+M-178,1243,photos/M-178_a.jpg,photos/M-178_A.jpg,162 109,109 162,2,reader,1
+M-179,1220,photos/M-179_a.jpg,photos/M-179_A.jpg,162 102,102 162,2,reader,1
+M-180,2014,photos/M-180_a.jpg,photos/M-180_A.jpg,342 242,242 342,2,reader,1
+M-181,2490,photos/M-181_a.jpg,photos/M-181_A.jpg,211 47 99 180 210,210 180 99 47 211,5,reader,1
+M-182,2154,photos/M-182_a.jpg,photos/M-182_A.jpg,342 173,173 342,2,reader,1
+M-184,2634,photos/M-184_a.jpg,photos/M-184_A.jpg,1 342 9 264,264 9 342 1,4,reader,1
+M-186,2161,photos/M-186_a.jpg,photos/M-186_A.jpg,211 67,67 211,2,reader,1
+M-187,2382,photos/M-187_a.jpg,photos/M-187_A.jpg,15 106,106 15,2,reader,1
+M-188,1287,photos/M-188_a.jpg,photos/M-188_A.jpg,15 86,86 15,2,reader,1
+M-189,1195,photos/M-189_a.jpg,photos/M-189_A.jpg,130 342 48,48 342 130,3,reader,1
+M-190,1205,photos/M-190_a.jpg,photos/M-190_A.jpg,15 87 403 87,87 403 87 15,4,reader,1
+M-191,1288,photos/M-191_a.jpg,photos/M-191_A.jpg,1 28,28 1,2,reader,1
+M-192,1206,photos/M-192_a.jpg,photos/M-192_A.jpg,328 212 329,329 212 328,3,reader,1
+M-193,2113,photos/M-193_a.jpg,photos/M-193_A.jpg,15 106,106 15,2,reader,1
+M-194,2254,photos/M-194_a.jpg,photos/M-194_A.jpg,1 342 287 106,106 287 342 1,4,reader,1
+M-195,2415,photos/M-195_a.jpg,photos/M-195_A.jpg,180 175 249 87 287 264,264 287 87 249 175 180,6,reader,1
+M-196,2474,photos/M-196_a.jpg,photos/M-196_A.jpg,267 205 402 267 343,343 267 402 205 267,5,reader,1
+M-197,2371,photos/M-197_a.jpg,photos/M-197_A.jpg,14 2,2 14,2,reader,1
+M-198,2363,photos/M-198_a.jpg,photos/M-198_A.jpg,342 347 403 217 99 267,267 99 217 403 347 342,6,reader,1
+M-199,2647,photos/M-199_a.jpg,photos/M-199_A.jpg,1 342 8 171 67 99 267,267 99 67 171 8 342 1,7,reader,1
+M-200,1148,photos/M-200_a.jpg,photos/M-200_A.jpg,342 62 99 391,391 99 62 342,4,reader,1
+M-201,2678,photos/M-201_a.jpg,photos/M-201_A.jpg,12 124,124 12,2,reader,1
+M-202,2625,photos/M-202_a.jpg,photos/M-202_A.jpg,176 68 86 123 391,391 123 86 68 176,5,reader,1
+M-203,1556,photos/M-203_a.jpg,photos/M-203_A.jpg,342 162 249 343 160 59,59 160 343 249 162 342,6,reader,1
+M-204,2623,photos/M-204_a.jpg,photos/M-204_A.jpg,342 124 99 267,267 99 124 342,4,reader,1
+M-205,1221,photos/M-205_a.jpg,photos/M-205_A.jpg,375 294 97 391,391 97 294 375,4,reader,1
+M-207,2458,photos/M-207_a.jpg,photos/M-207_A.jpg,307 379,379 307,2,reader,1
+M-208,2047,photos/M-208_a.jpg,photos/M-208_A.jpg,211 67,67 211,2,reader,1
+M-209,2375,photos/M-209_a.jpg,photos/M-209_A.jpg,12 342 70,70 342 12,3,reader,1
+M-210,2656,photos/M-210_a.jpg,photos/M-210_A.jpg,402 267 290,290 267 402,3,reader,1
+M-211,1214,photos/M-211_a.jpg,photos/M-211_A.jpg,1 342 8 59 99 86 319,319 86 99 59 8 342 1,7,reader,1
+M-213,1150,photos/M-213_a.jpg,photos/M-213_A.jpg,342 326 99 162 50,50 162 99 326 342,5,reader,1
+M-214,2571,photos/M-214_a.jpg,photos/M-214_A.jpg,176 81 391,391 81 176,3,reader,1
+M-217,2087,photos/M-217_a.jpg,photos/M-217_A.jpg,342 284 87 72,72 87 284 342,4,reader,1
+M-218,2175,photos/M-218_a.jpg,photos/M-218_A.jpg,176 59 190,190 59 176,3,reader,1
+M-219,2433,photos/M-219_a.jpg,photos/M-219_A.jpg,254 234,234 254,2,reader,1
+M-222,1194,photos/M-222_a.jpg,photos/M-222_A.jpg,83 49 51,51 49 83,3,reader,1
+M-224,2215,photos/M-224_a.jpg,photos/M-224_A.jpg,169 106,106 169,2,reader,1
+M-225,2199,photos/M-225_a.jpg,photos/M-225_A.jpg,68 99 286,286 99 68,3,reader,1
+M-226,2152,photos/M-226_a.jpg,photos/M-226_A.jpg,342 402 84 124,124 84 402 342,4,reader,1
+M-227,2226,photos/M-227_a.jpg,photos/M-227_A.jpg,73,73,1,reader,1
+M-228,2502,photos/M-228_a.jpg,photos/M-228_A.jpg,342 244 67,67 244 342,3,reader,1
+M-230,1295,photos/M-230_a.jpg,photos/M-230_A.jpg,1 342 48 72,72 48 342 1,4,reader,1
+M-231,2444,photos/M-231_a.jpg,photos/M-231_A.jpg,176 342 8 171,171 8 342 176,4,reader,1
+M-232,2234,photos/M-232_a.jpg,photos/M-232_A.jpg,66 100 162 336,336 162 100 66,4,reader,1
+M-236,2123,photos/M-236_a.jpg,photos/M-236_A.jpg,211 89 336 67 72 387,387 72 67 336 89 211,6,reader,1
+M-238,2534,photos/M-238_a.jpg,photos/M-238_A.jpg,342 387 72,72 387 342,3,reader,1
+M-239,2238,photos/M-239_a.jpg,photos/M-239_A.jpg,342 347 301 65 99 34,34 99 65 301 347 342,6,reader,1
+M-240,1324,photos/M-240_a.jpg,photos/M-240_A.jpg,211 67 59 87 99 267 238,238 267 99 87 59 67 211,7,reader,1
+M-241,1536,photos/M-241_a.jpg,photos/M-241_A.jpg,1 342 87 403 343 195 146,146 195 343 403 87 342 1,7,reader,1
+M-242,2216,photos/M-242_a.jpg,photos/M-242_A.jpg,342 338 99 180 175,175 180 99 338 342,5,reader,1
+M-243,2390,photos/M-243_a.jpg,photos/M-243_A.jpg,307 249 310 17 215,215 17 310 249 307,5,reader,1
+M-244,2399,photos/M-244_a.jpg,photos/M-244_A.jpg,254 216 *59 0,0 *59 216 254,4,reader,1
+M-245,2290,photos/M-245_a.jpg,photos/M-245_A.jpg,342 347 155 301 230 204 99 267,267 99 204 230 301 155 347 342,8,reader,1
+M-246,1317,photos/M-246_a.jpg,photos/M-246_A.jpg,*342 204 65 72 99 267,267 99 72 65 204 *342,6,reader,1
+M-247,2298,photos/M-247_a.jpg,photos/M-247_A.jpg,162 112 343 123 293,293 123 343 112 162,5,reader,1
+M-248,1310,photos/M-248_a.jpg,photos/M-248_A.jpg,342 8 171 99 336 249,249 336 99 171 8 342,6,reader,1
+M-249,2378,photos/M-249_a.jpg,photos/M-249_A.jpg,17 319 342 48 72 387,387 72 48 342 319 17,6,reader,1
+M-250,1308,photos/M-250_a.jpg,photos/M-250_A.jpg,388 72 70,70 72 388,3,reader,1
+M-251,2370,photos/M-251_a.jpg,photos/M-251_A.jpg,162 102 99 28 175,175 28 99 102 162,5,reader,1
+M-252,2423,photos/M-252_a.jpg,photos/M-252_A.jpg,176 10 245 245 121 97 10 75,75 10 97 121 245 245 10 176,8,reader,1
+M-253,2701,photos/M-253_a.jpg,photos/M-253_A.jpg,*254 216 387 99 402 398,398 402 99 387 216 *254,6,reader,1
+M-254,2090,photos/M-254_a.jpg,photos/M-254_A.jpg,130 51 162 106,106 162 51 130,4,reader,1
+M-255,2409,photos/M-255_a.jpg,photos/M-255_A.jpg,342 247 72,72 247 342,3,reader,1
+M-257,2314,photos/M-257_a.jpg,photos/M-257_A.jpg,87 342 123 293,293 123 342 87,4,reader,1
+M-259,2132,photos/M-259_a.jpg,photos/M-259_A.jpg,211 70 99 267,267 99 70 211,4,reader,1
+M-260,2567,photos/M-260_a.jpg,photos/M-260_A.jpg,1 342 59 105 99 391,391 99 105 59 342 1,6,reader,1
+M-261,2535,photos/M-261_a.jpg,photos/M-261_A.jpg,*342 124 97 151,151 97 124 *342,4,reader,1
+M-262,2249,photos/M-262_a.jpg,photos/M-262_A.jpg,25 102,102 25,2,reader,1
+M-263,1336,photos/M-263_a.jpg,photos/M-263_A.jpg,1 342 176 175 86 215,215 86 175 176 342 1,6,reader,1
+M-264,2607,photos/M-264_a.jpg,photos/M-264_A.jpg,342 153 153,153 153 342,3,reader,1
+M-265,2155,photos/M-265_a.jpg,photos/M-265_A.jpg,1 342 96 409 124,124 409 96 342 1,5,reader,1
+M-266,1306,photos/M-266_a.jpg,photos/M-266_A.jpg,224 342 53 65 72 98 99 81 244,244 81 99 98 72 65 53 342 224,9,reader,1
+M-267,2257,photos/M-267_a.jpg,photos/M-267_A.jpg,342 244 15 99 139,139 99 15 244 342,5,reader,1
+M-268,2445,photos/M-268_a.jpg,photos/M-268_A.jpg,415 86 134 1 391,391 1 134 86 415,5,reader,1
+M-269,2663,photos/M-269_a.jpg,photos/M-269_A.jpg,342 245 204,204 245 342,3,reader,1
+M-272,2554,photos/M-272_a.jpg,photos/M-272_A.jpg,99 284,284 99,2,chatgpt,0
+M-273,2673,photos/M-273_a.jpg,photos/M-273_A.jpg,326,326,1,chatgpt,0
+M-274,1342,photos/M-274_a.jpg,photos/M-274_A.jpg,342 347 78 70 344 186 87,87 186 344 70 78 347 342,7,reader,1
+M-275,2131,photos/M-275_a.jpg,photos/M-275_A.jpg,1 342 347 341 264,264 341 347 342 1,5,reader,1
+M-277,2309,photos/M-277_a.jpg,photos/M-277_A.jpg,342 387 59 402 0,0 402 59 387 342,5,chatgpt,0
+M-278,2648,photos/M-278_a.jpg,photos/M-278_A.jpg,242 162 104 99 267,267 99 104 162 242,5,reader,1
+M-280,1373,photos/M-280_a.jpg,photos/M-280_A.jpg,342 135 67 100 61 293 17,17 293 61 100 67 135 342,7,reader,1
+M-282,2304,photos/M-282_a.jpg,photos/M-282_A.jpg,15 25 402 267,267 402 25 15,4,chatgpt,0
+M-283,2127,photos/M-283_a.jpg,photos/M-283_A.jpg,162 114,114 162,2,chatgpt,0
+M-284,2195,photos/M-284_a.jpg,photos/M-284_A.jpg,342 347 192 0,0 192 347 342,4,chatgpt,0
+M-285,1367,photos/M-285_a.jpg,photos/M-285_A.jpg,206 175 67 99 267,267 99 67 175 206,5,chatgpt,0
+M-286,2517,photos/M-286_a.jpg,photos/M-286_A.jpg,342 51 336,336 51 342,3,chatgpt,0
+M-290,2527,photos/M-290_a.jpg,photos/M-290_A.jpg,176 50 84,84 50 176,3,chatgpt,0
+M-292,1361,photos/M-292_a.jpg,photos/M-292_A.jpg,162 102 123 293,293 123 102 162,4,reader,1
+M-293,1360,photos/M-293_a.jpg,photos/M-293_A.jpg,12 173 343 263,263 343 173 12,4,chatgpt,0
+M-294,1376,photos/M-294_a.jpg,photos/M-294_A.jpg,342 59 102,102 59 342,3,chatgpt,0
+M-295,1386,photos/M-295_a.jpg,photos/M-295_A.jpg,242 1 342 0 99 267,267 99 0 342 1 242,6,reader,1
+M-296,1387,photos/M-296_a.jpg,photos/M-296_A.jpg,242 211 59 123 286,286 123 59 211 242,5,chatgpt,0
+M-299,1381,photos/M-299_a.jpg,photos/M-299_A.jpg,0 403 17,17 403 0,3,chatgpt,0
+M-300,2521,photos/M-300_a.jpg,photos/M-300_A.jpg,342 162 249 98 123 391,391 123 98 249 162 342,6,chatgpt,0
+M-301,2258,photos/M-301_a.jpg,photos/M-301_A.jpg,342 48,48 342,2,chatgpt,0
+M-302,1380,photos/M-302_a.jpg,photos/M-302_A.jpg,211 70 65,65 70 211,3,chatgpt,0
+M-303,2411,photos/M-303_a.jpg,photos/M-303_A.jpg,211 89 336 123 391,391 123 336 89 211,5,chatgpt,0
+M-306,2086,photos/M-306_a.jpg,photos/M-306_A.jpg,242 342 53 389 343 213 261,261 213 343 389 53 342 242,7,chatgpt,0
+M-307,2122,photos/M-307_a.jpg,photos/M-307_A.jpg,342 294 87 123 216,216 123 87 294 342,5,chatgpt,0
+M-308,2075,photos/M-308_a.jpg,photos/M-308_A.jpg,211 59 99 333 186,186 333 99 59 211,5,chatgpt,0
+M-309,2522,photos/M-309_a.jpg,photos/M-309_A.jpg,86 59 402 342 124 99 284,284 99 124 342 402 59 86,7,chatgpt,0
+M-311,2347,photos/M-311_a.jpg,photos/M-311_A.jpg,176 176 99 402 319,319 402 99 176 176,5,chatgpt,0
+M-313,2637,photos/M-313_a.jpg,photos/M-313_A.jpg,12 70,70 12,2,chatgpt,0
+M-315,1395,photos/M-315_a.jpg,photos/M-315_A.jpg,162 104 99 400 74 343,343 74 400 99 104 162,6,chatgpt,0
+M-316,2408,photos/M-316_a.jpg,photos/M-316_A.jpg,402 162 331 99 267,267 99 331 162 402,5,chatgpt,0
+M-317,2016,photos/M-317_a.jpg,photos/M-317_A.jpg,51 123 150 176 176 293,293 176 176 150 123 51,6,chatgpt,0
+M-319,2260,photos/M-319_a.jpg,photos/M-319_A.jpg,342 381 89 67 59 87,87 59 67 89 381 342,6,chatgpt,0
+M-320,2449,photos/M-320_a.jpg,photos/M-320_A.jpg,342 48 343 162 28,28 162 343 48 342,5,chatgpt,0
+M-321,2173,photos/M-321_a.jpg,photos/M-321_A.jpg,245 245 379,379 245 245,3,chatgpt,0
+M-322,1192,photos/M-322_a.jpg,photos/M-322_A.jpg,342 124 123 391,391 123 124 342,4,chatgpt,0
+M-323,1277,photos/M-323_a.jpg,photos/M-323_A.jpg,211 59 171 65,65 171 59 211,4,chatgpt,0
+M-327,2631,photos/M-327_a.jpg,photos/M-327_A.jpg,342 153 153 99 267,267 99 153 153 342,5,chatgpt,0
+M-328,2108,photos/M-328_a.jpg,photos/M-328_A.jpg,15 25,25 15,2,chatgpt,0
+M-329,1477,photos/M-329_a.jpg,photos/M-329_A.jpg,99 267 328 328,328 328 267 99,4,chatgpt,0
+M-352,2152,photos/M-352_a.jpg,photos/M-352_A.jpg,342 402 84 124,124 84 402 342,4,reader,1
+M-354,1403,photos/M-354_a.jpg,photos/M-354_A.jpg,342 334 169 407 66 100 303 28,28 303 100 66 407 169 334 342,8,chatgpt,0
+M-355,2654,photos/M-355_a.jpg,photos/M-355_A.jpg,342 284 87 89 336 70 65 99 267 202 211 293 293 17,17 293 293 211 202 267 99 65 70 336 89 87 284 342,14,chatgpt,0
+M-356,1406,photos/M-356_a.jpg,photos/M-356_A.jpg,176 252 189 28 87 391 293 17,17 293 391 87 28 189 252 176,8,chatgpt,0
+M-357,1401,photos/M-357_a.jpg,photos/M-357_A.jpg,342 8 389 178 67 389 97 391,391 97 389 67 178 389 8 342,8,chatgpt,0
+M-358,2297,photos/M-358_a.jpg,photos/M-358_A.jpg,102 97 211 67 389 99 210 86,86 210 99 389 67 211 97 102,8,chatgpt,0
+M-359,2325,photos/M-359_a.jpg,photos/M-359_A.jpg,342 169 249 59 65 387 99 327 326 336 244,244 336 326 327 99 387 65 59 249 169 342,11,chatgpt,0
+M-361,2101,photos/M-361_a.jpg,photos/M-361_A.jpg,391 161 41,41 161 391,3,chatgpt,0
+M-362,1466,photos/M-362_a.jpg,photos/M-362_A.jpg,342 110 204 99 267,267 99 204 110 342,5,chatgpt,0
+M-363,1469,photos/M-363_a.jpg,photos/M-363_A.jpg,342 8 171 345 123 293,293 123 345 171 8 342,6,chatgpt,0
+M-364,1465,photos/M-364_a.jpg,photos/M-364_A.jpg,342 174 99 267,267 99 174 342,4,chatgpt,0
+M-365,2273,photos/M-365_a.jpg,photos/M-365_A.jpg,254 216 89 336 59 171 123 216,216 123 171 59 336 89 216 254,8,manual,1
+M-366,2077,photos/M-366_a.jpg,photos/M-366_A.jpg,190 102 76 41 345 0,0 345 41 76 102 190,6,manual,1
+M-367,2044,photos/M-367_a.jpg,photos/M-367_A.jpg,0 98 60 87 99 131,131 99 87 60 98 0,6,manual,1
+M-368,2336,photos/M-368_a.jpg,photos/M-368_A.jpg,254 222 169 406 121,121 406 169 222 254,5,manual,1
+M-369,2537,photos/M-369_a.jpg,photos/M-369_A.jpg,342 149 130 51 67 59 171 389 344 123 293,293 123 344 389 171 59 67 51 130 149 342,11,manual,1
+M-370,2138,photos/M-370_a.jpg,photos/M-370_A.jpg,375 294 342 128 327 72 53 389,389 53 72 327 128 342 294 375,8,manual,1
+M-371,2461,photos/M-371_a.jpg,photos/M-371_A.jpg,245 245 25 326 87 15 389 178,178 389 15 87 326 25 245 245,8,manual,1
+M-372,1438,photos/M-372_a.jpg,photos/M-372_A.jpg,342 193 258 48 97 391,391 97 48 258 193 342,6,manual,1
+M-373,2043,photos/M-373_a.jpg,photos/M-373_A.jpg,176 176 384 323 323 293,293 323 323 384 176 176,6,manual,1
+M-374,2097,photos/M-374_a.jpg,photos/M-374_A.jpg,342 287 102 245 204,204 245 102 287 342,5,manual,1
+M-375,1468,photos/M-375_a.jpg,photos/M-375_A.jpg,342 8 72 59 87 99 391,391 99 87 59 72 8 342,7,manual,1
+M-376,1426,photos/M-376_a.jpg,photos/M-376_A.jpg,342 8 48 99 267 309 341,341 309 267 99 48 8 342,7,manual,1
+M-378,1402,photos/M-378_a.jpg,photos/M-378_A.jpg,169 106 97 345 342 249,249 342 345 97 106 169,6,manual,1
+M-379,2159,photos/M-379_a.jpg,photos/M-379_A.jpg,15 53 230 175,175 230 53 15,4,manual,1
+M-380,2470,photos/M-380_a.jpg,photos/M-380_A.jpg,40 102 97 342 293 182,182 293 342 97 102 40,6,manual,1
+M-381,2162,photos/M-381_a.jpg,photos/M-381_A.jpg,342 121 59 87 53 99 391,391 99 53 87 59 121 342,7,manual,1
+M-382,1437,photos/M-382_a.jpg,photos/M-382_A.jpg,245 245 25,25 245 245,3,manual,1
+M-383,2240,photos/M-383_a.jpg,photos/M-383_A.jpg,245 245 25 102,102 25 245 245,4,manual,1
+M-384,2302,photos/M-384_a.jpg,photos/M-384_A.jpg,342 287 102 387 99 391,391 99 387 102 287 342,6,manual,1
+M-385,2387,photos/M-385_a.jpg,photos/M-385_A.jpg,169 104 99 391,391 99 104 169,4,manual,1
+M-386,1449,photos/M-386_a.jpg,photos/M-386_A.jpg,169 104 97 40,40 97 104 169,4,manual,1
+M-387,2041,photos/M-387_a.jpg,photos/M-387_A.jpg,60 87 53 344 123 293,293 123 344 53 87 60,6,manual,1
+M-388,2200,photos/M-388_a.jpg,photos/M-388_A.jpg,342 153 153,153 153 342,3,manual,1
+M-389,2397,photos/M-389_a.jpg,photos/M-389_A.jpg,342 267 136 86,86 136 267 342,4,manual,1
+M-390,1444,photos/M-390_a.jpg,photos/M-390_A.jpg,302 258 247 123 391,391 123 247 258 302,5,manual,1
+M-392,2046,photos/M-392_a.jpg,photos/M-392_A.jpg,342 169 249 59 87 389,389 87 59 249 169 342,6,manual,1
+M-393,2120,photos/M-393_a.jpg,photos/M-393_A.jpg,139 342 197 112 67 389 99 214,214 99 389 67 112 197 342 139,8,manual,1
+M-394,2213,photos/M-394_a.jpg,photos/M-394_A.jpg,342 358 98 89 336,336 89 98 358 342,5,manual,1
+M-395,2183,photos/M-395_a.jpg,photos/M-395_A.jpg,211 59 171 53,53 171 59 211,4,manual,1
+M-396,1421,photos/M-396_a.jpg,photos/M-396_A.jpg,56 244 72 375 294 58 244 65 123 216,216 123 65 244 58 294 375 72 244 56,10,manual,1
+M-397,1415,photos/M-397_a.jpg,photos/M-397_A.jpg,342 358 121 72,72 121 358 342,4,manual,1
+M-398,2308,photos/M-398_a.jpg,photos/M-398_A.jpg,342 293 182,182 293 342,3,manual,1
+M-399,1414,photos/M-399_a.jpg,photos/M-399_A.jpg,342 121 89 336 65,65 336 89 121 342,5,manual,1
+M-401,2346,photos/M-401_a.jpg,photos/M-401_A.jpg,245 245 216 102,102 216 245 245,4,manual,1
+M-402,2395,photos/M-402_a.jpg,photos/M-402_A.jpg,190 89 97 8 48 245 205,205 245 48 8 97 89 190,7,manual,1
+M-403,1410,photos/M-403_a.jpg,photos/M-403_A.jpg,169 126 211 18,18 211 126 169,4,manual,1
+M-404,1422,photos/M-404_a.jpg,photos/M-404_A.jpg,169 106,106 169,2,manual,1
+M-405,2221,photos/M-405_a.jpg,photos/M-405_A.jpg,342 296 67 65 389,389 65 67 296 342,5,manual,1
+M-406,1399,photos/M-406_a.jpg,photos/M-406_A.jpg,0 59 171 53,53 171 59 0,4,manual,1
+M-407,2643,photos/M-407_a.jpg,photos/M-407_A.jpg,342 296 65 344 323,323 344 65 296 342,5,manual,1
+M-408,2100,photos/M-408_a.jpg,photos/M-408_A.jpg,169 124 99 267,267 99 124 169,4,manual,1
+M-409,2699,photos/M-409_a.jpg,photos/M-409_A.jpg,91 342 389,389 342 91,3,manual,1
+M-410,2133,photos/M-410_a.jpg,photos/M-410_A.jpg,59,59,1,manual,1
+M-411,1431,photos/M-411_a.jpg,photos/M-411_A.jpg,162 403 72 67 344 89 80,80 89 344 67 72 403 162,7,manual,1
+M-412,1450,photos/M-412_a.jpg,photos/M-412_A.jpg,86 261 17 59 171,171 59 17 261 86,5,manual,1
+M-413,2319,photos/M-413_a.jpg,photos/M-413_A.jpg,0 171 53 99 174 104,104 174 99 53 171 0,6,manual,1
+M-414,2004,photos/M-414_a.jpg,photos/M-414_A.jpg,59 371 51,51 371 59,3,manual,1
+M-415,2500,photos/M-415_a.jpg,photos/M-415_A.jpg,52 375,375 52,2,manual,1
+M-416,1309,photos/M-416_a.jpg,photos/M-416_A.jpg,182 51 97 169 109,109 169 97 51 182,5,manual,1
+M-417,1383,photos/M-417_a.jpg,photos/M-417_A.jpg,0 17,17 0,2,manual,1
+M-442,1561,,photos/M-442_A.jpg,342 230 204,204 230 342,3,chatgpt,0
+M-554,1602,,photos/M-554_A.jpg,*342 347 192 65 99 86 134,134 86 99 65 192 347 *342,7,chatgpt,0
+M-588,1606,,photos/M-588_A.jpg,211 89 336 387 264,264 387 336 89 211,5,chatgpt,0

@@ -1,13 +1,14 @@
 # Labelled seal photos (CISI Vol. 1 + IM77 sequences)
 
 Real photographs of Indus seals, each with its sign sequence, for training and testing M1.
-Currently 244 Mohenjo-daro seals (242 with an impression photo), 1,232 sign occurrences, 203 distinct signs.
+Currently 328 Mohenjo-daro seals (281 with verified sequences, 324 with an impression photo), 1,673 sign occurrences, 225 distinct signs. Rebuild with `python scripts/cisi/build_dataset.py <photo dir>`.
 
 ## Files
 
 | File | What it is |
 |---|---|
-| `labelled_seals_M.csv` | One row per seal: `cisi_label`, `im77`, `impression_photo`, `seal_photo`, `caption_confident`, `signs_impression_left_to_right`, `signs_reading_order`, `n_signs`, `source` |
+| `labelled_seals_M.csv` | One row per seal: `cisi_label`, `im77`, `impression_photo`, `seal_photo`, `signs_impression_left_to_right`, `signs_reading_order`, `n_signs`, `source`, `verified` |
+| `sequences/*.csv` | The sequences per source (hover, reader, manual, chatgpt_a/b) and `multiline.txt`; see the build script for the order of trust |
 | `photos/M-<n>_a.jpg` | Photo of the **impression** (reads correctly, right to left). Use this one. |
 | `photos/M-<n>_A.jpg` | Photo of the **seal itself** (mirrored). |
 | `cisi_concordance.csv` | All 1,542 CISI Vol. 1 objects and the number in column 2 of the book's data table (pp. 366-375 of the book, PDF pages 402-411) |
@@ -28,7 +29,8 @@ Currently 244 Mohenjo-daro seals (242 with an impression photo), 1,232 sign occu
    - **Random audit:** 10 random cards were compared by eye, all correct.
    - **ChatGPT cross-check:** 3 texts were read independently by ChatGPT's agent, and all agree.
    - `source` says which method gave each row.
-4. **Sanity check (AGENTS.md rule 5):** in reading order the jar sign (342) is the last sign 86 times and the first sign 0 times.
+4. **Manual and ChatGPT readings:** Raghav read 50 texts by hand and two ChatGPT agent runs read the rest. Where they overlapped (24 texts) they disagreed on 3; the reader settled all 3 in favour of the manual reading. ChatGPT rows therefore have `verified = 0` and are kept out of test sets.
+5. **Sanity check (AGENTS.md rule 5):** in reading order the jar sign (342) is the last sign 116 times and the first sign 0 times.
 
 ## Conventions and caveats
 
