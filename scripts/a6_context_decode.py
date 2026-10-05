@@ -34,14 +34,21 @@ OUT = REPO_ROOT / "reports" / "a6_context.md"
 LAMBDAS = [0.0, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0]
 
 
-def view_log_probs(model, path, n, cut, tta, mirrored):
-    """CNN log-probs (n, 417) in reading order for one photo of a seal."""
+def view_log_probs(models, path, n, cut, tta, mirrored):
+    """Log-probs (n, 417) in reading order for one photo of a seal.
+
+    Several models = an ensemble: their probabilities are averaged. Different
+    networks make different mistakes, so the average is usually more reliable
+    than any one of them. Aligned cuts use the first model.
+    """
     image = load_image(path)
     if cut == "aligned":
-        crops = aligned_crops(model, image, n, mirrored=mirrored)[0]
+        crops = aligned_crops(models[0], image, n, mirrored=mirrored)[0]
     else:
         crops = sign_crops(image, n, mirrored=mirrored)[0]
-    return log_probs(model, to_input(np.stack(crops)), tta=tta)
+    x = to_input(np.stack(crops))
+    each = np.stack([log_probs(m, x, tta=tta) for m in models])
+    return np.logaddexp.reduce(each, axis=0) - np.log(len(models))     # log of the mean probability
 
 
 def seal_rows(model, df, labels_set, cut, tta, both_views=False):
@@ -76,11 +83,14 @@ def score(rows, lm, lam):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=str(REPO_ROOT / "data" / "processed" / "models" / "sign_cnn.pt"))
+    ap.add_argument("--model", nargs="+", default=[str(REPO_ROOT / "data" / "processed" / "models" / "sign_cnn.pt")],
+                    help="one model, or several to average (an ensemble)")
     ap.add_argument("--cut", choices=["equal", "aligned"], default="equal")
+    ap.add_argument("--try-both-photos", action="store_true",
+                    help="also try averaging with the seal photo (lost about 3 points on validation before)")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
-    model = load_model(args.model, args.device)
+    model = [load_model(m, args.device) for m in args.model]
 
     df = load_labelled_seals()
     df = df[df["impression_photo"] != ""]
@@ -96,7 +106,7 @@ def main() -> None:
 
     # ---- choose settings on validation
     results = []
-    for views in (False, True):
+    for views in ((False, True) if args.try_both_photos else (False,)):
         for tta in (False, True):
             rows = seal_rows(model, df, val, args.cut, tta, views)
             for name, lm in models.items():
@@ -118,7 +128,8 @@ def main() -> None:
     lines = [
         "# A6: reading the whole seal (CNN + sign-pair statistics)",
         "",
-        f"Model: {args.model}. Cuts: {args.cut} (sign count known, labels not used). "
+        f"Model{'s (ensemble, probabilities averaged)' if len(args.model) > 1 else ''}: "
+        f"{', '.join(args.model)}. Cuts: {args.cut} (sign count known, labels not used). "
         f"Test: {n} scorable signs on {len(rows_plain)} seals. Settings chosen on {len(val)} validation seals: "
         f"both photos {'yes' if views else 'no'}, test-time augmentation {'on' if tta else 'off'}, "
         f"{name}, lambda {lam}. "

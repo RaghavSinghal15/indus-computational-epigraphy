@@ -172,8 +172,63 @@ def log_probs(model: nn.Module, x: np.ndarray, tta: bool = False, batch: int = 5
     return np.concatenate(out)
 
 
-def load_model(path, device: str = "cpu") -> SignCNN:
-    """A trained SignCNN from a .pt file written by scripts/train_sign_cnn.py."""
-    model = SignCNN()
-    model.load_state_dict(torch.load(path, map_location=device))
+class ResNetSign(nn.Module):
+    """ResNet-18 (torchvision) for 64x64 grayscale crops -> 417 sign scores.
+
+    Transfer learning: with imagenet=True the convolution weights start from a
+    network trained on ImageNet (1.2 million everyday photos). It already knows
+    edges, textures and shading, which carved stone is full of; we only adapt
+    it. Small datasets like ours usually gain a lot from this.
+
+    Two adjustments for our input: the gray crop is copied into the 3 colour
+    channels ResNet expects, and enlarged to 128 x 128 first (ResNet shrinks
+    its input 32 times; 64 pixels would end as a 2 x 2 grid).
+    `features` lists the 5 stages in order (stem, layer1-4) so --freeze N
+    works as for SignCNN.
+    """
+
+    def __init__(self, n_classes: int = N_CLASSES, imagenet: bool = True, dropout: float = 0.3):
+        super().__init__()
+        from torchvision.models import ResNet18_Weights, resnet18     # imported here: only needed for this model
+        net = resnet18(weights=ResNet18_Weights.IMAGENET1K_V1 if imagenet else None)
+        stem = nn.Sequential(net.conv1, net.bn1, net.relu, net.maxpool)
+        self.features = nn.Sequential(stem, net.layer1, net.layer2, net.layer3, net.layer4)
+        self.head = nn.Sequential(nn.AdaptiveAvgPool2d(1), nn.Flatten(), nn.Dropout(dropout),
+                                  nn.Linear(512, n_classes))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        x = F.interpolate(x, size=(128, 128), mode="bilinear", align_corners=False)
+        return self.head(self.features(x.repeat(1, 3, 1, 1)))      # gray -> 3 identical channels
+
+
+ARCHS = ("small", "resnet18")
+
+
+def build_model(arch: str = "small", imagenet: bool = True) -> nn.Module:
+    """A fresh network: "small" = SignCNN, "resnet18" = ResNetSign."""
+    if arch == "small":
+        return SignCNN()
+    if arch == "resnet18":
+        return ResNetSign(imagenet=imagenet)
+    raise ValueError(f"arch must be one of {ARCHS}")
+
+
+def save_model(model: nn.Module, arch: str, path) -> None:
+    """Save weights together with the architecture name, so load_model can rebuild it."""
+    torch.save({"arch": arch, "state_dict": model.state_dict()}, path)
+
+
+def read_checkpoint(path, device="cpu") -> tuple[str, dict]:
+    """(arch, weights) from a .pt file; older files hold bare SignCNN weights."""
+    ckpt = torch.load(path, map_location=device)
+    if isinstance(ckpt, dict) and "arch" in ckpt:
+        return ckpt["arch"], ckpt["state_dict"]
+    return "small", ckpt
+
+
+def load_model(path, device: str = "cpu") -> nn.Module:
+    """A trained network from a .pt file written by scripts/train_sign_cnn.py."""
+    arch, weights = read_checkpoint(path, device)
+    model = build_model(arch, imagenet=False)          # weights come from the file anyway
+    model.load_state_dict(weights)
     return model.to(device).eval()

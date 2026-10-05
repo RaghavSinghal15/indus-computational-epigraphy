@@ -48,7 +48,8 @@ import torch
 import torch.nn as nn
 
 from indus.classify import classify_crop
-from indus.cnn import SignCNN, augment, load_carved_renders, predict, to_input
+from indus.cnn import (ARCHS, augment, build_model, load_carved_renders, predict, read_checkpoint, save_model,
+                       to_input)
 from indus.data import REPO_ROOT
 
 PROCESSED = REPO_ROOT / "data" / "processed"
@@ -120,6 +121,8 @@ def sampler(x, y, gen, size=BATCH):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--arch", choices=ARCHS, default="small",
+                    help="small = our 4-block CNN from scratch; resnet18 = ImageNet-pretrained ResNet-18")
     ap.add_argument("--pretrain-epochs", type=int, default=30)
     ap.add_argument("--finetune-epochs", type=int, default=40)
     ap.add_argument("--crops", default="crops.npz", help="file in data/processed/real_crops/")
@@ -160,16 +163,20 @@ def main() -> None:
     print(f"synthetic ({args.synthetic}): {len(syn_x)}, real crops: {len(tr_x)} train, {len(va_x)} val, {len(te_x)} test")
 
     # ---- stage 1: renders only
-    model = SignCNN().to(device)
     t_start = time.time()
     if args.init:
-        model.load_state_dict(torch.load(args.init, map_location=device))
+        args.arch, weights = read_checkpoint(args.init, device)       # the init file decides the architecture
+        model = build_model(args.arch, imagenet=False).to(device)
+        model.load_state_dict(weights)
         args.pretrain_epochs = 0
     else:
+        model = build_model(args.arch).to(device)
         steps = 20 if args.quick else len(syn_x) // BATCH
         run_epochs(model, sampler(syn_x, syn_lab, gen), steps, args.pretrain_epochs, 2e-3, device, "pretrain")
         MODELS.mkdir(parents=True, exist_ok=True)
-        torch.save(model.state_dict(), MODELS / f"sign_cnn_pretrained_{args.synthetic}.pt")
+        prefix = "sign_cnn" if args.arch == "small" else args.arch
+        save_model(model, args.arch, MODELS / f"{prefix}_pretrained_{args.synthetic}.pt")
+        print(f"pretrained model -> data/processed/models/{prefix}_pretrained_{args.synthetic}.pt")
     start_state = copy.deepcopy(model.state_dict())
 
     # ---- stage 2: half real, half renders in every batch
@@ -188,12 +195,12 @@ def main() -> None:
                                      aug=args.aug, frozen=frozen)
     minutes = (time.time() - t_start) / 60
     MODELS.mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), MODELS / args.out)
+    save_model(model, args.arch, MODELS / args.out)
     print(f"model -> data/processed/models/{args.out}")
 
     # ---- one line per run, so experiments can be compared on VALIDATION only
     _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
-    if RUNS.exists() and "seed" not in RUNS.read_text().splitlines()[0]:
+    if RUNS.exists() and "arch" not in RUNS.read_text().splitlines()[0]:
         # older column layout: keep it aside under the first free name (rename never overwrites on Windows)
         k = 1
         while RUNS.with_name(f"a5_runs_old{k}.csv").exists():
@@ -204,9 +211,9 @@ def main() -> None:
     with open(RUNS, "a", newline="") as f:
         w = csv.writer(f)
         if new:
-            w.writerow(["seed", "crops", "synthetic", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
+            w.writerow(["arch", "seed", "crops", "synthetic", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
                         "best_epoch", "train_acc_at_best", "val_top1", "val_top5"])
-        w.writerow([args.seed, args.crops, args.synthetic, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
+        w.writerow([args.arch, args.seed, args.crops, args.synthetic, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
                     args.finetune_epochs, best_epoch, f"{train_acc:.3f}", f"{val_t1:.3f}", f"{val_t5:.3f}"])
     print(f"validation: top-1 {val_t1:.1%}, top-5 {val_t5:.1%} at epoch {best_epoch} -> {RUNS.relative_to(REPO_ROOT)}")
     if args.no_test:
@@ -214,7 +221,7 @@ def main() -> None:
 
     # ---- the test seals, once
     ids, _ = predict(model, te_x)
-    start = SignCNN().to(device)
+    start = build_model(args.arch, imagenet=False).to(device)
     start.load_state_dict(start_state)
     pre_ids, _ = predict(start, te_x)
     a2_ids = np.array([[m.mahadevan_id for m in classify_crop(cv2.cvtColor(c, cv2.COLOR_GRAY2BGR))]
@@ -234,7 +241,7 @@ def main() -> None:
         m = (freq >= lo) & (freq <= hi)
         if m.any():
             bucket_rows.append(f"| {label} | {m.sum()} | {t1[m].mean():.1%} | {t5[m].mean():.1%} |")
-    settings = (f"freeze {args.freeze}, weight decay {args.weight_decay}, fine-tune lr {args.finetune_lr}, "
+    settings = (f"{args.arch} network, freeze {args.freeze}, weight decay {args.weight_decay}, fine-tune lr {args.finetune_lr}, "
                 f"augmentation {args.aug}")
     lines = [
         "# A5: sign CNN on real seal crops",
