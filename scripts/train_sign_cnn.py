@@ -127,6 +127,7 @@ def main() -> None:
     ap.add_argument("--finetune-lr", type=float, default=5e-4)
     ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
     ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="both")
+    ap.add_argument("--out", default="sign_cnn.pt", help="file name for the trained model in data/processed/models/")
     ap.add_argument("--seed", type=int, default=SEED, help="random seed (fine-tuning order, augmentation)")
     ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
     ap.add_argument("--quick", action="store_true", help="tiny run to check everything works")
@@ -185,7 +186,8 @@ def main() -> None:
                                      aug=args.aug, frozen=frozen)
     minutes = (time.time() - t_start) / 60
     MODELS.mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), MODELS / "sign_cnn.pt")
+    torch.save(model.state_dict(), MODELS / args.out)
+    print(f"model -> data/processed/models/{args.out}")
 
     # ---- one line per run, so experiments can be compared on VALIDATION only
     _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
