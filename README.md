@@ -4,6 +4,21 @@ AI course project, BITS Pilani K.K. Birla Goa Campus.
 
 The Indus script (c. 2600 to 1900 BCE) is undeciphered. This project does not try to read it. It analyses the script's structure: a vision pipeline that turns seal photos into sign sequences, Markov models of sign order, masked sign prediction, and statistical guardrails against overclaimed decipherments.
 
+## Results so far (first evaluation, Oct 6 2026)
+
+| Milestone | What | Result | Report |
+| --- | --- | --- | --- |
+| Data | 328 Mohenjo-daro seal photos (CISI Vol. 1) labelled with their IM77 sign sequences | 1,673 signs, 225 distinct; jar sign last in 116 texts, first in 0 | `data/raw/cisi_seals/README.md` |
+| M1 | Seal photo to sign sequence: CNN + sign-pair statistics, sign count given | 28 to 30% top-1, 45 to 49% top-5 on 70 test seals (template matching: 0.3% / 1.4%) | `reports/a6_context_*.md` |
+| M1 | Same, no labels at all (the model finds the sign count) | count right 19% (old pipeline 10%), character error rate 0.83 (1.48) | `reports/a7_unknown_count_gpu.md` |
+| M2 | Frequencies, start/end signs, transitions, conditional entropy | 8,359 signs, 568 types; jar sign ends texts; 3.31 bits | `reports/b1_results.md` to `b4_results.md` |
+| M3 | Hide a sign, predict it (smoothed bigrams) | 35% top-1, 60% top-5 from both neighbours; bigram perplexity 37.8 | `reports/c1_masked_prediction.md` |
+| M4 | Real texts vs shuffled | Naive Bayes 81%; permutation tests p = 0.001 | `reports/d1_guardrails.md` |
+| Extension | Error propagation: which conclusions survive M1's mistakes | positions survive at ~30% accuracy, pair statistics need ~60% | `reports/e1_error_propagation.md` |
+| Extension | Null-model benchmark for claims | a no-language Markov chain reproduces Zipf, end signs and entropy; sign triples still separate real texts (61%, control 49%) | `reports/e2_null_benchmark.md` |
+
+Every model choice was made on a fixed validation split; test numbers are reported once.
+
 ## Setup
 
 Requires Python 3.10 or newer.
@@ -20,7 +35,7 @@ pip install -r requirements.txt
 pytest
 ```
 
-All 6 tests should pass. If they do, the data is in place and loads correctly.
+All 48 tests should pass. If they do, the data is in place and loads correctly.
 
 (Using conda instead? Create and activate an env, then run the same `pip install -r requirements.txt`.)
 
