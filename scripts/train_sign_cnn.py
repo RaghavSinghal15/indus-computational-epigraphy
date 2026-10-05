@@ -9,7 +9,9 @@ Usage:
 
 Synthetic data (--synthetic): "single" = one centred render per image
 (make_carved_synthetic.py), "rows" = crops cut from rendered rows with the
-real-seal cutter (make_synthetic_rows.py), "both" (default) = all of them.
+real-seal cutter (make_synthetic_rows.py), "both" = all of them. Default "single":
+in the GPU sweep, adding rows LOWERED validation top-1 by about 5 points on all
+9 settings (rows cut with the equal-slice cutter carry its labelling mistakes).
 
 Stage 1 (pretrain): synthetic data only, all 417 signs. The result is saved to
 data/processed/models/sign_cnn_pretrained_<synthetic>.pt, so fine-tuning
@@ -126,7 +128,7 @@ def main() -> None:
     ap.add_argument("--weight-decay", type=float, default=1e-4)
     ap.add_argument("--finetune-lr", type=float, default=5e-4)
     ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
-    ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="both")
+    ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="single")
     ap.add_argument("--out", default="sign_cnn.pt", help="file name for the trained model in data/processed/models/")
     ap.add_argument("--seed", type=int, default=SEED, help="random seed (fine-tuning order, augmentation)")
     ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
