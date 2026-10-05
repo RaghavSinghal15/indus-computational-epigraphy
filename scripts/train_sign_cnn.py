@@ -127,6 +127,7 @@ def main() -> None:
     ap.add_argument("--finetune-lr", type=float, default=5e-4)
     ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
     ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="both")
+    ap.add_argument("--seed", type=int, default=SEED, help="random seed (fine-tuning order, augmentation)")
     ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
     ap.add_argument("--quick", action="store_true", help="tiny run to check everything works")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -134,8 +135,8 @@ def main() -> None:
     if args.quick:
         args.pretrain_epochs = args.finetune_epochs = 1
 
-    torch.manual_seed(SEED)
-    gen = torch.Generator().manual_seed(SEED)
+    torch.manual_seed(args.seed)
+    gen = torch.Generator().manual_seed(args.seed)
     device = torch.device(args.device)
     print(f"device: {device}" + (f" ({torch.cuda.get_device_name(0)})" if device.type == "cuda" else ""))
 
@@ -188,16 +189,16 @@ def main() -> None:
 
     # ---- one line per run, so experiments can be compared on VALIDATION only
     _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
-    if RUNS.exists() and "synthetic" not in RUNS.read_text().splitlines()[0]:
+    if RUNS.exists() and "seed" not in RUNS.read_text().splitlines()[0]:
         RUNS.rename(RUNS.with_name("a5_runs_old.csv"))          # older column layout: keep it aside
     new = not RUNS.exists()
     RUNS.parent.mkdir(parents=True, exist_ok=True)
     with open(RUNS, "a", newline="") as f:
         w = csv.writer(f)
         if new:
-            w.writerow(["crops", "synthetic", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
+            w.writerow(["seed", "crops", "synthetic", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
                         "best_epoch", "train_acc_at_best", "val_top1", "val_top5"])
-        w.writerow([args.crops, args.synthetic, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
+        w.writerow([args.seed, args.crops, args.synthetic, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
                     args.finetune_epochs, best_epoch, f"{train_acc:.3f}", f"{val_t1:.3f}", f"{val_t5:.3f}"])
     print(f"validation: top-1 {val_t1:.1%}, top-5 {val_t5:.1%} at epoch {best_epoch} -> {RUNS.relative_to(REPO_ROOT)}")
     if args.no_test:
@@ -238,7 +239,7 @@ def main() -> None:
         f"Training: {len(syn_x)} synthetic crops ({args.synthetic}; all 417 signs), {len(tr_x)} real crops from "
         f"{len(set(real['seal'][split == 'train']))} seals (impression + flipped seal photo). "
         f"{args.pretrain_epochs} pretrain + {args.finetune_epochs} fine-tune epochs on {device}, {minutes:.0f} min, "
-        f"seed {SEED}; {settings}. Kept fine-tune epoch {best_epoch}, chosen on {len(va_y)} validation crops "
+        f"seed {args.seed}; {settings}. Kept fine-tune epoch {best_epoch}, chosen on {len(va_y)} validation crops "
         f"(top-1 {val_t1:.1%}, top-5 {val_t5:.1%}).",
         "",
         "| Method | Top-1 | Top-5 |",

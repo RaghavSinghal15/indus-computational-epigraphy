@@ -70,8 +70,28 @@ def bigram_model(exclude: list[list[int]] = ()) -> tuple[np.ndarray, np.ndarray]
     return np.log(trans), np.log(uni)
 
 
-def posteriors(log_emit: np.ndarray, log_trans: np.ndarray, log_start: np.ndarray, lam: float) -> np.ndarray:
+def edge_model(sequences: list[list[int]], log_uni: np.ndarray, strength: float = 20.0):
+    """(log P(leftmost sign), log P(rightmost sign)) on the impression, from training texts.
+
+    The leftmost sign on an impression is the LAST one read (the jar sign 342
+    is very often there). Few texts, so each estimate is blended with the
+    unigram: (count + strength * P_unigram) / (texts + strength).
+    """
+    uni = np.exp(log_uni)
+    out = []
+    for pick in (0, -1):
+        counts = np.zeros(N_SIGNS)
+        for seq in sequences:
+            if seq and seq[pick] > 0:
+                counts[seq[pick] - 1] += 1
+        out.append(np.log((counts + strength * uni) / (counts.sum() + strength)))
+    return out[0], out[1]
+
+
+def posteriors(log_emit: np.ndarray, log_trans: np.ndarray, log_start: np.ndarray, lam: float,
+               log_end: np.ndarray | None = None) -> np.ndarray:
     """Forward-backward. log_emit: (n, 417) CNN log-probabilities, left to right.
+    log_start / log_end: log P of each sign at the left / right end (log_end optional).
     Returns (n, 417) log-probabilities of each sign at each position given the whole row."""
     n = len(log_emit)
     T = lam * log_trans
@@ -81,6 +101,8 @@ def posteriors(log_emit: np.ndarray, log_trans: np.ndarray, log_start: np.ndarra
         # alpha[i, s] = emit[i, s] + log sum_t exp(alpha[i-1, t] + T[t, s])
         alpha[i] = log_emit[i] + logsumexp(alpha[i - 1][:, None] + T, axis=0)
     beta = np.zeros_like(log_emit)
+    if log_end is not None:
+        beta[n - 1] = lam * log_end
     for i in range(n - 2, -1, -1):
         # beta[i, t] = log sum_s exp(T[t, s] + emit[i+1, s] + beta[i+1, s])
         beta[i] = logsumexp(T + (log_emit[i + 1] + beta[i + 1])[None, :], axis=1)
