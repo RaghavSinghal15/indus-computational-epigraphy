@@ -66,6 +66,20 @@ def square_crop(gray: np.ndarray, x0: int, x1: int) -> np.ndarray:
     return cv2.resize(sq, (CROP_SIZE, CROP_SIZE), interpolation=cv2.INTER_AREA)
 
 
+def band_crops(gray: np.ndarray, n: int):
+    """Exactly n crops from a grayscale text band (impression orientation), in
+    reading order, plus the n+1 cut positions in band columns (left to right)."""
+    scale, mask, profile = _band_profile(gray)
+
+    # trim columns with (almost) no carving at either end
+    ink = np.nonzero(profile > 0.05 * profile.max())[0] if profile.max() > 0 else np.arange(len(profile))
+    left, right = int(ink[0]), int(ink[-1]) + 1
+    cuts = [left + c for c in forced_cuts(profile[left:right], n)]
+    edges = [int(e / scale) for e in [left, *cuts, right]]
+    crops = [square_crop(gray, a, b) for a, b in zip(edges[:-1], edges[1:])]
+    return crops[::-1], edges                 # left-to-right pieces -> reading order (right to left)
+
+
 def sign_crops(image_bgr: np.ndarray, n: int, mirrored: bool = False):
     """Exactly n crops (CROP_SIZE x CROP_SIZE gray) from a seal photo, in reading order,
     plus the text band box and the cut positions (for drawing)."""
@@ -73,15 +87,5 @@ def sign_crops(image_bgr: np.ndarray, n: int, mirrored: bool = False):
     gray = cv2.cvtColor(band.crop(image_bgr), cv2.COLOR_BGR2GRAY)
     if mirrored:
         gray = gray[:, ::-1]
-    scale, mask, profile = _band_profile(gray)
-
-    # trim columns with (almost) no carving at either end
-    ink = np.nonzero(profile > 0.05 * profile.max())[0] if profile.max() > 0 else np.arange(len(profile))
-    left, right = int(ink[0]), int(ink[-1]) + 1
-    sub = profile[left:right]
-    cuts = [left + c for c in forced_cuts(sub, n)]
-    edges = [left, *cuts, right]
-
-    crops = [square_crop(gray, int(a / scale), int(b / scale)) for a, b in zip(edges[:-1], edges[1:])]
-    crops = crops[::-1]                       # left-to-right pieces -> reading order (right to left)
-    return crops, band, [int(e / scale) for e in edges]
+    crops, edges = band_crops(gray, n)
+    return crops, band, edges

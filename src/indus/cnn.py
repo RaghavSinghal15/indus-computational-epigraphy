@@ -145,6 +145,33 @@ def predict(model: nn.Module, x: np.ndarray, batch: int = 512, k: int = 5) -> tu
     return np.concatenate(ids), np.concatenate(probs)
 
 
+TTA_SHIFTS = [(0, 0), (0.08, 0), (-0.08, 0), (0, 0.08), (0, -0.08), (0.08, 0.08), (-0.08, -0.08)]
+
+
+@torch.no_grad()
+def log_probs(model: nn.Module, x: np.ndarray, tta: bool = False, batch: int = 512) -> np.ndarray:
+    """(N, 417) log-probabilities for prepared inputs x (N,1,64,64).
+
+    tta=True ("test-time augmentation"): also look at copies shifted by 8% of
+    the crop in a few directions and average the probabilities. A crop that is
+    a little off-centre then still gets one well-centred look.
+    """
+    model.eval()
+    dev = next(model.parameters()).device
+    out = []
+    for i in range(0, len(x), batch):
+        xb = torch.from_numpy(x[i:i + batch]).to(dev)
+        shifts = TTA_SHIFTS if tta else TTA_SHIFTS[:1]
+        p = 0
+        for dx, dy in shifts:
+            # a pure translation matrix; grid units run from -1 to 1, so 0.16 = 8% of the width
+            theta = torch.tensor([[1, 0, 2 * dx], [0, 1, 2 * dy]], dtype=xb.dtype, device=dev).expand(len(xb), 2, 3)
+            grid = F.affine_grid(theta, xb.shape, align_corners=False)
+            p = p + F.softmax(model(F.grid_sample(xb, grid, padding_mode="border", align_corners=False)), dim=1)
+        out.append(torch.log(p / len(shifts)).cpu().numpy())
+    return np.concatenate(out)
+
+
 def load_model(path, device: str = "cpu") -> SignCNN:
     """A trained SignCNN from a .pt file written by scripts/train_sign_cnn.py."""
     model = SignCNN()

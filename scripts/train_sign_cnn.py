@@ -2,13 +2,18 @@
 
 Usage:
     python scripts/make_carved_synthetic.py      # once: carved renders (about 1 minute)
+    python scripts/make_synthetic_rows.py        # once: carved ROWS cut like real seals (about 3 minutes)
     python scripts/make_real_crops.py            # once: real crops + fixed val/test split
     python scripts/train_sign_cnn.py             # GPU if available, else CPU
     python scripts/train_sign_cnn.py --quick     # 1+1 epochs on a subset, to check it runs
 
-Stage 1 (pretrain): carved renders only, all 417 signs. The result is saved to
-data/processed/models/sign_cnn_pretrained.pt, so fine-tuning experiments can
-start from it with --init and skip this stage.
+Synthetic data (--synthetic): "single" = one centred render per image
+(make_carved_synthetic.py), "rows" = crops cut from rendered rows with the
+real-seal cutter (make_synthetic_rows.py), "both" (default) = all of them.
+
+Stage 1 (pretrain): synthetic data only, all 417 signs. The result is saved to
+data/processed/models/sign_cnn_pretrained_<synthetic>.pt, so fine-tuning
+experiments can start from it with --init and skip this stage.
 Stage 2 (fine-tune): every batch is half real training crops, half renders
 (so signs that never occur in the real training seals are not forgotten).
 
@@ -121,6 +126,7 @@ def main() -> None:
     ap.add_argument("--weight-decay", type=float, default=1e-4)
     ap.add_argument("--finetune-lr", type=float, default=5e-4)
     ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
+    ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="both")
     ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
     ap.add_argument("--quick", action="store_true", help="tiny run to check everything works")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -133,14 +139,21 @@ def main() -> None:
     device = torch.device(args.device)
     print(f"device: {device}" + (f" ({torch.cuda.get_device_name(0)})" if device.type == "cuda" else ""))
 
-    syn_img, syn_lab = load_carved_renders(PROCESSED / "synthetic_carved")
+    parts = []
+    if args.synthetic in ("single", "both"):
+        parts.append(load_carved_renders(PROCESSED / "synthetic_carved"))
+    if args.synthetic in ("rows", "both"):
+        d = np.load(PROCESSED / "synthetic_rows_64.npz")
+        parts.append((d["images"], d["labels"]))
+    syn_img = np.concatenate([p[0] for p in parts])
+    syn_lab = np.concatenate([p[1] for p in parts])
     real = np.load(PROCESSED / "real_crops" / args.crops)
     split = real["split"]
     syn_x, real_x = to_input(syn_img), to_input(real["images"])
     tr_x, tr_y = real_x[split == "train"], real["labels"][split == "train"]
     va_x, va_y = real_x[split == "val"], real["labels"][split == "val"]
     te_x, te_y = real_x[split == "test"], real["labels"][split == "test"]
-    print(f"renders: {len(syn_x)}, real crops: {len(tr_x)} train, {len(va_x)} val, {len(te_x)} test")
+    print(f"synthetic ({args.synthetic}): {len(syn_x)}, real crops: {len(tr_x)} train, {len(va_x)} val, {len(te_x)} test")
 
     # ---- stage 1: renders only
     model = SignCNN().to(device)
@@ -152,7 +165,7 @@ def main() -> None:
         steps = 20 if args.quick else len(syn_x) // BATCH
         run_epochs(model, sampler(syn_x, syn_lab, gen), steps, args.pretrain_epochs, 2e-3, device, "pretrain")
         MODELS.mkdir(parents=True, exist_ok=True)
-        torch.save(model.state_dict(), MODELS / "sign_cnn_pretrained.pt")
+        torch.save(model.state_dict(), MODELS / f"sign_cnn_pretrained_{args.synthetic}.pt")
     start_state = copy.deepcopy(model.state_dict())
 
     # ---- stage 2: half real, half renders in every batch
@@ -175,14 +188,16 @@ def main() -> None:
 
     # ---- one line per run, so experiments can be compared on VALIDATION only
     _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
+    if RUNS.exists() and "synthetic" not in RUNS.read_text().splitlines()[0]:
+        RUNS.rename(RUNS.with_name("a5_runs_old.csv"))          # older column layout: keep it aside
     new = not RUNS.exists()
     RUNS.parent.mkdir(parents=True, exist_ok=True)
     with open(RUNS, "a", newline="") as f:
         w = csv.writer(f)
         if new:
-            w.writerow(["crops", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
+            w.writerow(["crops", "synthetic", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
                         "best_epoch", "train_acc_at_best", "val_top1", "val_top5"])
-        w.writerow([args.crops, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
+        w.writerow([args.crops, args.synthetic, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
                     args.finetune_epochs, best_epoch, f"{train_acc:.3f}", f"{val_t1:.3f}", f"{val_t5:.3f}"])
     print(f"validation: top-1 {val_t1:.1%}, top-5 {val_t5:.1%} at epoch {best_epoch} -> {RUNS.relative_to(REPO_ROOT)}")
     if args.no_test:
@@ -220,7 +235,7 @@ def main() -> None:
         "(data/raw/cisi_seals/test_seals.txt), impression photos, cut with the known sign count only. "
         "Doubtful and illegible signs excluded. Never used for training or for choosing settings.",
         "",
-        f"Training: {len(syn_x)} carved renders (all 417 signs), {len(tr_x)} real crops from "
+        f"Training: {len(syn_x)} synthetic crops ({args.synthetic}; all 417 signs), {len(tr_x)} real crops from "
         f"{len(set(real['seal'][split == 'train']))} seals (impression + flipped seal photo). "
         f"{args.pretrain_epochs} pretrain + {args.finetune_epochs} fine-tune epochs on {device}, {minutes:.0f} min, "
         f"seed {SEED}; {settings}. Kept fine-tune epoch {best_epoch}, chosen on {len(va_y)} validation crops "

@@ -103,7 +103,12 @@ def render_carved(template_gray: np.ndarray, rng: np.random.Generator, sunken: b
         sunken = bool(rng.random() < 0.5)
     _, strokes = cv2.threshold(template_gray, 127, 255, cv2.THRESH_BINARY)
     shape = _thicken(_trim_square(_jitter_shape(strokes, rng), rng), rng).astype(np.float32) / 255
+    return render_surface(shape, rng, sunken)
 
+
+def render_surface(shape: np.ndarray, rng: np.random.Generator, sunken: bool) -> np.ndarray:
+    """Steps 2-4 for any stroke image: `shape` is float in [0, 1] (1 = stroke), any size.
+    Returns a BGR uint8 image of the same size, lit and coloured like stone."""
     # 1. height map: rounded strokes plus stone grain
     height = cv2.GaussianBlur(shape, (0, 0), rng.uniform(0.8, 1.8))
     if sunken:
