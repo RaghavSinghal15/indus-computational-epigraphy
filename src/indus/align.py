@@ -81,13 +81,13 @@ def width_penalty(widths: np.ndarray, height: int) -> np.ndarray:
     return WIDTH_PRIOR * np.log(widths / (TYPICAL_W * height)) ** 2
 
 
-def best_pieces(positions, pieces, piece_scores, n, ink_cum):
+def best_pieces(positions, pieces, piece_scores, n, ink_cum, return_score=False):
     """Dynamic programme: the n non-overlapping pieces (left to right) with the
     highest total score minus the cost of carving left out.
 
     piece_scores: (pieces, n) array, score of each piece in slot k (slot 0 = leftmost).
     ink_cum[j]: carving to the left of position j, in units of one average sign.
-    Returns a list of n piece indices.
+    Returns a list of n piece indices (and the total score, if return_score).
     """
     P = len(positions)
     NEG = -1e18
@@ -108,6 +108,7 @@ def best_pieces(positions, pieces, piece_scores, n, ink_cum):
                 back[k + 1, ends[p]] = p
     final = best[n] - SKIP_COST * (ink_cum[-1] - ink_cum)   # columns right of the last piece skipped
     j = int(np.argmax(final))
+    total = float(final[j])
     chosen = []
     for k in range(n, 0, -1):
         p = back[k, j]
@@ -116,7 +117,7 @@ def best_pieces(positions, pieces, piece_scores, n, ink_cum):
         s = starts[p]
         prev = best[k - 1, :s + 1] + SKIP_COST * ink_cum[:s + 1]
         j = int(np.argmax(prev))
-    return chosen[::-1]
+    return (chosen[::-1], total) if return_score else chosen[::-1]
 
 
 def aligned_crops(model, image_bgr: np.ndarray, n: int, labels_reading=None, mirrored: bool = False):
@@ -148,3 +149,38 @@ def aligned_crops(model, image_bgr: np.ndarray, n: int, labels_reading=None, mir
     crops = [square_crop(gray, a, b) for a, b in edges][::-1]        # reading order
     guesses = [int(logp[p].argmax()) + 1 for p in chosen][::-1]
     return crops, band, edges, guesses
+
+
+def count_candidates(model, image_bgr: np.ndarray, n_max: int = 13, mirrored: bool = False):
+    """Read a seal WITHOUT knowing how many signs it has: the best cut for every
+    count n = 1..n_max, each with its total score.
+
+    Same search as aligned_crops without labels, but the skip cost is measured
+    against a typical-width sign (not total carving / n), so scores for
+    different n are comparable. Returns (band, gray, {n: (score, edges, logp
+    rows of the chosen pieces, left to right)}). Choosing n is left to the
+    caller (it adds a length prior; see scripts/a7_unknown_count.py).
+    """
+    band, gray = band_gray(image_bgr, mirrored)
+    h = gray.shape[0]
+    positions, pieces, logp = piece_log_probs(model, gray, 1)
+    widths = np.array([positions[j] - positions[i] for i, j in pieces], float)
+    best_guess = logp.max(axis=1) - width_penalty(widths, h)
+
+    scale, _, profile = _band_profile(gray)
+    cum = np.concatenate([[0.0], np.cumsum(profile)])
+    inked = profile[profile > 0.05 * profile.max()] if profile.max() > 0 else profile
+    per_sign = max(float(inked.mean()) * TYPICAL_W * h * scale, 1e-6)     # carving of one typical sign
+    ink_cum = np.array([cum[min(int(x * scale), len(profile))] for x in positions]) / per_sign
+
+    out = {}
+    for n in range(1, n_max + 1):
+        if len(pieces) < n:
+            break
+        scores = np.repeat(best_guess[:, None], n, axis=1)
+        chosen, total = best_pieces(positions, pieces, scores, n, ink_cum, return_score=True)
+        if total < -1e17:                                  # n pieces don't fit in the band
+            break
+        edges = [(int(positions[pieces[p][0]]), int(positions[pieces[p][1]])) for p in chosen]
+        out[n] = (total, edges, logp[chosen])
+    return band, gray, out
