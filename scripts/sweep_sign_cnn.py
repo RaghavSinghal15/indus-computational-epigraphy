@@ -1,43 +1,37 @@
-"""Try several fine-tuning settings and rank them on the VALIDATION seals.
+"""Compare training variants on the VALIDATION seals, each with several seeds.
 
 Usage:
-    python scripts/sweep_sign_cnn.py                       # single renders and rows, about 40 min on a GPU
-    python scripts/sweep_sign_cnn.py --synthetic rows      # one kind of synthetic data only
+    python scripts/sweep_sign_cnn.py                                    # single renders vs rows
+    python scripts/sweep_sign_cnn.py --synthetic both --crops crops_aligned.npz
 
 For each kind of synthetic data: pretrain once (skipped if
 data/processed/models/sign_cnn_pretrained_<kind>.pt exists), then fine-tune
-from that same starting point with each setting below, using --no-test so the
-test seals are never looked at. Prints the ranking and the command for the
-final run with the winning setting (the only run that scores the test seals).
+from that starting point with each setting below and each seed, using
+--no-test so the test seals are never looked at. Prints the mean and spread
+over seeds for each variant, and the command for the final run.
 
-Careful reading the ranking: the validation set has about 170 crops, so a
-difference under about 5 points top-1 can be luck. When results are that close,
-prefer the simpler setting.
+Why seeds: the validation set has about 170 crops, so one run's score moves
+by a few points just from luck (which batches came first, which random
+distortions). The first sweep showed 9 different settings all within 2 points
+of each other, i.e. settings matter less than that noise. Averaging 3 seeds
+makes differences between DATA variants (renders vs rows, cuts) visible.
 """
 
 import argparse
 import csv
 import subprocess
 import sys
+from collections import defaultdict
+
+import numpy as np
 
 from indus.data import REPO_ROOT
 
 TRAIN = [sys.executable, str(REPO_ROOT / "scripts" / "train_sign_cnn.py")]
 MODELS = REPO_ROOT / "data" / "processed" / "models"
 RUNS = REPO_ROOT / "reports" / "a5_runs.csv"
-
-# each entry: extra command-line settings for one fine-tuning run
-SETTINGS = [
-    [],                                                         # defaults, for reference
-    ["--freeze", "2"],
-    ["--freeze", "3"],
-    ["--weight-decay", "1e-3"],
-    ["--weight-decay", "5e-3", "--freeze", "2"],
-    ["--aug", "1.5"],
-    ["--aug", "1.5", "--freeze", "2", "--weight-decay", "1e-3"],
-    ["--finetune-lr", "2e-4"],
-    ["--finetune-lr", "1e-3"],
-]
+SETTINGS = [[], ["--aug", "1.5"]]          # the two best of the first sweep
+SEEDS = [0, 1, 2]
 
 
 def n_runs() -> int:
@@ -47,6 +41,7 @@ def n_runs() -> int:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--synthetic", nargs="+", default=["single", "both"], choices=["single", "rows", "both"])
+    ap.add_argument("--crops", default="crops.npz")
     args = ap.parse_args()
 
     first = None
@@ -58,24 +53,27 @@ def main() -> None:
         if first is None:
             first = n_runs()        # runs logged from here on belong to this sweep
         for extra in SETTINGS:
-            print(f"\n=== {kind} synthetic, fine-tune with", " ".join(extra) or "defaults")
-            subprocess.run(TRAIN + ["--synthetic", kind, "--init", str(pretrained), "--no-test", *extra], check=True)
+            for seed in SEEDS:
+                print(f"\n=== {kind} synthetic, {args.crops}, {' '.join(extra) or 'defaults'}, seed {seed}")
+                subprocess.run(TRAIN + ["--synthetic", kind, "--init", str(pretrained), "--crops", args.crops,
+                                        "--seed", str(seed), "--no-test", *extra], check=True)
 
     with open(RUNS) as f:
         rows = list(csv.DictReader(f))[first:]
-    rows.sort(key=lambda r: float(r["val_top1"]), reverse=True)
-    print("\nRanking on validation (higher is better):")
-    print(f"{'val top-1':>9} {'val top-5':>9} {'train acc':>9} {'epoch':>5}  setting")
+    groups = defaultdict(list)
     for r in rows:
-        setting = (f"{r['synthetic']} synthetic, freeze {r['freeze']}, wd {r['weight_decay']}, "
-                   f"lr {r['finetune_lr']}, aug {r['aug']}")
-        print(f"{float(r['val_top1']):>9.1%} {float(r['val_top5']):>9.1%} {float(r['train_acc_at_best']):>9.1%} "
-              f"{r['best_epoch']:>5}  {setting}")
-    b = rows[0]
-    print("\nFinal run with the best setting (scores the test seals once):")
-    print(f"python scripts/train_sign_cnn.py --synthetic {b['synthetic']} "
-          f"--init data/processed/models/sign_cnn_pretrained_{b['synthetic']}.pt --freeze {b['freeze']} "
-          f"--weight-decay {b['weight_decay']} --finetune-lr {b['finetune_lr']} --aug {b['aug']}")
+        groups[(r["synthetic"], r["crops"], r["aug"])].append((float(r["val_top1"]), float(r["val_top5"])))
+    ranked = sorted(groups.items(), key=lambda kv: -np.mean([v[0] for v in kv[1]]))
+    print("\nValidation, mean over seeds (+- spread):")
+    print(f"{'top-1':>14} {'top-5':>14}  variant")
+    for (kind, crops, aug), vals in ranked:
+        t1, t5 = np.array(vals).T
+        print(f"{t1.mean():>7.1%} +-{t1.std():.1%} {t5.mean():>7.1%} +-{t5.std():.1%}  "
+              f"{kind} synthetic, {crops}, aug {aug} ({len(vals)} seeds)")
+    kind, crops, aug = ranked[0][0]
+    print("\nFinal run with the best variant (scores the test seals once):")
+    print(f"python scripts/train_sign_cnn.py --synthetic {kind} --crops {crops} --aug {aug} "
+          f"--init data/processed/models/sign_cnn_pretrained_{kind}.pt")
 
 
 if __name__ == "__main__":
