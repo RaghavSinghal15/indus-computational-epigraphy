@@ -6,8 +6,8 @@ Usage:
 Same seals and the same fixed split as scripts/make_real_crops.py, but the cuts
 come from indus.align instead of equal slices:
   * training seals: aligned WITH their labels (cuts go where the right signs are),
-  * test seals: aligned WITHOUT labels, using only the sign count, so the test
-    stays honest.
+  * validation and test seals: aligned WITHOUT labels, using only the sign
+    count, so they stay honest.
 
 Writes data/processed/real_crops/crops_aligned.npz (same fields as crops.npz)
 and reports/figures/aligned_cuts.png (equal slices vs aligned cuts on a few
@@ -26,6 +26,7 @@ from indus.cnn import load_model
 from indus.data import REPO_ROOT, load_labelled_seals
 from indus.real_crops import sign_crops
 from indus.segment import load_image
+from make_real_crops import VAL_FILE, split_of     # same folder: scripts/
 
 CROPS = REPO_ROOT / "data" / "processed" / "real_crops"
 SPLIT_FILE = REPO_ROOT / "data" / "raw" / "cisi_seals" / "test_seals.txt"
@@ -49,9 +50,10 @@ def main() -> None:
 
     df = load_labelled_seals()
     test = set(SPLIT_FILE.read_text().split())
+    val = set(VAL_FILE.read_text().split())
     images, labels, seals, splits, views, figure = [], [], [], [], [], []
     for i, (_, row) in enumerate(df.iterrows()):
-        split = "test" if row["cisi_label"] in test else "train"
+        split = split_of(row["cisi_label"], test, val)
         signs = row["signs_reading"]
         sources = [("impression", row["impression_photo"], False)]
         if split == "train" and row["seal_photo"]:
@@ -60,7 +62,7 @@ def main() -> None:
             if not path:
                 continue
             image = load_image(path)
-            known = signs if split == "train" else None          # never use test labels to cut
+            known = signs if split == "train" else None          # never use val/test labels to cut
             crops, band, edges, _ = aligned_crops(model, image, len(signs), known, mirrored)
             if split == "train" and view == "impression" and len(figure) < FIGURE_SEALS:
                 _, b0, cuts = sign_crops(image, len(signs))
@@ -69,7 +71,7 @@ def main() -> None:
             for crop, sign in zip(crops, signs):
                 doubtful = sign.startswith("*")
                 number = int(sign.lstrip("*"))
-                if number == 0 or (doubtful and split == "test"):
+                if number == 0 or (doubtful and split != "train"):
                     continue
                 images.append(crop); labels.append(number); seals.append(row["cisi_label"])
                 splits.append(split); views.append(view)

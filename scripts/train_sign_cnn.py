@@ -1,23 +1,37 @@
-"""A5: train the sign CNN and measure it on the fixed test seals.
+"""A5: train the sign CNN, choose settings on the validation seals, test once.
 
 Usage:
     python scripts/make_carved_synthetic.py      # once: carved renders (about 1 minute)
-    python scripts/make_real_crops.py            # once: real crops + fixed split
+    python scripts/make_real_crops.py            # once: real crops + fixed val/test split
     python scripts/train_sign_cnn.py             # GPU if available, else CPU
     python scripts/train_sign_cnn.py --quick     # 1+1 epochs on a subset, to check it runs
 
-Stage 1 (pretrain): carved renders only, all 417 signs.
+Stage 1 (pretrain): carved renders only, all 417 signs. The result is saved to
+data/processed/models/sign_cnn_pretrained.pt, so fine-tuning experiments can
+start from it with --init and skip this stage.
 Stage 2 (fine-tune): every batch is half real training crops, half renders
 (so signs that never occur in the real training seals are not forgotten).
-No model selection on the test set: fixed epochs, test measured once at the end.
 
-Writes the model to data/processed/models/sign_cnn.pt and the numbers to
-reports/a5_cnn.md: top-1 / top-5 on test crops, overall and by how often the
-sign occurs in the real training crops, next to template matching (A2) on the
-same crops and to the pretrained-only model.
+Overfitting watch: after every epoch the model is scored on the VALIDATION
+seals (never trained on). The epoch with the best validation top-1 is kept,
+not the last one ("early stopping"). If training accuracy keeps rising while
+validation accuracy stalls or falls, the model is memorising the training crops.
+
+Settings worth trying (all chosen on validation, never on test):
+  --freeze N        keep the first N of the 4 conv blocks fixed while fine-tuning
+                    (fewer weights to fit 2,000 crops = less memorising)
+  --weight-decay    pull weights towards 0 (default 1e-4; try 1e-3, 5e-3)
+  --finetune-lr     step size while fine-tuning (default 5e-4)
+  --aug             augmentation strength for fine-tuning (default 1.0; try 1.5)
+  --no-test         don't score the test seals (use this for every experiment)
+
+Writes the model to data/processed/models/sign_cnn.pt, one line per run to
+reports/a5_runs.csv, and (unless --no-test) the numbers to reports/a5_cnn.md.
 """
 
 import argparse
+import copy
+import csv
 import time
 from collections import Counter
 
@@ -31,25 +45,40 @@ from indus.cnn import SignCNN, augment, load_carved_renders, predict, to_input
 from indus.data import REPO_ROOT
 
 PROCESSED = REPO_ROOT / "data" / "processed"
-MODEL_OUT = PROCESSED / "models" / "sign_cnn.pt"
+MODELS = PROCESSED / "models"
 REPORT = REPO_ROOT / "reports" / "a5_cnn.md"
+RUNS = REPO_ROOT / "reports" / "a5_runs.csv"
 SEED = 0
 BATCH = 128
 BUCKETS = [(0, 0, "never in real training crops"), (1, 4, "1-4 real training crops"),
            (5, 19, "5-19"), (20, 10**9, "20 or more")]
 
 
-def run_epochs(model, sample_batch, steps_per_epoch, epochs, lr, device, name):
-    """Train with AdamW and a cosine learning-rate schedule (high at first, smoothly to 0)."""
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+def scores(top_ids, labels):
+    """Per-crop booleans: (top-1 right, right answer among the top 5)."""
+    return (top_ids[:, 0] == labels), (top_ids == labels[:, None]).any(axis=1)
+
+
+def run_epochs(model, sample_batch, steps_per_epoch, epochs, lr, device, name,
+               val=None, weight_decay=1e-4, aug=1.0, frozen=()):
+    """Train with AdamW and a one-cycle schedule (learning rate warms up, then
+    falls smoothly to 0). If val = (x, y) is given, score it after every epoch
+    and return the model at the epoch with the best val top-1.
+    frozen: blocks of model.features whose weights must not change."""
+    params = [p for p in model.parameters() if p.requires_grad]
+    opt = torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=epochs * steps_per_epoch)
     loss_fn = nn.CrossEntropyLoss(label_smoothing=0.1)   # softens targets a little: less over-confident
+    best = (-1.0, 0, None)                               # (val top-1, epoch, weights)
+    history = []
     for epoch in range(epochs):
         model.train()
+        for block in frozen:
+            block.eval()         # frozen blocks: keep batch-norm statistics fixed too
         t0, total, correct, seen = time.time(), 0.0, 0, 0
         for _ in range(steps_per_epoch):
             x, y = sample_batch()
-            x, y = augment(x.to(device)), y.to(device)
+            x, y = augment(x.to(device), aug), y.to(device)
             logits = model(x)
             loss = loss_fn(logits, y)
             opt.zero_grad()          # clear gradients from the previous step
@@ -58,8 +87,18 @@ def run_epochs(model, sample_batch, steps_per_epoch, epochs, lr, device, name):
             sched.step()
             total += loss.item() * len(y); seen += len(y)
             correct += (logits.argmax(1) == y).sum().item()
-        print(f"  {name} epoch {epoch + 1}/{epochs}: loss {total / seen:.3f}, "
-              f"train acc {correct / seen:.1%}, {time.time() - t0:.0f}s")
+        line = f"  {name} epoch {epoch + 1}/{epochs}: loss {total / seen:.3f}, train acc {correct / seen:.1%}"
+        if val is not None:
+            t1, t5 = scores(predict(model, val[0])[0], val[1])
+            history.append((epoch + 1, correct / seen, t1.mean(), t5.mean()))
+            line += f", VAL top-1 {t1.mean():.1%} top-5 {t5.mean():.1%}"
+            if t1.mean() > best[0]:
+                best = (t1.mean(), epoch + 1, copy.deepcopy(model.state_dict()))
+        print(line + f", {time.time() - t0:.0f}s")
+    if best[2] is not None:
+        model.load_state_dict(best[2])
+        print(f"  {name}: keeping epoch {best[1]} (best validation top-1 {best[0]:.1%})")
+    return best[1], history
 
 
 def sampler(x, y, gen, size=BATCH):
@@ -72,16 +111,17 @@ def sampler(x, y, gen, size=BATCH):
     return sample
 
 
-def scores(top_ids, labels):
-    return (top_ids[:, 0] == labels), (top_ids == labels[:, None]).any(axis=1)
-
-
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pretrain-epochs", type=int, default=30)
     ap.add_argument("--finetune-epochs", type=int, default=40)
     ap.add_argument("--crops", default="crops.npz", help="file in data/processed/real_crops/")
     ap.add_argument("--init", help="start from this trained model and skip pretraining")
+    ap.add_argument("--freeze", type=int, default=0, help="conv blocks (0-4) kept fixed while fine-tuning")
+    ap.add_argument("--weight-decay", type=float, default=1e-4)
+    ap.add_argument("--finetune-lr", type=float, default=5e-4)
+    ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
+    ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
     ap.add_argument("--quick", action="store_true", help="tiny run to check everything works")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
@@ -95,16 +135,12 @@ def main() -> None:
 
     syn_img, syn_lab = load_carved_renders(PROCESSED / "synthetic_carved")
     real = np.load(PROCESSED / "real_crops" / args.crops)
-    train = real["split"] == "train"
-    test = ~train
+    split = real["split"]
     syn_x, real_x = to_input(syn_img), to_input(real["images"])
-    tr_x, tr_y = real_x[train], real["labels"][train]
-    te_x, te_y = real_x[test], real["labels"][test]
-    print(f"renders: {len(syn_x)}, real train crops: {len(tr_x)}, real test crops: {len(te_x)}")
-
-    steps = len(syn_x) // BATCH
-    if args.quick:
-        steps = 20
+    tr_x, tr_y = real_x[split == "train"], real["labels"][split == "train"]
+    va_x, va_y = real_x[split == "val"], real["labels"][split == "val"]
+    te_x, te_y = real_x[split == "test"], real["labels"][split == "test"]
+    print(f"renders: {len(syn_x)}, real crops: {len(tr_x)} train, {len(va_x)} val, {len(te_x)} test")
 
     # ---- stage 1: renders only
     model = SignCNN().to(device)
@@ -113,61 +149,92 @@ def main() -> None:
         model.load_state_dict(torch.load(args.init, map_location=device))
         args.pretrain_epochs = 0
     else:
+        steps = 20 if args.quick else len(syn_x) // BATCH
         run_epochs(model, sampler(syn_x, syn_lab, gen), steps, args.pretrain_epochs, 2e-3, device, "pretrain")
-    pre_ids, _ = predict(model, te_x)
+        MODELS.mkdir(parents=True, exist_ok=True)
+        torch.save(model.state_dict(), MODELS / "sign_cnn_pretrained.pt")
+    start_state = copy.deepcopy(model.state_dict())
 
     # ---- stage 2: half real, half renders in every batch
+    frozen = list(model.features[:args.freeze])
+    for block in frozen:
+        for p in block.parameters():
+            p.requires_grad = False      # no gradient: these weights stay as they are
     real_s, syn_s = sampler(tr_x, tr_y, gen, BATCH // 2), sampler(syn_x, syn_lab, gen, BATCH // 2)
 
     def mixed():
         (a, b), (c, d) = real_s(), syn_s()
         return torch.cat([a, c]), torch.cat([b, d])
-    run_epochs(model, mixed, max(1, len(tr_x) // (BATCH // 2)) if not args.quick else 20,
-               args.finetune_epochs, 5e-4, device, "fine-tune")
+    steps = 20 if args.quick else max(1, len(tr_x) // (BATCH // 2))
+    best_epoch, history = run_epochs(model, mixed, steps, args.finetune_epochs, args.finetune_lr, device,
+                                     "fine-tune", val=(va_x, va_y), weight_decay=args.weight_decay,
+                                     aug=args.aug, frozen=frozen)
     minutes = (time.time() - t_start) / 60
-    MODEL_OUT.parent.mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), MODEL_OUT)
+    MODELS.mkdir(parents=True, exist_ok=True)
+    torch.save(model.state_dict(), MODELS / "sign_cnn.pt")
+
+    # ---- one line per run, so experiments can be compared on VALIDATION only
+    _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
+    new = not RUNS.exists()
+    RUNS.parent.mkdir(parents=True, exist_ok=True)
+    with open(RUNS, "a", newline="") as f:
+        w = csv.writer(f)
+        if new:
+            w.writerow(["crops", "init", "freeze", "weight_decay", "finetune_lr", "aug", "finetune_epochs",
+                        "best_epoch", "train_acc_at_best", "val_top1", "val_top5"])
+        w.writerow([args.crops, args.init or "", args.freeze, args.weight_decay, args.finetune_lr, args.aug,
+                    args.finetune_epochs, best_epoch, f"{train_acc:.3f}", f"{val_t1:.3f}", f"{val_t5:.3f}"])
+    print(f"validation: top-1 {val_t1:.1%}, top-5 {val_t5:.1%} at epoch {best_epoch} -> {RUNS.relative_to(REPO_ROOT)}")
+    if args.no_test:
+        return
+
+    # ---- the test seals, once
     ids, _ = predict(model, te_x)
-
-    # ---- A2 template matching on the very same test crops, for comparison
+    start = SignCNN().to(device)
+    start.load_state_dict(start_state)
+    pre_ids, _ = predict(start, te_x)
     a2_ids = np.array([[m.mahadevan_id for m in classify_crop(cv2.cvtColor(c, cv2.COLOR_GRAY2BGR))]
-                       for c in real["images"][test]])
-
-    # ---- report
+                       for c in real["images"][split == "test"]])
     counts = Counter(tr_y.tolist())
     freq = np.array([counts.get(int(s), 0) for s in te_y])
     rows = []
-    for name, top in [("Template matching (A2)", a2_ids), ("CNN before fine-tuning" + (" (= --init model)" if args.init else ", renders only"), pre_ids),
+    for name, top in [("Template matching (A2)", a2_ids),
+                      ("CNN before fine-tuning" + (" (= --init model)" if args.init else ", renders only"), pre_ids),
                       ("CNN, renders + real fine-tune", ids)]:
         t1, t5 = scores(top, te_y)
         rows.append(f"| {name} | {t1.mean():.1%} | {t5.mean():.1%} |")
+    common = [s for s, _ in counts.most_common(5)]
     t1, t5 = scores(ids, te_y)
     bucket_rows = []
     for lo, hi, label in BUCKETS:
         m = (freq >= lo) & (freq <= hi)
         if m.any():
             bucket_rows.append(f"| {label} | {m.sum()} | {t1[m].mean():.1%} | {t5[m].mean():.1%} |")
+    settings = (f"freeze {args.freeze}, weight decay {args.weight_decay}, fine-tune lr {args.finetune_lr}, "
+                f"augmentation {args.aug}")
     lines = [
         "# A5: sign CNN on real seal crops",
         "",
         f"Crops: {args.crops}" + (f", started from {args.init}" if args.init else "") + ". "
-        f"Test set: {len(te_y)} sign crops from {len(set(real['seal'][test]))} verified seals "
-        "(data/raw/cisi_seals/test_seals.txt), impression photos, cut with the known sign count "
-        "(equal slices, real_crops.py; or CNN-aligned WITHOUT labels, align.py). Doubtful and illegible signs excluded. "
-        "Never used for training or for choosing settings.",
+        f"Test set: {len(te_y)} sign crops from {len(set(real['seal'][split == 'test']))} verified seals "
+        "(data/raw/cisi_seals/test_seals.txt), impression photos, cut with the known sign count only. "
+        "Doubtful and illegible signs excluded. Never used for training or for choosing settings.",
         "",
         f"Training: {len(syn_x)} carved renders (all 417 signs), {len(tr_x)} real crops from "
-        f"{len(set(real['seal'][train]))} seals (impression + flipped seal photo). "
-        f"{args.pretrain_epochs} pretrain + {args.finetune_epochs} fine-tune epochs on {device}, "
-        f"{minutes:.0f} min, seed {SEED}.",
+        f"{len(set(real['seal'][split == 'train']))} seals (impression + flipped seal photo). "
+        f"{args.pretrain_epochs} pretrain + {args.finetune_epochs} fine-tune epochs on {device}, {minutes:.0f} min, "
+        f"seed {SEED}; {settings}. Kept fine-tune epoch {best_epoch}, chosen on {len(va_y)} validation crops "
+        f"(top-1 {val_t1:.1%}, top-5 {val_t5:.1%}).",
         "",
         "| Method | Top-1 | Top-5 |",
         "| --- | --- | --- |",
         *rows,
         f"| Chance | {1 / 417:.1%} | {5 / 417:.1%} |",
         "| Always guess the commonest training signs (no image used) | "
-        f"{np.mean(te_y == Counter(tr_y.tolist()).most_common(1)[0][0]):.1%} | "
-        f"{np.isin(te_y, [s for s, _ in Counter(tr_y.tolist()).most_common(5)]).mean():.1%} |",
+        f"{np.mean(te_y == common[0]):.1%} | {np.isin(te_y, common).mean():.1%} |",
+        "",
+        f"With {len(te_y)} test crops, a result has a margin of error of about "
+        f"{1.96 * np.sqrt(t1.mean() * (1 - t1.mean()) / len(te_y)):.0%} either way (95%).",
         "",
         "Fine-tuned CNN by how common the sign is in the real training crops:",
         "",
@@ -177,7 +244,6 @@ def main() -> None:
     ]
     if args.quick:
         lines.insert(2, "**QUICK SMOKE RUN, numbers meaningless.**\n")
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
