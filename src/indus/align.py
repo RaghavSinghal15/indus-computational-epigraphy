@@ -20,7 +20,8 @@ The search ("dynamic programming"): candidate cut positions every 8% of the
 band height; a piece is any span between two positions whose width is
 0.2-1.6 band heights; pieces may not overlap; columns left out between or
 around pieces cost a little in proportion to the carving they contain (so
-the horn can be dropped cheaply but a real sign cannot). best[k][j] = best
+the horn can be dropped cheaply but a real sign cannot); pieces much narrower
+or wider than a typical sign pay a width penalty (no slivers, no two-sign boxes). best[k][j] = best
 total score with k pieces placed, the last ending at position j; each step
 extends it by one piece. Total work: about n x (number of pieces).
 """
@@ -39,6 +40,8 @@ from indus.real_crops import _band_profile, square_crop
 STEP_FRAC = 0.08                 # candidate cut every 8% of the band height
 MIN_W, MAX_W = 0.2, 1.6          # piece width limits, in band heights
 SKIP_COST = 3.0                  # cost of leaving out one average sign's worth of carving
+WIDTH_PRIOR = 1.0                # penalty for pieces far from a typical width (see width_penalty)
+TYPICAL_W = 0.75                 # typical sign width, in band heights
 
 
 def band_gray(image_bgr: np.ndarray, mirrored: bool = False):
@@ -65,6 +68,17 @@ def piece_log_probs(model, gray: np.ndarray, n: int):
     x = torch.from_numpy(to_input(crops))
     logp = torch.cat([F.log_softmax(model(x[k:k + 512].to(dev)), dim=1).cpu() for k in range(0, len(x), 512)])
     return positions, pieces, logp.numpy()
+
+
+def width_penalty(widths: np.ndarray, height: int) -> np.ndarray:
+    """Cost of each piece width: WIDTH_PRIOR * (log(width / typical width))^2.
+
+    Zero at the typical width (0.75 band heights), 0.5 for half or 1.5x that
+    (with WIDTH_PRIOR = 1), growing fast for slivers and for pieces that
+    swallow two signs. Mild enough that a confident CNN can still pick a
+    narrow stroke sign.
+    """
+    return WIDTH_PRIOR * np.log(widths / (TYPICAL_W * height)) ** 2
 
 
 def best_pieces(positions, pieces, piece_scores, n, ink_cum):
@@ -120,6 +134,8 @@ def aligned_crops(model, image_bgr: np.ndarray, n: int, labels_reading=None, mir
         scores = np.stack(cols, axis=1)
     else:
         scores = np.repeat(logp.max(axis=1, keepdims=True), n, axis=1)
+    widths = np.array([positions[j] - positions[i] for i, j in pieces], float)
+    scores = scores - width_penalty(widths, gray.shape[0])[:, None]
 
     # carving per position, in units of one average sign, for the skip cost
     scale, _, profile = _band_profile(gray)
