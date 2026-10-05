@@ -26,6 +26,8 @@ from indus.segment import Box, carving_mask, find_sign_boxes
 BAND_SEARCH = (0.15, 0.45)   # the text band ends somewhere between 15% and 45% of the height
 BAND_DROP_FRAC = 0.4         # ...where carving density first falls below 40% of its peak
 FIND_ROW_HEIGHT = 300        # seal photos are resized to this height to find the band
+TEXT_ONLY_ASPECT = 1.5       # width/height at or above this: a text-only seal (no animal)
+BORDER_FRAC = 0.04           # border trimmed off each side of a text-only seal photo
 
 
 @dataclass
@@ -41,7 +43,15 @@ class SignReading:
 
 
 def find_text_row(image: np.ndarray) -> Box:
-    """Box around the row of signs at the top of a whole-seal photo."""
+    """Box around the row of signs at the top of a whole-seal photo.
+
+    Text-only seals (long rectangles with no animal, width/height >= 1.5) are
+    all text, so the band is the whole photo minus a thin border.
+    """
+    H, W = image.shape[:2]
+    if W / H >= TEXT_ONLY_ASPECT:
+        mx, my = int(BORDER_FRAC * W), int(BORDER_FRAC * H)
+        return Box(mx, my, W - mx, H - my)
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     scale = FIND_ROW_HEIGHT / gray.shape[0]
     small = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
