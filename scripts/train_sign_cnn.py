@@ -194,7 +194,11 @@ def main() -> None:
     # ---- one line per run, so experiments can be compared on VALIDATION only
     _, train_acc, val_t1, val_t5 = history[best_epoch - 1]
     if RUNS.exists() and "seed" not in RUNS.read_text().splitlines()[0]:
-        RUNS.rename(RUNS.with_name("a5_runs_old.csv"))          # older column layout: keep it aside
+        # older column layout: keep it aside under the first free name (rename never overwrites on Windows)
+        k = 1
+        while RUNS.with_name(f"a5_runs_old{k}.csv").exists():
+            k += 1
+        RUNS.rename(RUNS.with_name(f"a5_runs_old{k}.csv"))
     new = not RUNS.exists()
     RUNS.parent.mkdir(parents=True, exist_ok=True)
     with open(RUNS, "a", newline="") as f:
