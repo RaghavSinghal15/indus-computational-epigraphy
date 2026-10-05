@@ -19,11 +19,13 @@ import cv2
 import numpy as np
 import torch
 
-from indus.align import aligned_crops
+from collections import Counter
+
+from indus.align import aligned_crops, count_candidates
 from indus.cnn import load_model, log_probs, to_input
 from indus.data import REPO_ROOT, load_labelled_seals, template_path
 from indus.decode import bigram_model, edge_model, posteriors
-from indus.real_crops import sign_crops
+from indus.real_crops import sign_crops, square_crop
 from indus.segment import load_image
 
 CISI = REPO_ROOT / "data" / "raw" / "cisi_seals"
@@ -51,7 +53,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("seal", help="CISI label, e.g. M-26")
     ap.add_argument("--model", default=str(REPO_ROOT / "data" / "processed" / "models" / "sign_cnn.pt"))
-    ap.add_argument("--cut", choices=["equal", "aligned"], default="equal")
+    ap.add_argument("--cut", choices=["equal", "aligned", "unknown"], default="equal",
+                    help="unknown = the pipeline also decides how many signs there are (A7)")
+    ap.add_argument("--alpha", type=float, default=2.0, help="A7 count weights (from validation)")
+    ap.add_argument("--beta", type=float, default=1.0)
     ap.add_argument("--lam", type=float, default=0.0, help="weight of the sign-pair statistics (0 = CNN alone)")
     ap.add_argument("--ends", action="store_true", help="also use start/end statistics")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +67,17 @@ def main() -> None:
     row = df.set_index("cisi_label").loc[args.seal]
     signs = row["signs_reading"]
     image = load_image(row["impression_photo"])
-    if args.cut == "aligned":
+    if args.cut == "unknown":
+        train = df[~df["cisi_label"].isin(set((CISI / "test_seals.txt").read_text().split())
+                                          | set((CISI / "val_seals.txt").read_text().split()))]
+        lengths = Counter(train["n_signs"].astype(int))
+        log_len = {n: np.log((lengths.get(n, 0) + 1) / (sum(lengths.values()) + 14)) for n in range(1, 14)}
+        band, gray, cands = count_candidates(model, image)
+        n = max(cands, key=lambda k: cands[k][0] + args.alpha * k + args.beta * log_len[k])
+        edges = cands[n][1]
+        crops = [square_crop(gray, a, b) for a, b in edges][::-1]
+        cuts = sorted({e for pair in edges for e in pair})
+    elif args.cut == "aligned":
         crops, band, edges, _ = aligned_crops(model, image, len(signs))
         cuts = sorted({e for pair in edges for e in pair})
     else:
@@ -84,18 +99,28 @@ def main() -> None:
     for c in cuts:
         cv2.line(photo, (band.x0 + c, band.y0), (band.x0 + c, band.y1), (0, 200, 0), 2)
 
-    # one column per sign, right to left so it lines up with the seal
+    # one column per sign read, right to left so it lines up with the seal;
+    # green = matches the true sign at that position (only when the count is right)
+    same_count = len(crops) == len(signs)
+    truths = [int(t.lstrip("*")) for t in signs] if same_count else [None] * len(crops)
     columns = []
-    for crop, guesses, truth in list(zip(crops, top3, signs))[::-1]:
-        t = int(truth.lstrip("*"))
-        cells = [tile(crop)]
-        cells += [tile(template(g), GREEN if g == t else GREY) for g in guesses]
-        cells.append(label(tile(template(t) if t > 0 else np.full((64, 64), 255, np.uint8), WHITE), f"true {truth}"))
+    for crop, guesses, t in list(zip(crops, top3, truths))[::-1]:
+        cells = [tile(crop)] + [tile(template(g), GREEN if g == t else GREY) for g in guesses]
         columns.append(np.vstack(cells))
     grid = np.hstack([cv2.copyMakeBorder(c, 0, 0, 4, 4, cv2.BORDER_CONSTANT, value=WHITE) for c in columns])
+    # the true sequence as its own strip underneath (right to left, like the seal)
+    truth_tiles = [tile(template(int(t.lstrip("*"))) if t != "0" else np.full((64, 64), 255, np.uint8), WHITE)
+                   for t in signs[::-1]]
+    strip = np.hstack([cv2.copyMakeBorder(t, 0, 0, 4, 4, cv2.BORDER_CONSTANT, value=WHITE) for t in truth_tiles])
+    caption = label(np.full((22, max(strip.shape[1], 10), 3), 255, np.uint8), "true sequence")
+    strip = np.vstack([caption, strip])
+    width = max(grid.shape[1], strip.shape[1])
+    pad = lambda img: cv2.copyMakeBorder(img, 0, 0, 0, width - img.shape[1], cv2.BORDER_CONSTANT, value=WHITE)
+    grid = np.vstack([pad(grid), pad(strip)])
     head = np.full((22, grid.shape[1], 3), 255, np.uint8)
-    what = "CNN" + (f" + sign statistics (lambda {args.lam})" if args.lam > 0 else "")
-    label(head, f"{args.seal}: rows = crop, guesses 1-3 ({what}), true sign. Green = right.")
+    what = "CNN" + (" + statistics" if args.lam > 0 else "")
+    given = "count found by model" if args.cut == "unknown" else f"{len(signs)} signs given"
+    label(head, f"{args.seal} ({given}): crop, guesses 1-3 ({what}). Green = right.")
     photo = cv2.resize(photo, (grid.shape[1], int(photo.shape[0] * grid.shape[1] / photo.shape[1])))
     if photo.shape[0] > 360:                       # keep the photo from dominating
         w = int(photo.shape[1] * 360 / photo.shape[0])
@@ -103,8 +128,9 @@ def main() -> None:
                                    grid.shape[1] - w - (grid.shape[1] - w) // 2, cv2.BORDER_CONSTANT, value=WHITE)
     out = REPO_ROOT / "reports" / "figures" / f"demo_{args.seal}.png"
     cv2.imwrite(str(out), np.vstack([photo, head, grid]))
-    right = sum(int(t.lstrip("*")) == g[0] for t, g in zip(signs, top3) if t != "0")
-    print(f"{args.seal}: {right}/{len(signs)} signs right at top-1 -> {out.relative_to(REPO_ROOT)}")
+    right = sum(int(t.lstrip("*")) == g[0] for t, g in zip(signs, top3) if t != "0") if same_count else 0
+    print(f"{args.seal}: read {len(crops)} signs (true {len(signs)}), {right} right at top-1 "
+          f"-> {out.relative_to(REPO_ROOT)}")
 
 
 if __name__ == "__main__":
