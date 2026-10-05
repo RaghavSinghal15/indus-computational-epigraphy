@@ -108,3 +108,22 @@ def posteriors(log_emit: np.ndarray, log_trans: np.ndarray, log_start: np.ndarra
         beta[i] = logsumexp(T + (log_emit[i + 1] + beta[i + 1])[None, :], axis=1)
     post = alpha + beta
     return post - logsumexp(post, axis=1, keepdims=True)
+
+
+def log_evidence(log_emit: np.ndarray, log_trans: np.ndarray, log_start: np.ndarray, lam: float,
+                 log_end: np.ndarray | None = None) -> float:
+    """How well a row of CNN guesses fits the sign statistics: the log of the
+    total score summed over all possible sign sequences (the forward pass of
+    posteriors() without the backward pass).
+
+    0 would mean the statistics fully agree with the CNN; very negative means
+    whatever the CNN sees forms unlikely sequences (for example one sign cut
+    into two halves that never occur next to each other).
+    """
+    T = lam * log_trans
+    alpha = log_emit[0] + lam * log_start
+    for i in range(1, len(log_emit)):
+        alpha = log_emit[i] + logsumexp(alpha[:, None] + T, axis=0)
+    if log_end is not None:
+        alpha = alpha + lam * log_end
+    return float(logsumexp(alpha))
