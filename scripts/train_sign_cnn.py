@@ -9,7 +9,9 @@ Usage:
 
 Synthetic data (--synthetic): "single" = one centred render per image
 (make_carved_synthetic.py), "rows" = crops cut from rendered rows with the
-real-seal cutter (make_synthetic_rows.py), "both" = all of them. Default "single":
+real-seal cutter (make_synthetic_rows.py), "both" = all of them, "none" = no
+synthetic data at all (no pretraining; every batch is real crops; the ablation
+that shows what the renders are worth). Default "single":
 in the GPU sweep, adding rows LOWERED validation top-1 by about 5 points on all
 9 settings (rows cut with the equal-slice cutter carry its labelling mistakes).
 
@@ -131,10 +133,11 @@ def main() -> None:
     ap.add_argument("--weight-decay", type=float, default=1e-4)
     ap.add_argument("--finetune-lr", type=float, default=5e-4)
     ap.add_argument("--aug", type=float, default=1.0, help="augmentation strength while fine-tuning")
-    ap.add_argument("--synthetic", choices=["single", "rows", "both"], default="single")
+    ap.add_argument("--synthetic", choices=["single", "rows", "both", "none"], default="single")
     ap.add_argument("--out", default="sign_cnn.pt", help="file name for the trained model in data/processed/models/")
     ap.add_argument("--seed", type=int, default=SEED, help="random seed (fine-tuning order, augmentation)")
     ap.add_argument("--no-test", action="store_true", help="experiment: don't look at the test seals")
+    ap.add_argument("--report", default="a5_cnn.md", help="test report file name in reports/")
     ap.add_argument("--quick", action="store_true", help="tiny run to check everything works")
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     args = ap.parse_args()
@@ -152,8 +155,12 @@ def main() -> None:
     if args.synthetic in ("rows", "both"):
         d = np.load(PROCESSED / "synthetic_rows_64.npz")
         parts.append((d["images"], d["labels"]))
-    syn_img = np.concatenate([p[0] for p in parts])
-    syn_lab = np.concatenate([p[1] for p in parts])
+    if parts:
+        syn_img = np.concatenate([p[0] for p in parts])
+        syn_lab = np.concatenate([p[1] for p in parts])
+    else:                                         # --synthetic none: an empty synthetic set
+        syn_img = np.zeros((0, 64, 64), dtype=np.uint8)
+        syn_lab = np.zeros(0, dtype=int)
     real = np.load(PROCESSED / "real_crops" / args.crops)
     split = real["split"]
     syn_x, real_x = to_input(syn_img), to_input(real["images"])
@@ -164,7 +171,12 @@ def main() -> None:
 
     # ---- stage 1: renders only
     t_start = time.time()
-    if args.init:
+    if args.synthetic == "none":
+        if args.init:
+            raise SystemExit("--synthetic none trains from scratch; don't combine it with --init")
+        model = build_model(args.arch, imagenet=False).to(device)   # random weights, nothing pretrained
+        args.pretrain_epochs = 0
+    elif args.init:
         args.arch, weights = read_checkpoint(args.init, device)       # the init file decides the architecture
         model = build_model(args.arch, imagenet=False).to(device)
         model.load_state_dict(weights)
@@ -184,12 +196,16 @@ def main() -> None:
     for block in frozen:
         for p in block.parameters():
             p.requires_grad = False      # no gradient: these weights stay as they are
-    real_s, syn_s = sampler(tr_x, tr_y, gen, BATCH // 2), sampler(syn_x, syn_lab, gen, BATCH // 2)
+    if args.synthetic == "none":
+        mixed = sampler(tr_x, tr_y, gen, BATCH)        # every batch: real crops only
+        steps = 20 if args.quick else max(1, len(tr_x) // BATCH)
+    else:
+        real_s, syn_s = sampler(tr_x, tr_y, gen, BATCH // 2), sampler(syn_x, syn_lab, gen, BATCH // 2)
 
-    def mixed():
-        (a, b), (c, d) = real_s(), syn_s()
-        return torch.cat([a, c]), torch.cat([b, d])
-    steps = 20 if args.quick else max(1, len(tr_x) // (BATCH // 2))
+        def mixed():
+            (a, b), (c, d) = real_s(), syn_s()
+            return torch.cat([a, c]), torch.cat([b, d])
+        steps = 20 if args.quick else max(1, len(tr_x) // (BATCH // 2))
     best_epoch, history = run_epochs(model, mixed, steps, args.finetune_epochs, args.finetune_lr, device,
                                      "fine-tune", val=(va_x, va_y), weight_decay=args.weight_decay,
                                      aug=args.aug, frozen=frozen)
@@ -230,8 +246,9 @@ def main() -> None:
     freq = np.array([counts.get(int(s), 0) for s in te_y])
     rows = []
     for name, top in [("Template matching (A2)", a2_ids),
-                      ("CNN before fine-tuning" + (" (= --init model)" if args.init else ", renders only"), pre_ids),
-                      ("CNN, renders + real fine-tune", ids)]:
+                      ("CNN before fine-tuning" + (" (= --init model)" if args.init else
+                                                  " (random weights)" if args.synthetic == "none" else ", renders only"), pre_ids),
+                      ("CNN, real crops only" if args.synthetic == "none" else "CNN, renders + real fine-tune", ids)]:
         t1, t5 = scores(top, te_y)
         rows.append(f"| {name} | {t1.mean():.1%} | {t5.mean():.1%} |")
     common = [s for s, _ in counts.most_common(5)]
@@ -275,7 +292,7 @@ def main() -> None:
     ]
     if args.quick:
         lines.insert(2, "**QUICK SMOKE RUN, numbers meaningless.**\n")
-    REPORT.write_text("\n".join(lines) + "\n")
+    (REPORT.parent / args.report).write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
 
