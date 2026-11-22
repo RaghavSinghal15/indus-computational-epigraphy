@@ -19,6 +19,10 @@ The Indus script (c. 2600 to 1900 BCE) is undeciphered. This project does not tr
 
 Every model choice was made on a fixed validation split; test numbers are reported once.
 
+## Final phase (now)
+
+We found the full ICIT corpus and about 570 more labelled seal photos (via Lipi), switched M1 to Wells sign IDs, and are adding hand-drawn sign boxes, synthetic inscriptions built from real signs, and a reader that needs no cutting (CRNN). **Plan, decisions and order of work: [`docs/ROADMAP.md`](docs/ROADMAP.md).** Open work is in the [issues](../../issues) (P0 first): claim one on WhatsApp and assign yourself.
+
 ## Setup
 
 Requires Python 3.10 or newer.
@@ -124,8 +128,9 @@ src/indus/         shared code; data.py loads every dataset
 notebooks/         exploration, one per task
 tests/             sanity checks on the data
 reports/figures/   plots for slides and the report
-docs/PLAN.md       direction, Oct 6 outline, what's next
-docs/TASKS.md      who does what until Oct 6
+docs/ROADMAP.md    current plan and decisions (final phase); work is in GitHub issues
+docs/PLAN.md       first-phase direction (until Oct 6)
+docs/TASKS.md      first-phase task list (until Oct 6)
 AGENTS.md          context for AI coding tools (read by Claude Code and Codex)
 ```
 
