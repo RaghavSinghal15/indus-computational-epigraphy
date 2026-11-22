@@ -15,12 +15,16 @@ Course project (AI, BITS Pilani Goa): structural analysis of the undeciphered In
 ## Rules that matter
 
 1. **Orientation.** Raw files store signs left to right as seen on the seal. The script reads right to left. Always load sequences with `indus.data.load_sequences()` (reading order by default). Never parse `data/raw/icit_1837_sequences.csv` directly.
-2. **Numbering schemes are not interchangeable.** Sequences use Wells numbers. IM77 tables and sign templates use Mahadevan numbers (1 to 417). Convert only through `indus.data.wells_to_mahadevan()`. Never compare raw IDs across schemes.
-3. **Never modify `data/raw/`.** Write derived data to `data/processed/`.
+2. **Numbering schemes are not interchangeable.** Sequences use Wells numbers. IM77 tables and sign templates use Mahadevan numbers (1 to 417). Convert only through `indus.data.wells_to_mahadevan()`. Never compare raw IDs across schemes. **From v2 on, M1 predicts Wells IDs** (see `docs/ROADMAP.md`); v1 (Mahadevan) results are kept for comparison only.
+3. **Never modify `data/raw/`.** Write derived data to `data/processed/`. Files from Lipi (no licence) are downloaded by `scripts/fetch_lipi.py` into `data/external/` and are never committed.
 4. **Run `pytest` after touching data code.** The tests encode known facts about the data. A failing test means the data or loader is wrong.
 5. **Every result needs a sanity check** against something known: a published number, a hand count on a few rows, or the jar sign (Wells 740 / Mahadevan 342), which should appear mostly at the END of texts in reading order.
 6. **Reusable code goes in `src/indus/`**, exploration in `notebooks/`. Notebooks import from `indus`, not the other way round.
 7. Fix random seeds and use a single fixed train/test split for anything evaluated.
+
+## Where things stand
+
+`docs/ROADMAP.md` has the current plan, the decisions behind it and the issue order. Work is tracked as GitHub issues (labels P0/P1/P2). Read the issue you are working on before writing code.
 
 ## Reference numbers
 
