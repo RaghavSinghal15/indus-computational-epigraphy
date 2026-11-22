@@ -191,3 +191,49 @@ def load_lipi_seals() -> pd.DataFrame:
     df["image"] = df.image_file.map(lambda f: str(LIPI_DIR / "seal_images" / f))
     df["in_v1"] = df.cisi.isin(set(load_labelled_seals().cisi_label))
     return df
+
+
+# ---------------------------------------------------------------- hand-drawn sign boxes (#23)
+
+BOXES_DIR = RAW / "sign_boxes"
+
+
+def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int, int, int]]:
+    """Boxes from one YOLO label file as pixel (x0, y0, x1, y1), sorted left to right.
+
+    YOLO lines are 'class x_centre y_centre box_width box_height', all as fractions of the image size.
+    """
+    boxes = []
+    for line in path.read_text().split("\n"):
+        parts = line.split()
+        if len(parts) != 5:
+            continue
+        cx, cy, w, h = (float(v) for v in parts[1:])
+        boxes.append((round((cx - w / 2) * width), round((cy - h / 2) * height),
+                      round((cx + w / 2) * width), round((cy + h / 2) * height)))
+    return sorted(boxes, key=lambda b: (b[0] + b[2]) / 2)
+
+
+def load_sign_boxes() -> pd.DataFrame:
+    """One row per hand-boxed sign: cisi, batch, image, pos_ltr, wells, x0, y0, x1, y1 (pixels).
+
+    Labels come from the seal's known sequence: boxes sorted left to right get signs_ltr in order.
+    Seals whose box count differs from their sequence length are left out (check_boxes.py lists them).
+    """
+    from PIL import Image
+    seals = load_lipi_seals().set_index("cisi")
+    batches = pd.read_csv(BOXES_DIR / "batches.csv")
+    rows = []
+    for _, b in batches.iterrows():
+        label = BOXES_DIR / f"batch_{b.batch:02d}" / (Path(b.image_file).stem + ".txt")
+        if not label.exists() or b.cisi not in seals.index:
+            continue
+        seal = seals.loc[b.cisi]
+        w, h = Image.open(seal.image).size
+        boxes = read_yolo_boxes(label, w, h)
+        if len(boxes) != len(seal.signs_ltr):
+            continue
+        for i, (box, sign) in enumerate(zip(boxes, seal.signs_ltr)):
+            rows.append({"cisi": b.cisi, "batch": b.batch, "image": seal.image, "pos_ltr": i, "wells": sign,
+                         "x0": box[0], "y0": box[1], "x1": box[2], "y1": box[3]})
+    return pd.DataFrame(rows)
