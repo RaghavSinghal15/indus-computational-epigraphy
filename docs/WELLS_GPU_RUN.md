@@ -47,4 +47,11 @@ Copy the contents of `data/processed/wells_runs/` to approved persistent storage
 | #40 crop protocol | On the #40 branch, run `python -u scripts/m1_dixit_protocol.py /path/to/crops_v2.npz --init /path/to/wells_renders.pt --epochs 15 --device cuda`. Each protocol needs its own fit, so use the render-only weights here. |
 | #36 detector | The detector has a separate training job once the reviewed boxes and compositor outputs are available. Reuse `wells_all.pt` for its detect-then-classify evaluation. |
 
-Use the same pinned Lipi source in each checkout so the Wells vocabulary is available. The exported test JSON includes top-1, top-5, and frequency bins. For the v1 comparison, report the actual shared seal coverage shown in that JSON; an intersection of seal IDs can still have different sign annotations. The CNN runner supplies the weights and diagnostics for #30. The train-only Wells context decoder and matched v1/v2 comparison still need their own measurements.
+Use the same pinned Lipi source in each checkout so the Wells vocabulary is available. The exported test JSON includes top-1, top-5, and frequency bins. For the v1 comparison, report the actual shared seal coverage shown in that JSON; an intersection of seal IDs can still have different sign annotations. The CNN runner supplies the weights and diagnostics for #30. Evaluate context decoding after the all-site fit:
+
+```bash
+python scripts/eval_wells_context.py data/processed/wells_runs/wells_all.pt \
+  --output reports/m1_v2.md
+```
+
+The decoder fits the ICIT bigram prior after excluding held-out seal IDs and their exact sequences, then selects its weight on validation. CPU inference is sufficient for this step. A strictly matched v1 comparison also needs v1 predictions for the overlapping seal IDs and a check that the labels align under the two sign inventories.
