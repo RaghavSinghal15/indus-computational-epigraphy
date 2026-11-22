@@ -49,7 +49,13 @@ def to_ttf(woff2: Path) -> Path:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--clone", type=Path, help="local clone of yajnadevam/lipi at the pinned commit")
+    ap.add_argument("--corpus-only", action="store_true", help="download only the inscription CSV")
     args = ap.parse_args()
+    if args.corpus_only:
+        repo_path = "src/assets/data/inscriptions.csv"
+        get(repo_path, LIPI_DIR / FILES[repo_path], args.clone)
+        print(LIPI_DIR / FILES[repo_path])
+        return
 
     for repo_path, name in FILES.items():
         get(repo_path, LIPI_DIR / name, args.clone)

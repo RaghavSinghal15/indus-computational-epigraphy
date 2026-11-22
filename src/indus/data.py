@@ -144,13 +144,18 @@ def load_lipi_corpus() -> pd.DataFrame:
     return df
 
 
-def load_icit_full(order: str = "reading", unique: bool = True) -> list[list[int]]:
+def load_icit_full(order: str = "reading", unique: bool = True, *,
+                   site: str | None = None) -> list[list[int]]:
     """All clean ICIT texts (complete, legible, one line, 2+ signs, known direction), Wells IDs.
 
-    A superset of the 1,837-text benchmark from load_sequences(), for robustness checks.
+    Use site to select an exact site name before filtering and deduplication.
     unique=True keeps one copy of each distinct sequence, like the benchmark.
     """
     df = load_lipi_corpus()
+    if site is not None:
+        df = df[df["site"].str.strip() == site]
+        if df.empty:
+            raise ValueError(f"Unknown ICIT site: {site!r}")
     ok = df[df.signs_ltr.notna() & (df.complete == "Y") & df.direction.isin(["R/L", "L/R"])]
     texts = [s for s in ok.signs_ltr if len(s) >= 2]
     if unique:
