@@ -53,3 +53,12 @@ def test_lipi_labels_agree_with_our_im77_labels():
                 total += 1
                 agree += m in w2m[w]
     assert total > 1000 and agree / total > 0.95
+
+
+def test_font_has_a_drawing_for_every_corpus_sign():
+    from indus.glyphs import glyph, wells_codes
+    codes = set(wells_codes())
+    used = {s for t in load_icit_full() for s in t}
+    assert used <= codes
+    jar = glyph(740, 64)
+    assert jar.shape == (64, 64) and (jar < 128).mean() > 0.03   # some ink, on white
