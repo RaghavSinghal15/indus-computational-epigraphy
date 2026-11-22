@@ -232,3 +232,19 @@ def draw_boxes(image: np.ndarray, boxes: list[Box]) -> np.ndarray:
         cv2.putText(out, str(i), (b.x0 + 3, b.y0 + 3 + 12 * thickness),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.4 * thickness, (0, 255, 0), thickness)
     return out
+
+
+def trim_caption(image: np.ndarray, white: int = 225, solid: float = 0.5, run: int = 8) -> np.ndarray:
+    """Cut off the white caption strip under a CISI photo (e.g. "M-58 a" in Lipi's images).
+
+    Scans up from the bottom for the first run of `run` rows that are mostly
+    non-white (the seal itself) and drops everything below it.
+    """
+    gray = image if image.ndim == 2 else cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    nonwhite = (gray < white).mean(axis=1)            # share of non-white pixels in each row
+    streak = 0
+    for y in range(len(nonwhite) - 1, -1, -1):
+        streak = streak + 1 if nonwhite[y] > solid else 0
+        if streak >= run:
+            return image[: min(len(nonwhite), y + run)]
+    return image
