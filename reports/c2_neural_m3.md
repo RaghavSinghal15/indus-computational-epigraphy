@@ -20,6 +20,8 @@ Training selected 50 epochs from up to 50 using 147 validation texts drawn from 
 
 Reproduce with `python scripts/c2_masked_transformer.py --epochs 50 --seed 0 --threads 2 --device cpu`.
 
+A [follow-up n-gram sweep](c2_ngram_order_sweep.md) tested orders 1 through 14. Three led on validation top-1 and top-5, and four showed a training gain with a validation drop.
+
 ## Colab architecture comparison
 
 Four bidirectional masked encoders ran with seeds 0, 1 and 2 on one Colab Tesla T4. The twelve trials took 254.2 seconds after corpus setup (PyTorch 2.14.1+cu130). The standalone runner downloads the [public PLOS supplement](https://doi.org/10.1371/journal.pone.0190735), verifies its archive and CSV hashes, and reconstructs the split above. The CSV matches the repository copy byte for byte.
