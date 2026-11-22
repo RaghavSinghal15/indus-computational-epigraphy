@@ -6,12 +6,14 @@ Both protocols use the same 2,212 eligible Mohenjo-daro crops (of 2,875 before e
 
 | Split | Target labels | Train / val / test crops | Test crops from train seals | Test classes | Test targets seen in train | Frequency top 1 | CNN top 1 | CNN top 5 |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| Fixed seal split | Full Wells IDs | 1531 / 212 / 469 | 0.0% | 118 | 95.1% | 14.1% | 16.4% | 33.0% |
-| Fixed seal split | 38 listed codes + Other | 1531 / 212 / 469 | 0.0% | 26 | 100.0% | 49.9% | 49.9% | 76.3% |
-| Random crop split | Full Wells IDs | 1531 / 212 / 469 | 94.5% | 109 | 95.7% | 12.6% | 13.6% | 30.5% |
-| Random crop split | 38 listed codes + Other | 1531 / 212 / 469 | 94.5% | 27 | 100.0% | 49.7% | 52.0% | 76.1% |
+| Fixed seal split | Full Wells IDs | 1531 / 212 / 469 | 0.0% | 118 | 95.1% | 14.1% | 35.0% | 54.4% |
+| Fixed seal split | 38 listed codes + Other | 1531 / 212 / 469 | 0.0% | 26 | 100.0% | 49.9% | 62.5% | 88.3% |
+| Random crop split | Full Wells IDs | 1531 / 212 / 469 | 94.5% | 109 | 95.7% | 12.6% | 33.5% | 52.0% |
+| Random crop split | 38 listed codes + Other | 1531 / 212 / 469 | 94.5% | 27 | 100.0% | 49.7% | 61.4% | 87.2% |
 
 Random crop splits deliberately allow different positions on one seal to appear in train and test. Both splits use the same partition sizes. Frequency top 1 always picks the most common training label. A change in these scores measures a protocol effect on our forced-cut crop pool. The published study used different images, class balance, cropping, and a different model, so matching its published accuracy is a separate question.
 
-From-scratch CNN pilot, 2 epochs, seed 0 and device cpu.
+Render-pretrained backbone with fresh classification heads, 15 epochs, seed 0 and device cuda.
 Use --init with a render-only v2 checkpoint to repeat the comparison with pretrained features. Separate fits per split keep crop-level test examples out of their respective training runs.
+
+Top-1 rose from 35.0% to 62.5% on the fixed seal split when the labels were collapsed, with a 49.9% frequency baseline in the collapsed task. The random crop split shared seals with training for 94.5% of test crops and did not improve top-1 in this run. The audit measures protocol sensitivity on our forced-cut pool. Differences in label balance, source images, annotations, and architecture remain unresolved in any comparison with the published score.
