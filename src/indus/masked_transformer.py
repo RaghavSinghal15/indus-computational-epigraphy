@@ -10,16 +10,16 @@ from torch import nn
 class MaskedTransformer(nn.Module):
     """Encode the inscription in both directions and classify its one masked position."""
 
-    def __init__(self, n_signs, max_length, width=64):
+    def __init__(self, n_signs, max_length, width=64, layers=2, heads=4):
         super().__init__()
         self.unknown = n_signs
         self.mask = n_signs + 1
         self.pad = n_signs + 2
         self.tokens = nn.Embedding(n_signs + 3, width, padding_idx=self.pad)
         self.positions = nn.Embedding(max_length, width)
-        layer = nn.TransformerEncoderLayer(width, nhead=4, dim_feedforward=128, dropout=0.15,
+        layer = nn.TransformerEncoderLayer(width, nhead=heads, dim_feedforward=2 * width, dropout=0.15,
                                            batch_first=True, norm_first=True)
-        self.encoder = nn.TransformerEncoder(layer, num_layers=2, norm=nn.LayerNorm(width),
+        self.encoder = nn.TransformerEncoder(layer, num_layers=layers, norm=nn.LayerNorm(width),
                                              enable_nested_tensor=False)
         self.classifier = nn.Linear(width, n_signs + 1)
 

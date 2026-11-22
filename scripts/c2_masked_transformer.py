@@ -1,6 +1,8 @@
 """Compare a small masked transformer and n-grams on the fixed C1 split."""
 
 import argparse
+import json
+import time
 from pathlib import Path
 import random
 
@@ -48,11 +50,11 @@ def predict(model, examples):
     return np.concatenate([model(x, pos).cpu().numpy() for x, pos, _ in batches(examples, model)])
 
 
-def train_model(texts, lookup, max_length, epochs, seed, device, validation=None):
+def train_model(texts, lookup, max_length, epochs, seed, device, validation=None, architecture=None):
     unknown = len(lookup)
     rng = random.Random(seed)
     torch.manual_seed(seed)
-    model = MaskedTransformer(unknown, max_length).to(device)
+    model = MaskedTransformer(unknown, max_length, **(architecture or {})).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
     criterion = nn.CrossEntropyLoss(label_smoothing=0.05)
     best_epoch, best_loss, stale = epochs, float("inf"), 0
@@ -86,6 +88,10 @@ def train_model(texts, lookup, max_length, epochs, seed, device, validation=None
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--epochs", type=int, default=50)
+    parser.add_argument("--width", type=int, default=64)
+    parser.add_argument("--layers", type=int, default=2)
+    parser.add_argument("--heads", type=int, default=4)
+    parser.add_argument("--summary", type=Path, help="optional JSON metrics and architecture")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--device", default="cpu", choices=("cpu", "cuda"))
     parser.add_argument("--threads", type=int, default=2)
@@ -93,7 +99,13 @@ def main():
     args = parser.parse_args()
     if args.epochs < 1 or args.threads < 1:
         parser.error("--epochs and --threads must be positive")
+    if min(args.width, args.layers, args.heads) < 1 or args.width % args.heads:
+        parser.error("width must be a positive multiple of heads; layers must be positive")
+    if args.device == "cuda" and not torch.cuda.is_available():
+        parser.error("CUDA is unavailable")
+    architecture = dict(width=args.width, layers=args.layers, heads=args.heads)
     torch.set_num_threads(args.threads)
+    started = time.perf_counter()
 
     # C1's held-out texts stay sealed until the epoch is selected and the model is refitted.
     train, test = split(load_sequences())
@@ -105,8 +117,8 @@ def main():
     tuning = [train[i] for i in tuning_indices[:split_at]]
     validation = [train[i] for i in tuning_indices[split_at:]]
     tune_lookup = NGramModel().fit(tuning).index
-    _, epochs = train_model(tuning, tune_lookup, max_length, args.epochs, args.seed, args.device, validation)
-    model, _ = train_model(train, ngram.index, max_length, epochs, args.seed, args.device)
+    _, epochs = train_model(tuning, tune_lookup, max_length, args.epochs, args.seed, args.device, validation, architecture=architecture)
+    model, _ = train_model(train, ngram.index, max_length, epochs, args.seed, args.device, architecture=architecture)
 
     assert max(map(len, test)) <= max_length
     examples = list(encode_examples(test, ngram.index, ngram.UNK))
@@ -144,7 +156,8 @@ def main():
         "The bigram scores both neighbouring factors; the trigram scores up to three factors affected by the mask "
         "and interpolates with the bigram. Both estimate all counts on training texts.",
         "",
-        f"The transformer uses two layers, width 64, four heads, 128 feed-forward units, dropout 0.15 and "
+        f"The transformer uses {args.layers} layers, width {args.width}, {args.heads} heads, "
+        f"{2 * args.width} feed-forward units, dropout 0.15 and "
         f"{sum(p.numel() for p in model.parameters()):,} parameters. It masks one random sign per training text "
         "per epoch, drops 3% of context signs to UNKNOWN to handle unseen inputs, and uses AdamW, batch size 64, "
         "learning rate 0.001 and label smoothing 0.05.",
@@ -154,9 +167,17 @@ def main():
         f"from scratch on all training texts. Seed {args.seed}, device {args.device}, PyTorch {torch.__version__}.",
         "",
         f"Reproduce with `python scripts/c2_masked_transformer.py --epochs {args.epochs} --seed {args.seed} "
+        f"--width {args.width} --layers {args.layers} --heads {args.heads} "
         f"--threads {args.threads} --device {args.device}`.",
     ]
     args.output.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    if args.summary:
+        args.summary.write_text(json.dumps({
+            "seed": args.seed, "parameters": sum(p.numel() for p in model.parameters()),
+            "epochs": epochs, "architecture": architecture, "torch": str(torch.__version__),
+            "device": torch.cuda.get_device_name() if args.device == "cuda" else args.device,
+            "wall_seconds": time.perf_counter() - started, "metrics": results,
+        }, indent=2) + "\n", encoding="utf-8")
     print(args.output)
 
 
