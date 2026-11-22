@@ -107,12 +107,23 @@ def main():
     v2_rows = seal_rows(updated, crops, np.isin(crops["seal"], list(aligned)), codes)
 
     totals = np.zeros((4, 2), dtype=int)
-    for code, positions in aligned.items():
+    full_legacy = np.zeros((2, 2), dtype=int)
+    full_count = 0
+    for code in sorted(old_test):
         row = legacy.loc[code]
         signs = row.signs_reading
         raw_v1 = view_log_probs([original], row.impression_photo, len(signs), "equal", False, False)
         # Legacy A6 applies its Markov model in visual order.
         context_v1 = posteriors(raw_v1[::-1], v1_transition, v1_start, 0.5, v1_end)[::-1]
+        scorable = [i for i, sign in enumerate(signs) if sign != "0" and not sign.startswith("*")]
+        truth = np.array([int(signs[i]) - 1 for i in scorable])
+        full_count += len(scorable)
+        full_legacy[0] += count_hits(raw_v1[scorable], truth)
+        full_legacy[1] += count_hits(context_v1[scorable], truth)
+
+        positions = aligned.get(code)
+        if positions is None:
+            continue
         old_target = np.array([int(signs[i]) - 1 for i in positions])
         raw_v2, new_target = v2_rows[code]
         assert tuple(codes[i] for i in new_target) == tuple(wells.at[code, "signs_reading"])
@@ -132,6 +143,12 @@ def main():
              "| Reader | Top-1 | Top-5 |", "| --- | ---: | ---: |"]
     for name, (top1, top5) in zip(("V1 CNN", "V1 CNN + IM77 prior", "V2 CNN", "V2 CNN + ICIT prior"), totals):
         lines.append(f"| {name} | {top1}/{n} ({top1/n:.1%}) | {top5}/{n} ({top5/n:.1%}) |")
+    lines += ["", "### Full legacy test split", "",
+              f"The legacy-only evaluation covers {len(old_test)} seals and {full_count} scorable signs.",
+              "", "| Reader | Top-1 | Top-5 |", "| --- | ---: | ---: |"]
+    for name, (top1, top5) in zip(("V1 CNN", "V1 CNN + IM77 prior"), full_legacy):
+        lines.append(f"| {name} | {top1}/{full_count} ({top1/full_count:.1%}) | "
+                     f"{top5}/{full_count} ({top5/full_count:.1%}) |")
     args.output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(args.output.read_text())
 
