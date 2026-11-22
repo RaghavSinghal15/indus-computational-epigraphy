@@ -17,3 +17,7 @@ pytest>=8.0
 
 # Our own code, installed in editable mode so `import indus` works everywhere
 -e .
+
+# Lipi download (scripts/fetch_lipi.py): reads the woff2 sign font
+fonttools>=4.47
+brotli>=1.1

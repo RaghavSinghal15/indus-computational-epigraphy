@@ -31,6 +31,10 @@ MAPPING_FILE = RAW / "sign_mapping_parpola_wells_mahadevan.csv"
 TEMPLATES_DIR = RAW / "sign_templates"
 CISI_DIR = RAW / "cisi_seals"
 
+# Lipi: full ICIT corpus + CISI photos, downloaded by scripts/fetch_lipi.py (never committed)
+LIPI_COMMIT = "fc8813a52e183d19c441631dc26c33a4dccbea39"
+LIPI_DIR = REPO_ROOT / "data" / "external" / "lipi"
+
 
 def load_sequences(order: str = "reading") -> list[list[int]]:
     """The 1,837 ICIT inscriptions as lists of Wells sign numbers.
@@ -102,4 +106,88 @@ def load_labelled_seals() -> pd.DataFrame:
     df["signs_ltr"] = df["signs_impression_left_to_right"].str.split()
     for col in ("impression_photo", "seal_photo"):
         df[col] = df[col].map(lambda p: str(CISI_DIR / p) if p else "")
+    return df
+
+
+# ---------------------------------------------------------------- Lipi / full ICIT corpus
+#
+# Lipi's inscriptions.csv is Fuls's Corpus of Indus Inscriptions (ICIT database).
+# Text codes look like "+740-460-503-002-817+": Wells numbers in VISUAL order, left
+# to right, normalised so that every text reads right to left (Fuls 2022, ch. 3).
+# "000" = illegible sign, "999" = blank space, "/" = next line, "[" or "]" = the
+# text may continue past that end. Its Sanskrit/translation columns are one
+# author's proposed decipherment; we never use them.
+
+_LIPI_TEXT = r"\+\d{3}(?:-\d{3})*\+"   # complete single-line text, nothing doubtful
+
+
+def _parse_lipi_text(text) -> list[int] | None:
+    """Wells IDs, left to right, for a clean complete single-line text; None otherwise."""
+    import re
+    if not isinstance(text, str) or not re.fullmatch(_LIPI_TEXT, text.strip()):
+        return None
+    signs = [int(s) for s in text.strip().strip("+").split("-")]
+    if 0 in signs or 999 in signs:
+        return None
+    return signs
+
+
+def load_lipi_corpus() -> pd.DataFrame:
+    """Every row of Lipi's inscriptions.csv, plus 'signs_ltr' (list of Wells IDs, or None if not clean)."""
+    path = LIPI_DIR / "inscriptions.csv"
+    if not path.exists():
+        raise FileNotFoundError(f"{path} missing: run python scripts/fetch_lipi.py")
+    df = pd.read_csv(path, dtype=str)
+    df.columns = [c.strip() for c in df.columns]
+    df["direction"] = df["dir."].fillna("").str.strip()
+    df["signs_ltr"] = df["text"].map(_parse_lipi_text)
+    return df
+
+
+def load_icit_full(order: str = "reading", unique: bool = True) -> list[list[int]]:
+    """All clean ICIT texts (complete, legible, one line, 2+ signs, known direction), Wells IDs.
+
+    A superset of the 1,837-text benchmark from load_sequences(), for robustness checks.
+    unique=True keeps one copy of each distinct sequence, like the benchmark.
+    """
+    df = load_lipi_corpus()
+    ok = df[df.signs_ltr.notna() & (df.complete == "Y") & df.direction.isin(["R/L", "L/R"])]
+    texts = [s for s in ok.signs_ltr if len(s) >= 2]
+    if unique:
+        texts = [list(t) for t in dict.fromkeys(tuple(t) for t in texts)]
+    if order == "reading":
+        texts = [t[::-1] for t in texts]
+    elif order != "visual":
+        raise ValueError("order must be 'reading' or 'visual'")
+    return texts
+
+
+def lipi_usable_seals(check_images: bool = True) -> pd.DataFrame:
+    """Seals usable for M1: one object, one complete legible right-to-left text, an impression photo.
+
+    Columns: cisi, icit_id, site, type, image_file (first impression photo),
+    signs_ltr / signs_reading (Wells IDs), n_signs.
+    """
+    import json
+    df = load_lipi_corpus()
+    images = json.loads((LIPI_DIR / "seal_id_and_image_mapping.json").read_text())
+    df["cisi"] = df["cisi"].fillna("").str.strip()
+    one_row = df["cisi"].map(df["cisi"].value_counts()) == 1     # no multi-text objects
+    ok = df[df["type"].fillna("").str.startswith("SEAL") & one_row & (df.cisi != "-")
+            & df.signs_ltr.notna() & (df.complete == "Y") & (df.sides == "1") & (df.direction == "R/L")].copy()
+    ok["image_file"] = ok.cisi.map(lambda c: next((f for f in images.get(c, []) if "imp" in f.lower()), None))
+    ok = ok[ok.image_file.notna()]
+    if check_images:
+        ok = ok[ok.image_file.map(lambda f: (LIPI_DIR / "seal_images" / f).exists())]
+    ok["signs_reading"] = ok.signs_ltr.map(lambda s: s[::-1])
+    ok["n_signs"] = ok.signs_ltr.map(len)
+    ok = ok.rename(columns={"id": "icit_id"})
+    return ok[["cisi", "icit_id", "site", "type", "image_file", "signs_ltr", "signs_reading", "n_signs"]].reset_index(drop=True)
+
+
+def load_lipi_seals() -> pd.DataFrame:
+    """lipi_usable_seals() with absolute image paths and 'in_v1' (True for our 328 first-phase seals)."""
+    df = lipi_usable_seals()
+    df["image"] = df.image_file.map(lambda f: str(LIPI_DIR / "seal_images" / f))
+    df["in_v1"] = df.cisi.isin(set(load_labelled_seals().cisi_label))
     return df
