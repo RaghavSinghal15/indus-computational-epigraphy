@@ -216,7 +216,7 @@ def main():
             lines += split_report(label, by_split[part])
     lines += [
         "## Reproduce", "",
-        "Fetch Lipi and supply the reviewed batch folders. For the 28-seal validation run, the labels are in "
+        "Fetch Lipi and supply the reviewed batch folders. The Batch 1 labels are in "
         "[PR #62](https://github.com/RaghavSinghal15/indus-computational-epigraphy/pull/62).",
         "", "```bash",
         "python scripts/m1_segmentation.py --checkpoint /path/to/wells_all.pt --boxes-dir /path/to/data/raw/sign_boxes",
