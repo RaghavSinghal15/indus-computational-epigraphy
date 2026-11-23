@@ -21,22 +21,22 @@ Wells checkpoint SHA-256: `d5c3821a90e08ed27f0861770306e854ca7a7f58149219db417cc
 
 | Method | Mean IoU | IoU ≥ 0.50 | Cleanly covered signs | Exact count | Within one sign |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Forced cuts, true count supplied | 0.450 | 75/163 | 9/163 | 28/28 | 28/28 |
-| A7 count search, same Wells CNN | 0.293 | 48/163 | 2/163 | 2/28 | 10/28 |
+| Forced cuts, true count supplied | 0.445 | 75/163 | 9/163 | 28/28 | 28/28 |
+| A7 count search, same Wells CNN | 0.288 | 47/163 | 2/163 | 2/28 | 10/28 |
 
 A7's mean absolute count error was 2.25 signs per seal.
 
 | Crop source | Correct first guesses | Correct in first five |
 | --- | ---: | ---: |
 | Forced cuts | 53/163 | 73/163 |
-| Reviewed boxes | 87/163 | 129/163 |
+| Reviewed boxes | 86/163 | 128/163 |
 
 ### Counts by seal
 
 | Seal | True count | A7 count | Forced mean IoU | A7 mean IoU |
 | --- | ---: | ---: | ---: | ---: |
 | M-104 | 5 | 4 | 0.520 | 0.412 |
-| M-107 | 6 | 4 | 0.504 | 0.423 |
+| M-107 | 6 | 4 | 0.455 | 0.365 |
 | M-10 | 11 | 5 | 0.461 | 0.249 |
 | M-118 | 8 | 5 | 0.460 | 0.297 |
 | M-129 | 6 | 4 | 0.420 | 0.240 |
@@ -57,7 +57,7 @@ A7's mean absolute count error was 2.25 signs per seal.
 | M-38 | 13 | 6 | 0.286 | 0.141 |
 | M-390 | 5 | 3 | 0.737 | 0.338 |
 | M-404 | 2 | 3 | 0.700 | 0.745 |
-| M-43 | 6 | 4 | 0.662 | 0.412 |
+| M-43 | 6 | 4 | 0.549 | 0.339 |
 | M-50 | 9 | 4 | 0.324 | 0.141 |
 | M-70 | 5 | 4 | 0.381 | 0.464 |
 | M-72 | 7 | 5 | 0.193 | 0.132 |
@@ -68,15 +68,15 @@ A7's mean absolute count error was 2.25 signs per seal.
 
 | Method | Mean IoU | IoU ≥ 0.50 | Cleanly covered signs | Exact count | Within one sign |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Forced cuts, true count supplied | 0.456 | 151/322 | 21/322 | 64/64 | 64/64 |
-| A7 count search, same Wells CNN | 0.316 | 92/322 | 7/322 | 14/64 | 32/64 |
+| Forced cuts, true count supplied | 0.455 | 150/322 | 21/322 | 64/64 | 64/64 |
+| A7 count search, same Wells CNN | 0.314 | 90/322 | 7/322 | 14/64 | 32/64 |
 
 A7's mean absolute count error was 1.83 signs per seal.
 
 | Crop source | Correct first guesses | Correct in first five |
 | --- | ---: | ---: |
 | Forced cuts | 107/322 | 181/322 |
-| Reviewed boxes | 178/322 | 252/322 |
+| Reviewed boxes | 180/322 | 252/322 |
 
 ### Counts by seal
 
@@ -87,7 +87,7 @@ A7's mean absolute count error was 1.83 signs per seal.
 | M-131 | 6 | 4 | 0.680 | 0.397 |
 | M-132 | 3 | 3 | 0.718 | 0.631 |
 | M-135 | 4 | 3 | 0.497 | 0.443 |
-| M-140 | 7 | 4 | 0.345 | 0.204 |
+| M-140 | 7 | 4 | 0.338 | 0.217 |
 | M-145 | 4 | 4 | 0.392 | 0.431 |
 | M-146 | 5 | 5 | 0.185 | 0.246 |
 | M-148 | 3 | 4 | 0.450 | 0.505 |
@@ -112,9 +112,9 @@ A7's mean absolute count error was 1.83 signs per seal.
 | M-238 | 3 | 5 | 0.295 | 0.198 |
 | M-241 | 7 | 4 | 0.587 | 0.323 |
 | M-242 | 5 | 5 | 0.450 | 0.320 |
-| M-252 | 7 | 5 | 0.506 | 0.335 |
+| M-252 | 7 | 5 | 0.490 | 0.311 |
 | M-255 | 3 | 5 | 0.194 | 0.100 |
-| M-257 | 4 | 3 | 0.486 | 0.410 |
+| M-257 | 4 | 3 | 0.430 | 0.340 |
 | M-259 | 4 | 3 | 0.304 | 0.252 |
 | M-263 | 6 | 4 | 0.378 | 0.274 |
 | M-264 | 2 | 5 | 0.176 | 0.304 |
@@ -132,7 +132,7 @@ A7's mean absolute count error was 1.83 signs per seal.
 | M-411 | 7 | 3 | 0.458 | 0.161 |
 | M-412 | 5 | 2 | 0.495 | 0.157 |
 | M-51 | 8 | 6 | 0.330 | 0.289 |
-| M-53 | 9 | 3 | 0.051 | 0.074 |
+| M-53 | 9 | 3 | 0.051 | 0.072 |
 | M-54 | 7 | 5 | 0.339 | 0.206 |
 | M-58 | 5 | 5 | 0.550 | 0.494 |
 | M-64 | 6 | 5 | 0.374 | 0.254 |
