@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
 
-from indus.data import BOXES_DIR, REPO_ROOT, load_lipi_seals, read_yolo_boxes
+from indus.data import BOXES_DIR, REPO_ROOT, load_lipi_seals, photo_signs_ltr, read_yolo_boxes
 from indus.glyphs import glyph
 
 
@@ -51,7 +51,7 @@ def check(batch: int, show: bool) -> int:
         else:
             ok += 1
         if show:
-            draw_check(img, boxes, seal.signs_ltr, out / f"{row.cisi}.png")
+            draw_check(img, boxes, photo_signs_ltr(seal), out / f"{row.cisi}.png")
     print(f"batch {batch}: {ok} seals fine, {problems} to fix" + (f"; pictures in {out}" if show else ""))
     return problems
 

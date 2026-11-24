@@ -14,7 +14,7 @@ import pandas as pd
 
 from PIL import Image
 
-from indus.data import CISI_DIR, REPO_ROOT, load_lipi_seals
+from indus.data import CISI_DIR, REPO_ROOT, load_lipi_seals, photo_signs_ltr
 from indus.glyphs import strip
 
 BATCHES = REPO_ROOT / "data" / "raw" / "sign_boxes" / "batches.csv"
@@ -56,7 +56,7 @@ def save_guide(seal, path) -> None:
     """Photo above the expected signs, left to right, so annotators know how many boxes to draw."""
     photo = Image.open(seal.image).convert("L")
     photo.thumbnail((480, 480))
-    glyphs = Image.fromarray(strip(seal.signs_ltr, 56))
+    glyphs = Image.fromarray(strip(photo_signs_ltr(seal), 56))
     glyphs.thumbnail((photo.width, 56))
     sheet = Image.new("L", (max(photo.width, glyphs.width), photo.height + glyphs.height + 10), 255)
     sheet.paste(photo, (0, 0))
