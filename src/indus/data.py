@@ -200,9 +200,9 @@ BOXES_DIR = RAW / "sign_boxes"
 
 def photo_signs_ltr(seal) -> list[int]:
     """Return Wells IDs from left to right in this specific impression photograph."""
-    # Lipi transcribes L-58 as +740-550+, but this scan shows 550 on the left
-    # and the distinctive 740 jar on the right. Keep the catalogue order intact.
-    if seal.image_file == "L-58_imp_a.jpg":
+    # Both photos show the opposite of the catalogue order: L-58 is 550, 740
+    # and M-657 is 240, 520. Match by filename because another view may differ.
+    if seal.image_file in {"L-58_imp_a.jpg", "M-657_imp_a.jpg"}:
         return seal.signs_ltr[::-1]
     return seal.signs_ltr
 
@@ -226,7 +226,7 @@ def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int,
 def load_sign_boxes() -> pd.DataFrame:
     """One row per hand-boxed sign: cisi, batch, image, pos_ltr, wells, x0, y0, x1, y1 (pixels).
 
-    Labels come from the seal's known sequence: boxes sorted left to right get signs_ltr in order.
+    Boxes are sorted left to right and paired with Wells IDs in the photo's order.
     Seals whose box count differs from their sequence length are left out (check_boxes.py lists them).
     """
     from PIL import Image

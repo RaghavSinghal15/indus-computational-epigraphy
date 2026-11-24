@@ -1,13 +1,23 @@
 """Sign-box helpers (#23)."""
 from types import SimpleNamespace
 
+import pytest
+
 from indus.data import photo_signs_ltr, read_yolo_boxes
 
 
-def test_l58_photo_has_jar_on_right():
-    seal = SimpleNamespace(image_file="L-58_imp_a.jpg", signs_ltr=[740, 550])
-    assert photo_signs_ltr(seal) == [550, 740]
-    assert seal.signs_ltr == [740, 550]
+@pytest.mark.parametrize(
+    ("image_file", "catalogue_order", "photo_order"),
+    [
+        ("L-58_imp_a.jpg", [740, 550], [550, 740]),
+        ("M-657_imp_a.jpg", [520, 240], [240, 520]),
+        ("M-657_alternate.jpg", [520, 240], [520, 240]),
+    ],
+)
+def test_photo_sign_order_is_specific_to_the_image(image_file, catalogue_order, photo_order):
+    seal = SimpleNamespace(image_file=image_file, signs_ltr=catalogue_order.copy())
+    assert photo_signs_ltr(seal) == photo_order
+    assert seal.signs_ltr == catalogue_order
 
 
 def test_yolo_boxes_become_pixels_sorted_left_to_right(tmp_path):
