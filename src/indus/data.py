@@ -198,11 +198,33 @@ def load_lipi_seals() -> pd.DataFrame:
 BOXES_DIR = RAW / "sign_boxes"
 
 
+def box_photo_overrides(batch: int) -> dict[str, str]:
+    """Return the alternate photo filename explicitly recorded for each seal."""
+    path = BOXES_DIR / f"batch_{batch:02d}" / "photo_overrides.csv"
+    if not path.exists():
+        return {}
+    with path.open(newline="") as stream:
+        return {row["cisi"]: row["image_file"] for row in csv.DictReader(stream)}
+
+
+def box_photo(seal: pd.Series, image_file: str | None) -> pd.Series:
+    """Use the exact view annotated in the label export."""
+    if image_file is None:
+        return seal
+    image = LIPI_DIR / "seal_images" / image_file
+    if not image.is_file():
+        raise FileNotFoundError(f"{image} missing: run python scripts/fetch_box_photos.py")
+    photo = seal.copy()
+    photo["image_file"] = image_file
+    photo["image"] = str(image)
+    return photo
+
+
 def photo_signs_ltr(seal) -> list[int]:
     """Return Wells IDs from left to right in this specific impression photograph."""
-    # Both photos show the opposite of the catalogue order: L-58 is 550, 740
-    # and M-657 is 240, 520. Match by filename because another view may differ.
-    if seal.image_file in {"L-58_imp_a.jpg", "M-657_imp_a.jpg"}:
+    # The photos show L-16 as 4, 154; L-58 as 550, 740; and M-657 as 240, 520.
+    # Match by filename because a different view may have a different order.
+    if seal.image_file in {"L-16_imp_a.jpg", "L-58_imp_a.jpg", "M-657_imp_a.jpg"}:
         return seal.signs_ltr[::-1]
     return seal.signs_ltr
 
@@ -232,13 +254,16 @@ def load_sign_boxes() -> pd.DataFrame:
     from PIL import Image
     seals = load_lipi_seals().set_index("cisi")
     batches = pd.read_csv(BOXES_DIR / "batches.csv")
+    overrides = {batch: box_photo_overrides(batch) for batch in batches.batch.unique()}
     rows = []
     for _, b in batches.iterrows():
-        label = BOXES_DIR / f"batch_{b.batch:02d}" / (Path(b.image_file).stem + ".txt")
+        alternate = overrides[b.batch].get(b.cisi)
+        label = BOXES_DIR / f"batch_{b.batch:02d}" / (Path(alternate or b.image_file).stem + ".txt")
         if not label.exists() or b.cisi not in seals.index:
             continue
-        seal = seals.loc[b.cisi]
-        w, h = Image.open(seal.image).size
+        seal = box_photo(seals.loc[b.cisi], alternate)
+        with Image.open(seal.image) as image:
+            w, h = image.size
         boxes = read_yolo_boxes(label, w, h)
         if len(boxes) != len(seal.signs_ltr):
             continue
