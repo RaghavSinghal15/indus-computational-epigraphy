@@ -14,7 +14,8 @@ import pandas as pd
 
 from PIL import Image
 
-from indus.data import CISI_DIR, REPO_ROOT, load_lipi_seals, photo_signs_ltr
+from indus.data import (CISI_DIR, REPO_ROOT, box_photo, box_photo_overrides,
+                        load_lipi_seals, photo_signs_ltr)
 from indus.glyphs import strip
 
 BATCHES = REPO_ROOT / "data" / "raw" / "sign_boxes" / "batches.csv"
@@ -44,9 +45,10 @@ def copy_batch(n: int) -> None:
     dest = OUT / f"batch_{n:02d}"
     dest.mkdir(parents=True, exist_ok=True)
     rows = batches[batches.batch == n]
+    overrides = box_photo_overrides(n)
     (dest / "guide").mkdir(exist_ok=True)
     for cisi in rows.cisi:
-        seal = seals.loc[cisi]
+        seal = box_photo(seals.loc[cisi], overrides.get(cisi))
         shutil.copy(seal.image, dest)
         save_guide(seal, dest / "guide" / f"{cisi}_guide.png")
     print(f"{len(rows)} photos ({rows.n_signs.sum()} signs) in {dest}; expected signs per seal in {dest / 'guide'}")
