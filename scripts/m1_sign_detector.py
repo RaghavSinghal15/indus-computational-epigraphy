@@ -173,6 +173,7 @@ def main():
     train.add_argument("--epochs", type=int, default=50)
     train.add_argument("--device", default="cpu")
     train.add_argument("--initial", default="yolov8n.pt")
+    train.add_argument("--imgsz", type=int, default=640, help="320 is enough for CISI photos and runs on a CPU")
     evaluate_parser = sub.add_parser("evaluate")
     evaluate_parser.add_argument("checkpoint", type=Path)
     evaluate_parser.add_argument("--device", default="cpu")
@@ -191,7 +192,7 @@ def main():
 
     if args.command == "train":
         model = YOLO(args.initial)
-        model.train(data=str(root / "signs.yaml"), epochs=args.epochs, imgsz=640, seed=0, fliplr=0.0,
+        model.train(data=str(root / "signs.yaml"), epochs=args.epochs, imgsz=args.imgsz, seed=0, fliplr=0.0,
                     device=args.device, workers=0, project=str(root / "runs"), name="yolov8n")
     else:
         if not 0 <= args.confidence <= 1:

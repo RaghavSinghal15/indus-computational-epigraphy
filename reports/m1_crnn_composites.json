@@ -1,0 +1,48 @@
+{
+  "test": {
+    "Crop CNN, given count": {
+      "seals": 141,
+      "signs": 686,
+      "sign_error_rate": 0.6807580174927114,
+      "exact": 0.02127659574468085,
+      "count_accuracy": 1.0
+    },
+    "Crop CNN, estimated count": {
+      "seals": 141,
+      "signs": 686,
+      "sign_error_rate": 1.1384839650145773,
+      "exact": 0.014184397163120567,
+      "count_accuracy": 0.16312056737588654
+    },
+    "Whole-band CRNN + CTC": {
+      "seals": 141,
+      "signs": 686,
+      "sign_error_rate": 0.543731778425656,
+      "exact": 0.03546099290780142,
+      "count_accuracy": 0.2907801418439716
+    }
+  },
+  "harappa": {
+    "Crop CNN, given count": {
+      "seals": 181,
+      "signs": 866,
+      "sign_error_rate": 0.6893764434180139,
+      "exact": 0.016574585635359115,
+      "count_accuracy": 1.0
+    },
+    "Crop CNN, estimated count": {
+      "seals": 181,
+      "signs": 866,
+      "sign_error_rate": 1.2043879907621247,
+      "exact": 0.0,
+      "count_accuracy": 0.1712707182320442
+    },
+    "Whole-band CRNN + CTC": {
+      "seals": 181,
+      "signs": 866,
+      "sign_error_rate": 0.5323325635103926,
+      "exact": 0.07734806629834254,
+      "count_accuracy": 0.35911602209944754
+    }
+  }
+}

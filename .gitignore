@@ -37,3 +37,12 @@ Indus_Epigraphy_AI_Project_Proposal.docx
 
 # Downloaded third-party data without a licence to redistribute (see scripts/fetch_lipi.py)
 data/external/
+
+# LaTeX build files for the report
+report/*.aux
+report/*.log
+report/*.bbl
+report/*.blg
+report/*.fls
+report/*.fdb_latexmk
+report/*.out
