@@ -97,7 +97,7 @@ Harappa, hand-box-trained CNN & 71.3 / 91.2 \\
 \end{figure*}
 
 \section{Results}
-\textbf{M1.} Table~\ref{tab:m1}. On the same test signs v2 beats v1 by 6 points. Accuracy follows sign frequency: 44.6\% for signs with 20+ training crops, 4.3\% for signs never seen in real training. The reader transfers across sites: a model trained on Mohenjo-daro gets 29.9\% there and 28.9\% on Harappa. On Dixit et al.'s 40-sign label set our top-1 is 62.5\% (majority 49.9\%), so most of the gap to 94.5\% is the task, not the model.
+\textbf{M1.} Table~\ref{tab:m1}. On the same test signs v2 beats v1 by 6 points. Accuracy follows sign frequency: 44.6\% for signs with 20+ training crops, 4.3\% for signs never seen in real training. Trained on Mohenjo-daro only, it gets 29.9\% there and 28.9\% on Harappa. On Dixit et al.'s 40-sign set (94.5\% published) we get 62.5\% from forced cuts (majority 49.9\%) and 90.4\% from hand boxes.
 
 \textbf{Segmentation is the bottleneck.} On 64 test seals forced cuts reach mean IoU 0.455 with the hand boxes and isolate only 21 of 322 signs cleanly (Fig.~\ref{fig:m1}); the same CNN reads 33.2\% of these signs from our cuts and 55.9\% from hand-box crops. Training on hand-box crops instead of cuts (same start, same extra epochs) lifts hand-box test accuracy from 55.7\% to 73.9\%, but the model drops to 28.6\% on forced cuts, so the gain needs good boxes at test time. A single-class YOLOv8n detector trained on the training-seal boxes plus 1,000 composites supplies them: on the 141 test seals it reaches 91.5\% box precision and 87.9\% recall and finds the exact sign count on 57.4\% of seals. Detecting and then classifying with the hand-box CNN gives 40.8\% SER with no count given, our best fully automatic reader (Table~\ref{tab:crnn}).
 
