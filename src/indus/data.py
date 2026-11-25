@@ -256,6 +256,9 @@ def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int,
     if path.name == "L-29_imp_a.txt" and len(boxes) == 5:
         # The three strokes sit above the caret and come before it in the guide (batch 6, #70).
         boxes[1:3] = sorted(boxes[1:3], key=lambda b: b[1] + b[3])
+    elif path.name == "M-416_imp_a.txt" and len(boxes) == 5:
+        # The fork (Wells 405) sits above the six strokes (Wells 16).
+        boxes[3:5] = sorted(boxes[3:5], key=lambda b: b[1] + b[3])
     return boxes
 
 
