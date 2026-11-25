@@ -136,11 +136,12 @@ def load_cnn(path, device):
     return model.to(device).eval(), np.array(codes)
 
 
-def evaluate(model, root, device, confidence, cnn=None):
-    result = model.val(data=str(root / "signs.yaml"), split="test", device=device, plots=False, workers=0)
+def evaluate(model, root, device, confidence, cnn=None, imgsz=640):
+    result = model.val(data=str(root / "signs.yaml"), split="test", device=device, plots=False, workers=0,
+                       imgsz=imgsz)
     images = sorted((root / "images" / "test").iterdir())
     stream = model.predict(source=[str(p) for p in images], stream=True, conf=confidence, device=device,
-                           verbose=False)
+                           verbose=False, imgsz=imgsz)
     true, guessed = [], []
     edits = exact = 0
     if cnn is not None:
@@ -179,6 +180,7 @@ def main():
     evaluate_parser.add_argument("--device", default="cpu")
     evaluate_parser.add_argument("--cnn-checkpoint", type=Path, help="optional v2 Wells CNN for detect-then-classify")
     evaluate_parser.add_argument("--confidence", type=float, default=0.25)
+    evaluate_parser.add_argument("--imgsz", type=int, default=640, help="use the training size")
     evaluate_parser.add_argument("--output", type=Path, default=REPO_ROOT / "reports" / "m1_sign_detector.md")
     for action in (prep, train, evaluate_parser):
         action.add_argument("--dataset", type=Path, default=DEFAULT)
@@ -199,7 +201,7 @@ def main():
             parser.error("--confidence must be between 0 and 1")
         cnn = load_cnn(args.cnn_checkpoint, args.device) if args.cnn_checkpoint else None
         box, accuracy, mae, count, reading = evaluate(YOLO(str(args.checkpoint)), root, args.device,
-                                                     args.confidence, cnn)
+                                                     args.confidence, cnn, args.imgsz)
         lines = [
             "# M1 · Single-class sign detector", "",
             f"{count} hand-boxed seals from the fixed v2 test split. "

@@ -324,8 +324,8 @@ def s3(t, c):
             if g > 0:
                 d.rounded_rectangle([720, y + 48, 720 + int(12 * v * g), y + 98], 6, fill=col)
                 text(d, (735 + int(12 * v * g), y + 50), f"{v * g:.1f}%", 40, F, INK, 1)
-        para(d, (720, 820), "Forced-cut pipeline overall: 33.7% first guess, 55% top 5 on 141 unseen seals "
-             "(guessing common signs: 11%), and 28.9% on Harappa, a site it never saw.", 28, 1050, FR, MUTED, ramp(t, 23.5))
+        para(d, (720, 820), "So we trained a sign detector on our boxes: detector + this CNN reads whole seals at 40.8% "
+             "sign error with no sign count, against 68% for forced cuts even when given the count.", 28, 1080, FS, TEAL, ramp(t, 23.0))
     return im
 
 
