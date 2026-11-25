@@ -4,24 +4,29 @@ AI course project, BITS Pilani K.K. Birla Goa Campus.
 
 The Indus script (c. 2600 to 1900 BCE) is undeciphered. This project does not try to read it. It analyses the script's structure: a vision pipeline that turns seal photos into sign sequences, Markov models of sign order, masked sign prediction, and statistical guardrails against overclaimed decipherments.
 
-## Results so far (first evaluation, Oct 6 2026)
+## Final results (Nov 2026)
+
+Fixed seal-level split: 466 train, 67 validation, 141 test seals, plus 181 Harappa seals never used for training. Every choice was made on validation; test numbers are reported once. Full write-up: [`report/`](report/) (course report source) and the files in `reports/`.
 
 | Milestone | What | Result | Report |
 | --- | --- | --- | --- |
-| Data | 328 Mohenjo-daro seal photos (CISI Vol. 1) labelled with their IM77 sign sequences | 1,673 signs, 225 distinct; jar sign last in 116 texts, first in 0 | `data/raw/cisi_seals/README.md` |
-| M1 | Seal photo to sign sequence: CNN + sign-pair statistics, sign count given | 28 to 30% top-1, 45 to 49% top-5 on 70 test seals (template matching: 0.3% / 1.4%) | `reports/a6_context_*.md` |
-| M1 | Same, no labels at all (the model finds the sign count) | count right 19% (old pipeline 10%), character error rate 0.83 (1.48) | `reports/a7_unknown_count_gpu.md` |
-| M2 | Frequencies, start/end signs, transitions, conditional entropy | 8,359 signs, 568 types; jar sign ends texts; 3.31 bits | `reports/b1_results.md` to `b4_results.md` |
-| M3 | Hide a sign, predict it (smoothed bigrams) | 35% top-1, 60% top-5 from both neighbours; bigram perplexity 37.8 | `reports/c1_masked_prediction.md` |
-| M4 | Real texts vs shuffled | Naive Bayes 81%; permutation tests p = 0.001 | `reports/d1_guardrails.md` |
-| Extension | Error propagation: which conclusions survive M1's mistakes | positions survive at ~30% accuracy, pair statistics need ~60% | `reports/e1_error_propagation.md` |
-| Extension | Null-model benchmark for claims | a no-language Markov chain reproduces Zipf, end signs and entropy; sign triples still separate real texts (61%, control 49%) | `reports/e2_null_benchmark.md` |
+| Data | 855 CISI seal photos with Wells sign sequences (via Lipi); team-drawn boxes on 834 seals (4,078 signs) | labels agree with our hand-linked IM77 labels on 96.5% of signs | `data/README.md`, `docs/ANNOTATION.md` |
+| M1 | Seal photo to signs: forced cuts + CNN (renders + real crops) + ICIT bigram decoder, count given | 33.7% top-1, 55.1% top-5 on 141 test seals (frequency baseline 11.4%); v1 to v2 on the same signs: 29.7% to 35.5% | `reports/m1_v2.md` |
+| M1 | Segmentation audit against hand boxes | same CNN: 33% on our cuts vs 56% on hand-box crops; mean IoU 0.455 | `reports/m1_segmentation.md` |
+| M1 | Training on hand-box crops | same start and extra epochs, only the training crops differ: 73.9% top-1 / 90.1% top-5 on hand-box test crops (control 55.7%), 71.3% on Harappa; needs good boxes at test time | `reports/m1_handbox_cnn.md` |
+| M1 | Whole-band CRNN + CTC (no count, no cutting) | sign error 56.3% (T4) / 55.4% (CPU rerun) vs 68.1% for cut-and-classify with the true count | `reports/m1_crnn.md` |
+| M1 | Synthetic inscriptions from real sign crops (instructor's suggestion) | CRNN sign error with composites vs without (same seed): test 55.4% to 54.4%; Harappa 57.9% to 53.2%, correct counts 53 to 65 of 181 | `reports/m1_composites.md` |
+| M1 | Cross-site: trained on Mohenjo-daro, tested on Harappa | 28.9% vs 29.9% in-site | `reports/m1_harappa.md` |
+| M1 | Published 94.5% protocol (40 signs, crop split) on our data | 62.5% (majority 49.9%); random crop split did not inflate it | `reports/m1_dixit_protocol.md` |
+| M2 | Frequencies, start/end signs, transitions, entropy | jar sign ends 35.2% of texts, starts 0.16%; entropy 3.31 bits read right to left vs 3.82 reversed | `reports/b1_results.md` to `b4_results.md` |
+| M2-M4 | Full ICIT corpus and per site | all statistics within 1 point; jar-final 39.6% Mohenjo-daro vs 29.0% Harappa | `reports/m2m4_full_corpus.md` |
+| M3 | Hide a sign, predict it | bigrams 35.0% / 60.0%; perplexity 37.8 (unigram 87.1); small transformer 29.9% (worse) | `reports/c1_masked_prediction.md`, `reports/c2_neural_m3.md` |
+| M4 | Real vs shuffled texts | Naive Bayes 81.4% (control 50%); permutation p = 0.001 | `reports/d1_guardrails.md` |
+| M4 | Same tests on non-language symbols | deity symbols also pass (84.6%), barn stars do not (50%) | `reports/m4_symbol_controls.md` |
+| E1 | Error propagation from M1 into M2-M4 | pair statistics need about 60% reading accuracy; with real CNN confusions at 31% more survives (61% vs 54%) | `reports/e1_error_propagation.md`, `reports/e1_cnn_confusions.md` |
+| E2 | Null-model benchmark | a no-language bigram chain reproduces Zipf, the jar sign and entropy; only sign triples separate real texts (61%) | `reports/e2_null_benchmark.md` |
 
-Every model choice was made on a fixed validation split; test numbers are reported once.
-
-## Final phase (now)
-
-We found the full ICIT corpus and about 570 more labelled seal photos (via Lipi), switched M1 to Wells sign IDs, and are adding hand-drawn sign boxes, synthetic inscriptions built from real signs, and a reader that needs no cutting (CRNN). **Plan, decisions and order of work: [`docs/ROADMAP.md`](docs/ROADMAP.md).** Open work is in the [issues](../../issues) (P0 first): claim one on WhatsApp and assign yourself.
+First-phase (Oct 6) results and the plan that led here: `docs/PLAN.md`, `docs/ROADMAP.md`.
 
 ## Setup
 
@@ -39,7 +44,7 @@ pip install -r requirements.txt
 pytest
 ```
 
-All 48 tests should pass. If they do, the data is in place and loads correctly.
+All tests should pass (some skip until `python scripts/fetch_lipi.py` has downloaded the Lipi data). If they do, the data is in place and loads correctly.
 
 (Using conda instead? Create and activate an env, then run the same `pip install -r requirements.txt`.)
 
