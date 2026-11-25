@@ -35,7 +35,7 @@
   \begin{minipage}{0.85\textwidth}
     \small
     \centerline{\bfseries Abstract}\vspace{0.5ex}
-    The Indus script survives on about 4,000 short inscriptions and is undeciphered. We do not try to read it; we measure its structure and test how far each measurement can be trusted. We built 855 labelled seal photographs with 4,078 hand-checked sign boxes, and a reader that turns a photo into Wells sign IDs: 33.7\% first-guess accuracy on unseen seals with forced cuts, 73.9\% on hand-box crops, and 40.8\% sign error fully automatically with a detector trained on our boxes. Synthetic inscriptions built from real sign crops (suggested by Prof.\ Ashwin) lower a whole-band CRNN's sign error on that unseen site from 57.9\% to 53.2\%. On the sign sequences, Markov statistics, masked prediction (35\% top-1) and Naive Bayes guardrails (81\% real vs shuffled) show strong order, but non-linguistic symbols pass the same test and a no-language Markov chain reproduces most classic statistics; only sign triples set the script apart.
+    The Indus script survives on about 4,000 short inscriptions and is undeciphered. We do not try to read it; we measure its structure and test how far each measurement can be trusted. We built 855 labelled seal photographs with 4,078 hand-checked sign boxes, and a reader that turns a photo into Wells sign IDs: 33.7\% first-guess accuracy on unseen seals with forced cuts, 73.9\% on hand-box crops, and 40.8\% sign error fully automatically with a detector trained on our boxes. Synthetic inscriptions built from real sign crops (suggested by Prof.\ Ashwin) lower a whole-band CRNN's sign error on that unseen site from 57.9\% to 53.2\%. On the sign sequences, Markov statistics, masked prediction (35\% top-1) and Naive Bayes guardrails (81\% real vs shuffled) show strong order, but non-linguistic symbols pass the same test and a no-language Markov chain reproduces most classic statistics; in our benchmark sign triples separate the texts from such a chain better than pairs.
   \end{minipage}
 \end{center}
 \vspace{1.5ex}
@@ -50,7 +50,7 @@ The Indus script (c.\ 2600--1900 BCE) survives in short texts, mostly on seals. 
 Corpora: Mahadevan's concordance~\cite{mahadevan1977} and Fuls's ICIT corpus with Wells sign numbers~\cite{fuls2022}. Rao et al.~\cite{rao2009} argued from conditional entropy that the script is linguistic; Yadav et al.~\cite{yadav2010plos} fitted $n$-grams (bigram perplexity 26.7); Sproat~\cite{sproat2014} showed non-linguistic symbol systems can pass such tests. Dixit et al.~\cite{dixit2025} report 94.5\% sign recognition on about 40 common signs. Our tools: CNNs, HMM decoding, CRNN with CTC~\cite{graves2006ctc}, SynthText-style synthetic data~\cite{gupta2016synthtext}, smoothed $n$-grams, Naive Bayes.
 
 \section{Method}
-\textbf{Data.} Sequences use Wells IDs. The M2--M4 benchmark is the 1,837-text corpus of~\cite{yadav2010plos} (8,359 signs, 568 types). Seal photos are CISI scans~\cite{cisi1}; we first linked 328 to the concordance by hand, then took sequences for 855 seals from Lipi~\cite{lipi}, a digitised copy of Fuls's corpus (96.5\% agreement with our labels). M1 predicts Wells IDs (712 classes), so its output feeds M2--M4 without cross-scheme mapping. The team drew a tight box around every sign on 834 seals in a browser tool; labels come automatically from the known sequence and a checker rejects any seal whose box count is wrong.
+\textbf{Data.} Sequences use Wells IDs. The M2--M4 benchmark is the 1,837-text ICIT corpus released by~\cite{ashraf2018} (8,359 signs, 568 types). Seal photos are CISI scans~\cite{cisi1}; we first linked 328 to the concordance (47 transcriptions unverified and kept out of evaluation), then took sequences for 855 seals from Lipi~\cite{lipi}, a digitised copy of Fuls's corpus (96.5\% agreement with our labels on mappable signs). M1 predicts Wells IDs (712 classes), so its output feeds M2--M4 without cross-scheme mapping. The team drew a tight box around every sign on 834 seals in a browser tool; labels come automatically from the known sequence and a checker rejects any seal whose box count is wrong.
 
 \textbf{M1, cut and classify.} Find the text band from the row profile of a carving mask; cut it into $n$ pieces, moving each cut to the lowest-ink column within $\pm$30\% of an equal split; classify each $64{\times}64$ crop with a 4-block CNN (Conv--BN--ReLU, global average pooling, dropout, softmax), pretrained on 35,600 carved-look renders of clean sign drawings and fine-tuned on real crops; decode with an HMM whose emissions are CNN probabilities and transitions ICIT sign-pair probabilities (forward--backward, weight chosen on validation).
 
@@ -63,7 +63,7 @@ Corpora: Mahadevan's concordance~\cite{mahadevan1977} and Fuls's ICIT corpus wit
 \textbf{M4 and extensions.} Naive Bayes over bags of adjacent pairs separates real texts from within-text shuffles (control: single signs, which shuffling leaves unchanged), with 1,000-shuffle permutation tests. E1 corrupts the corpus to a given reading accuracy (randomly or with the CNN's measured confusions) and reruns M2--M4. E2 asks which statistics fitted unigram and bigram generators reproduce. D1 and E2 also run on Sproat's non-linguistic corpora~\cite{sproat2014}.
 
 \section{Experimental setup}
-One fixed seal-level split: 466 train, 67 validation, 141 test seals (first-phase test and validation seals keep their roles), and all 181 Harappa seals held out for a cross-site test. Text experiments use a fixed 1,469/368 split. Every choice was made on validation; test numbers are reported once. Metrics: top-1/top-5 sign accuracy; sign error rate (SER: insertions, deletions and substitutions over reference signs); perplexity; held-out classifier accuracy. Hardware: Colab T4 GPU and a 2-core CPU; PyTorch, OpenCV, Ultralytics YOLOv8; seed 0 throughout.
+One fixed seal-level split: 466 train, 67 validation, 141 test seals (first-phase test and validation seals keep their roles), and all 181 Harappa seals held out for a cross-site test. Text experiments use a fixed 1,469/368 split. Every choice was made on validation; test numbers are reported once. Metrics: top-1/top-5 sign accuracy; sign error rate (SER: insertions, deletions and substitutions over reference signs); perplexity; held-out classifier accuracy. Hardware: Colab T4 GPU and a 2-core CPU; PyTorch, OpenCV, Ultralytics YOLOv8; fixed seeds.
 
 \begin{table}[t]
 \centering\small\setlength{\tabcolsep}{4pt}
@@ -80,11 +80,11 @@ v2 CNN + ICIT bigram, forced cuts & 33.7 / 55.1 \\
 v2 CNN, hand-box crops & 52.8 / 77.7 \\
 Hand-box-trained CNN, hand boxes & \textbf{73.9} / \textbf{90.1} \\
 \midrule
-Harappa, v2 CNN, cuts & 28.9 / 48.8 \\
-Harappa, hand-box-trained CNN & 71.3 / 91.2 \\
+Harappa, Mohenjo-only CNN, cuts & 28.9 / 48.8 \\
+Harappa, hand-box CNN, boxes & 71.3 / 91.2 \\
 \bottomrule
 \end{tabular}
-\caption{M1 sign accuracy (\%, higher is better) on 141 test seals (686 signs) unless stated. Matched rows: the 279 positions shared by v1 and v2. Harappa: 181 seals never used in training.}
+\caption{M1 sign accuracy (\%, higher is better) on 141 test seals (686 signs) unless stated. Matched rows: the 279 positions shared by v1 and v2. Harappa (never used in training): forced cuts on 181 seals (866 signs); hand boxes on 168 seals (805 signs).}
 \label{tab:m1}
 \end{table}
 
@@ -92,12 +92,12 @@ Harappa, hand-box-trained CNN & 71.3 / 91.2 \\
 \centering
 \includegraphics[height=3.2cm]{figures/segmentation_cuts_vs_boxes.png}\hfill
 \includegraphics[height=3.2cm]{figures/composites_vs_real.png}
-\caption{Left: forced cuts (red, true count given) vs reviewed hand boxes (green) on test seals; cuts slice signs. Right: composites built from real sign crops along real texts (left column) next to real training bands.}
+\caption{Top: forced cuts (red, true count given) vs reviewed hand boxes (green) on test seals; cuts slice signs. Bottom: composites built from real sign crops along real texts (left column) next to real training bands.}
 \label{fig:m1}
 \end{figure*}
 
 \section{Results}
-\textbf{M1.} Table~\ref{tab:m1}. On the same test signs v2 beats v1 by 6 points. Accuracy follows sign frequency: 44.6\% for signs with 20+ training crops, 4.3\% for signs never seen in real training. Trained on Mohenjo-daro only, it gets 29.9\% there and 28.9\% on Harappa. On Dixit et al.'s 40-sign set (94.5\% published) we get 62.5\% from forced cuts (majority 49.9\%) and 90.4\% from hand boxes.
+\textbf{M1.} Table~\ref{tab:m1}. On the same test signs v2 beats v1 by 6 points. Accuracy follows sign frequency: 44.6\% for signs with 20+ training crops, 4.3\% for signs never seen in real training. Trained on Mohenjo-daro only, it gets 29.9\% there and 28.9\% on Harappa. Using Dixit et al.'s 40-label grouping (94.5\% on their own set) on our 469 Mohenjo-daro test crops, we get 62.5\% from forced cuts (majority 49.9\%) and 90.4\% from hand boxes.
 
 \textbf{Segmentation is the bottleneck.} On 64 test seals forced cuts reach mean IoU 0.455 with the hand boxes and isolate only 21 of 322 signs cleanly (Fig.~\ref{fig:m1}); the same CNN reads 33.2\% of these signs from our cuts and 55.9\% from hand-box crops. Training on hand-box crops instead of cuts (same start, same extra epochs) lifts hand-box test accuracy from 55.7\% to 73.9\%, but the model drops to 28.6\% on forced cuts, so the gain needs good boxes at test time. A single-class YOLOv8n detector trained on the training-seal boxes plus 1,000 composites supplies them: on the 141 test seals it reaches 91.5\% box precision and 87.9\% recall and finds the exact sign count on 57.4\% of seals. Detecting and then classifying with the hand-box CNN gives 40.8\% SER with no count given, our best fully automatic reader (Table~\ref{tab:crnn}).
 
@@ -119,15 +119,15 @@ CRNN, real bands & 57.9 & 5.5 & 29.3 \\
 CRNN, real + composites & \textbf{53.2} & \textbf{7.7} & \textbf{35.9} \\
 \bottomrule
 \end{tabular}
-\caption{Whole-inscription reading on 141 test seals: sign error rate (lower is better), exact inscriptions and correct sign count (\%). Only the first row is given the count. CRNN rows share seed and settings.}
+\caption{Whole-inscription reading on 141 test seals: sign error rate (lower is better), exact inscriptions and correct sign count (\%). Only the first row is given the count.}
 \label{tab:crnn}
 \end{table}
 
 \textbf{Reading without cutting; composites.} The CRNN needs no count and beats cut-and-classify even when that is given the count (Table~\ref{tab:crnn}). Adding the 5,000 composites lowers test SER only slightly (within single-seed noise), but on Harappa SER falls by 4.7 points and correct counts rise from 53 to 65 of 181 seals: composites add arrangements and backgrounds that the 466 real bands lack, which matters most when test photos differ from training ones.
 
-\textbf{M2.} The 568 sign types are Zipf-like (top 10: 33\% of tokens). The jar sign (Wells 740) ends 35.2\% of texts and begins 0.16\%. Next-sign entropy is 3.31 bits in reading order and 3.82 reversed. On the full ICIT corpus every statistic moves by under a point; by site, the jar sign ends 39.6\% of Mohenjo-daro texts but 29.0\% of Harappa texts.
+\textbf{M2.} The 568 sign types are Zipf-like (top 10: 33\% of tokens). The jar sign (Wells 740) ends 35.2\% of texts and begins 0.16\%. Next-sign entropy is 3.31 bits in reading order and 3.82 reversed. On the full ICIT corpus the statistics barely move (jar-final 35.2 to 34.9\%, bigram perplexity 37.8 to 36.6); by site, the jar sign ends 39.6\% of Mohenjo-daro texts but 29.0\% of Harappa texts.
 
-\textbf{M3.} Masked top-1/top-5: unigram 11.3/23.7\%, previous sign only 25.0/44.9\%, both neighbours 35.0/60.0\%. Held-out perplexity is 87.1 (unigram) and 37.8 (bigram), close to the published 68.8 and 26.7 on a different corpus~\cite{yadav2010plos}. A small transformer reached at best 29.9/52.0\%, below a trigram (35.8/61.0\%).
+\textbf{M3.} Masked top-1/top-5: unigram 11.3/23.7\%, previous sign only 25.0/44.9\%, both neighbours 35.0/60.0\%. Held-out perplexity is 87.1 (unigram) and 37.8 (bigram), close to the published 68.8 and 26.7 on a different corpus~\cite{yadav2010plos}. The best small transformer reached 29.9/50.8\%, below a trigram (35.8/61.0\%).
 
 \begin{figure}[t]
 \centering
@@ -138,18 +138,18 @@ CRNN, real + composites & \textbf{53.2} & \textbf{7.7} & \textbf{35.9} \\
 
 \textbf{M4.} Naive Bayes separates real from shuffled texts with 81.4\% accuracy (control 50.0\%); permutation tests give entropy 3.685 vs 4.715 bits and jar-final 35.2\% vs 11.1\% ($p=0.001$ for both). But Mesopotamian kudurru deity symbols, which are not writing, also pass (84.6\%), while barn-star motifs do not (50.0\%) (Fig.~\ref{fig:guard}): non-random order alone is not evidence of language.
 
-\textbf{E1.} Real-vs-shuffled accuracy falls from 82.7\% (perfect readings) to 64.5\% at 60\% accuracy and 53.5\% at 30\%. With the forced-cut CNN's measured confusions at 31\% accuracy more survives (61.0\% vs 53.8\%), because a reader confuses similar signs consistently, but the masked-prediction signal is gone (top-5 43.2\% vs 41.0\% shuffled). With the hand-box CNN's confusions at its 73.9\% every signal holds: real vs shuffled 73.7\%, jar-final 26.7\% vs 10.0\%, entropy 4.25 vs 4.81 bits, masked top-5 41.6\% vs 21.3\%. Readings from good boxes are now accurate enough to support the corpus-level conclusions.
+\textbf{E1.} Real-vs-shuffled accuracy falls from 82.7\% (perfect readings) to 64.5\% at 60\% accuracy and 53.5\% at 30\%. With the forced-cut CNN's measured confusions at 31\% accuracy more survives (61.0\% vs 53.8\%), because a reader confuses similar signs consistently, but the masked-prediction signal is gone (top-5 43.2\% vs 41.0\% shuffled). With the hand-box CNN's confusions at its 73.9\% every signal holds: real vs shuffled 73.7\%, jar-final 26.7\% vs 10.0\%, entropy 4.25 vs 4.81 bits, masked top-5 41.6\% vs 21.3\%.
 
 \textbf{E2.} A bigram chain with no words or grammar reproduces Zipf's slope ($-0.93$), the jar-final rate (37.6\% vs 35.2\%) and similar entropy (3.00 vs 3.31 bits). Pairs cannot tell its output from real texts (49.6\%), but triples can (61.0\%, control 49.0\%); deity symbols show no such excess (50.8\%).
 
 \section{Discussion and limitations}
-The reader's limit was segmentation, not recognition: with good boxes the CNN reaches 74\%, and a detector trained on our boxes recovers much of that gap (40.8\% SER without a count, against 68.1\% for forced cuts given the count). E1 now passes at the hand-box CNN's accuracy; the fully automatic pipeline (40.8\% SER, with dropped and inserted signs that E1 does not model) sits near the 60\% threshold. One seed and one split per experiment ($\pm$4 points on 141 seals); most of the 712 classes have few real examples; boxes for batches 7--9 were AI-assisted then checked; small control corpora are noisy (barn stars: 58.1\% on triples, control 45.7\%).
+Better boxes substantially improve recognition (74\%, though one sign in four is still misread), and a detector trained on our boxes recovers much of the gain (40.8\% SER with no count vs 68.1\% for forced cuts given it). E1 passes at the hand-box CNN's accuracy; it simulates substitutions only, so it does not yet cover the automatic pipeline's dropped and inserted signs. Most experiments use one seed and one split; most of the 712 classes have few real examples; small control corpora are noisy.
 
 \section{Conclusion}
-Sign order in the Indus texts is strongly structured and partly predictable, and real sign crops recombined along real texts make a useful training resource. But order alone does not separate the script from non-linguistic symbols or from a simple Markov process; recurring sign groups beyond pairs are the property here that does.
+Sign order in the Indus texts is strongly structured and partly predictable, and real sign crops recombined along real texts make a useful training resource. But order alone does not separate the script from non-linguistic symbols or from a simple Markov process; in our benchmark, sign triples separate them from a fitted bigram model better than pairs.
 
 \section*{Individual member contributions}
-{\small
+{\footnotesize
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
 Name & Contribution \\
@@ -166,15 +166,17 @@ Agrim Agarwal & First synthetic sign generator; first-pass boxes for batches 2--
 \noindent All members have read this report and agree with the statement above.
 
 \section*{Generative AI disclosure}
-We used Claude (Anthropic; Claude Code and claude.ai) and ChatGPT/Codex (OpenAI) to discuss approaches, write, review and debug code under our supervision, draft documentation, edit this report, and pre-draw sign boxes for batches 7--9, which we then checked. In the first phase ChatGPT transcribed 47 seals we could not verify by hand; they were marked and used only for training. No generative model is part of the method itself. We checked all such output, every number here is produced by code in the repository and checked against a known value, and we take responsibility for it.
+We used Claude (Anthropic; Claude Opus 5.5 via Claude Code and claude.ai) and ChatGPT/Codex (OpenAI) to discuss approaches, write, review and debug code under our supervision, draft documentation, edit this report, and pre-draw sign boxes for batches 7--9, which we then checked. In the first phase ChatGPT transcribed 47 seals we could not verify by hand; they were marked and used only for training. No generative model is part of the method itself. We checked all such output and the reported results against the experiment outputs and published sources, and we take responsibility for it.
 
 \section*{Code availability}
 \noindent Code and data:\\
 \url{\githuburl}\\
-The README lists every result with the report and command that reproduces it.
+The README links every result to its experiment report.
 
-\begin{thebibliography}{9}
+\begin{thebibliography}{99}
 \small
+\bibitem{ashraf2018} M.~Ashraf and S.~Sinha. The ``handedness'' of language: directional symmetry breaking of sign usage in words. \emph{PLoS ONE} 13(1):e0190735, 2018.
+
 \bibitem{cisi1} J.~P.~Joshi and A.~Parpola (eds.). \emph{Corpus of Indus Seals and Inscriptions, Vol.~1}. Suomalainen Tiedeakatemia, 1987.
 \bibitem{dixit2025} Dixit, Hussain, Basak, Atturu, D.~Mitra and U.~Bhattacharya. Deep learning in archiving Indus script and motif information. \emph{J. Computer Applications in Archaeology}, 2025.
 \bibitem{fuls2022} A.~Fuls. \emph{Corpus of Indus Inscriptions}. Harrassowitz, 2022.
