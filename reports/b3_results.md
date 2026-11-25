@@ -162,4 +162,4 @@ held-out accuracy is claimed. There is no randomness or evaluation split in this
 descriptive task. No sign meanings, grammar or independent reading direction
 are inferred. B4 can reuse counts/probabilities; smoothing remains B5.
 
-Local references: `docs/TASKS.md`, `data/README.md`, `src/indus/data.py`.
+Local references: `data/README.md`, `src/indus/data.py`.

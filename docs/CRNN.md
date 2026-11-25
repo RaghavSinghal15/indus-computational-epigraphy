@@ -1,4 +1,4 @@
-# Whole-band reader (#33)
+# Whole-band reader (CRNN + CTC)
 
 The CRNN starts from the trained all-site Wells v2 sign CNN. For each seal it
 locates one inscription band from pixels, then reads the entire band. It

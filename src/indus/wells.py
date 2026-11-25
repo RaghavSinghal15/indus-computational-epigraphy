@@ -1,4 +1,4 @@
-"""M1 v2 label space and split: Wells (ICIT) sign IDs on the Lipi seals. See docs/ROADMAP.md.
+"""M1 v2 label space and split: Wells (ICIT) sign IDs on the Lipi seals.
 
 Classes are every Wells code used anywhere in the full ICIT corpus (712 signs),
 in increasing order; class index i <-> Wells code WELLS_CODES[i].

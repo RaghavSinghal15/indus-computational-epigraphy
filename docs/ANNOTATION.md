@@ -1,46 +1,31 @@
-# Drawing sign boxes (issues #24 to #29)
+# Sign boxes: how they were drawn
 
-Goal: a tight box around every sign on about 600 seal photos. You only draw boxes; nobody types sign numbers, because each seal's sequence is already known and boxes are labelled automatically from left to right. About an hour per batch of 100 seals.
+The team drew a tight box around every sign on 834 CISI seal photos (4,078 signs), in batches of about 100 photos, using [makesense.ai](https://www.makesense.ai) (Object Detection, one label `sign`, YOLO export). Nobody typed sign numbers: each seal's sequence is already known from the corpus, so boxes are labelled automatically. The boxes are in `data/raw/sign_boxes/batch_NN/`, one YOLO `.txt` per photo.
 
-## Once
+## Rules
 
-```bash
-pip install -r requirements.txt
-python scripts/fetch_lipi.py            # downloads the photos (about 20 MB)
-```
+- **Tight**: touch the outermost strokes, with no big margins. Include strokes that belong to the sign, like the "ears" of the jar sign.
+- **One box per sign in the sequence.** Groups of short strokes (`||`, `|||`) count as one sign.
+- **Only the text**, never the animal, the manger or the CISI caption.
+- A sign that is half broken off still gets a box around what is visible.
+- Photos that were unreadable, or whose sequence did not match the photo, were skipped.
 
-## For your batch (say batch 3)
-
-1. `python scripts/make_box_batch.py 3` copies the 100 photos to `data/processed/box_batches/batch_03/`, plus a `guide/` folder showing each photo with its expected signs underneath, left to right.
-2. Open **makesense.ai** in a browser, then Get Started. Drop in the 100 photos (not the `guide` folder) and choose **Object Detection**. Create one label: `sign`.
-3. For each photo, draw one rectangle per sign (the Rect tool or the R key):
-   - **Tight**: touch the outermost strokes, with no big margins. Include strokes that belong to the sign, like the "ears" of the jar sign.
-   - **One box per sign in the guide.** Groups of short strokes (`||`, `|||`) count as one sign. If the guide shows 5 signs, draw 5 boxes.
-   - **Only the text**, never the animal, the manger or the CISI caption.
-   - A sign that is half broken off still gets a box around what is visible.
-   - If a photo is unreadable or the guide clearly does not match the photo, skip it and write its CISI number in your PR.
-4. Actions, Export Annotations, **YOLO format**. Unzip the `.txt` files into `data/raw/sign_boxes/batch_03/` (one file per photo, same name as the photo).
-5. `python scripts/check_boxes.py 3 --show`. Fix every seal it lists, which usually means a missing or extra box. Then skim a few pictures in `data/processed/box_check/batch_03/`: the sign drawn under each box should match the sign in the box.
-6. Commit only `data/raw/sign_boxes/batch_03/` and open a PR with `Closes #<issue>`.
-
-Tip: makesense.ai keeps work only in the open browser tab. Export every 20 or 30 photos so you never lose more than that.
+`python scripts/make_box_batch.py N` builds a batch with a guide image per seal (the expected signs, left to right); `python scripts/check_boxes.py N --show` checks box counts and draws each assigned sign under its box for review.
 
 ## How the labels are assigned
 
-Boxes are sorted by their horizontal centre, left to right, and get the seal's known sequence in left-to-right order (the impression shows the text mirrored back into reading direction, so the first sign read is the right-most one). `indus.data.load_sign_boxes()` returns one row per boxed sign with its Wells number. Seals whose box count does not match are left out, which is why `check_boxes.py` must pass.
+Boxes are sorted by their horizontal centre, left to right, and get the seal's known sequence in left-to-right order (the impression shows the text mirrored back into reading direction, so the first sign read is the right-most one). `indus.data.load_sign_boxes()` returns one row per boxed sign with its Wells number. Seals whose box count does not match are left out; `scripts/check_boxes.py` lists them.
 
 ## Alternate photos and mirrored views
 
-Each batch may name a better view of the same inscription in
+A batch may name a better view of the same inscription in
 `data/raw/sign_boxes/batch_NN/photo_overrides.csv`. Run
 `python scripts/fetch_box_photos.py NN` after fetching Lipi. The K-39 archival
 scan requires Poppler's `pdftoppm`. The other alternate views use the pinned Lipi
 source or the linked published colour plate. Photo files stay in the ignored
-external cache. If you already have the exact annotated images from the review
-pack, copy them to `data/external/lipi/seal_images/`.
+external cache.
 
-Export with the alternate photo's exact filename stem. The box loader, checker
-and guide generator use the selected photo's dimensions. Draw fresh coordinates
-when changing views. A photograph whose visible sign sequence is reversed,
+Boxes on an alternate view use that photo's filename stem. The box loader, checker
+and guide generator use the selected photo's dimensions. A photograph whose visible sign sequence is reversed,
 such as the selected L-16, L-58 or M-657 view, gets a filename-specific order
 correction. The catalogue transcription is kept as recorded.
