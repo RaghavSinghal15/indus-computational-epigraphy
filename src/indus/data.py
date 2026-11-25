@@ -208,7 +208,7 @@ def photo_signs_ltr(seal) -> list[int]:
 
 
 def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int, int, int]]:
-    """Boxes from one YOLO label file as pixel (x0, y0, x1, y1), sorted left to right.
+    """Read YOLO rectangles as pixels, ordered left to right with a stacked pair on L-29.
 
     YOLO lines are 'class x_centre y_centre box_width box_height', all as fractions of the image size.
     """
@@ -220,7 +220,11 @@ def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int,
         cx, cy, w, h = (float(v) for v in parts[1:])
         boxes.append((round((cx - w / 2) * width), round((cy - h / 2) * height),
                       round((cx + w / 2) * width), round((cy + h / 2) * height)))
-    return sorted(boxes, key=lambda b: (b[0] + b[2]) / 2)
+    boxes.sort(key=lambda b: b[0] + b[2])
+    if path.name == "L-29_imp_a.txt" and len(boxes) == 5:
+        # The three strokes sit above the caret and come before it in the guide.
+        boxes[1:3] = sorted(boxes[1:3], key=lambda b: b[1] + b[3])
+    return boxes
 
 
 def load_sign_boxes() -> pd.DataFrame:
