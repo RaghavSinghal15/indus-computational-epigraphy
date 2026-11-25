@@ -28,3 +28,19 @@ Tip: makesense.ai keeps work only in the open browser tab. Export every 20 or 30
 ## How the labels are assigned
 
 Boxes are sorted by their horizontal centre, left to right, and get the seal's known sequence in left-to-right order (the impression shows the text mirrored back into reading direction, so the first sign read is the right-most one). `indus.data.load_sign_boxes()` returns one row per boxed sign with its Wells number. Seals whose box count does not match are left out, which is why `check_boxes.py` must pass.
+
+## Alternate photos and mirrored views
+
+Each batch may name a better view of the same inscription in
+`data/raw/sign_boxes/batch_NN/photo_overrides.csv`. Run
+`python scripts/fetch_box_photos.py NN` after fetching Lipi. The K-39 archival
+scan requires Poppler's `pdftoppm`. The other alternate views use the pinned Lipi
+source or the linked published colour plate. Photo files stay in the ignored
+external cache. If you already have the exact annotated images from the review
+pack, copy them to `data/external/lipi/seal_images/`.
+
+Export with the alternate photo's exact filename stem. The box loader, checker
+and guide generator use the selected photo's dimensions. Draw fresh coordinates
+when changing views. A photograph whose visible sign sequence is reversed,
+such as the selected L-16, L-58 or M-657 view, gets a filename-specific order
+correction. The catalogue transcription is kept as recorded.

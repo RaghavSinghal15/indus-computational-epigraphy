@@ -8,12 +8,14 @@ Also flags boxes that overlap a lot (likely duplicates) or touch in a way that m
 left-to-right order ambiguous (two signs stacked above each other).
 """
 import argparse
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 from PIL import Image, ImageDraw
 
-from indus.data import BOXES_DIR, REPO_ROOT, load_lipi_seals, photo_signs_ltr, read_yolo_boxes
+from indus.data import (BOXES_DIR, REPO_ROOT, box_photo, box_photo_overrides,
+                        load_lipi_seals, photo_signs_ltr, read_yolo_boxes)
 from indus.glyphs import glyph
 
 
@@ -32,12 +34,14 @@ def check(batch: int, show: bool) -> int:
     plan = pd.read_csv(BOXES_DIR / "batches.csv")
     folder = BOXES_DIR / f"batch_{batch:02d}"
     out = REPO_ROOT / "data" / "processed" / "box_check" / f"batch_{batch:02d}"
+    overrides = box_photo_overrides(batch)
     problems = ok = 0
     for _, row in plan[plan.batch == batch].iterrows():
-        seal = seals.loc[row.cisi]
-        label = folder / (row.image_file.rsplit(".", 1)[0] + ".txt")
+        alternate = overrides.get(row.cisi)
+        label = folder / (Path(alternate or row.image_file).stem + ".txt")
         if not label.exists():
             print(f"{row.cisi}: no label file {label.name}"); problems += 1; continue
+        seal = box_photo(seals.loc[row.cisi], alternate)
         img = Image.open(seal.image).convert("RGB")
         boxes = read_yolo_boxes(label, *img.size)
         issues = []
