@@ -3,7 +3,9 @@
 Each scene is a function f(t) -> PIL image (t in seconds from the scene start). Frames are
 piped to ffmpeg (one file per scene) in data/processed/video/clips/; join them with
 ffmpeg's concat demuxer. Narration: report/video_script.md.
-    python scripts/make_video.py 1 2 3 4 5 6 7 8      # all scenes (about 15 minutes on a CPU)
+    python scripts/make_video.py 1 2 3 4 5 6 7 8      # all scenes (a few minutes on a CPU)
+    python scripts/make_music.py 171.05 data/processed/video/music.wav
+    python scripts/mux_video_audio.py <recordings folder> data/processed/video/music.wav <out.mp4>
     python scripts/make_video.py still 4@20          # one frame of scene 4 at t = 20 s
 """
 import json
@@ -680,16 +682,28 @@ SCENES = [(s1, s1_setup, 15), (s2, s2_setup, 18), (s3, s3_setup, 27), (s4, s4_se
           (s5, None, 22), (s6, None, 24), (s7, None, 20), (s8, None, 12)]          # 176 s
 
 
+# Scene lengths fitted to the recorded narration (made from the recordings by forced alignment).
+# "warp" pairs [video time, design time]: each visual event is moved onto the word that names it.
+TIMING_FILE = Path(__file__).resolve().parents[1] / "report" / "video_timing.json"
+TIMING = json.loads(TIMING_FILE.read_text()) if TIMING_FILE.exists() else {}
+
+
 def render(i):
     fn, setup, dur = SCENES[i - 1]
     ctx = setup() if setup else {}
+    if str(i) in TIMING:
+        dur = TIMING[str(i)]["dur"]
+        out_t, design_t = zip(*TIMING[str(i)]["warp"])
+        clock = lambda tau: float(np.interp(tau, out_t, design_t))   # piecewise-linear time map  # noqa: E731
+    else:
+        clock = lambda tau: tau                                        # noqa: E731
     tmp, out = CLIPS / f"tmp_s{i}.mp4", CLIPS / f"s{i}.mp4"
     p = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}",
                           "-r", str(FPS), "-i", "-", "-vf", f"fade=t=in:st=0:d=0.3,fade=t=out:st={dur - 0.35}:d=0.35",
                           "-c:v", "libx264", "-crf", "18", "-preset", "veryfast", "-pix_fmt", "yuv420p", str(tmp)],
                          stdin=subprocess.PIPE)
     for f in range(int(dur * FPS)):
-        p.stdin.write(fn(f / FPS, ctx).tobytes())
+        p.stdin.write(fn(clock(f / FPS), ctx).tobytes())
     p.stdin.close()
     if p.wait() == 0:
         tmp.replace(out)
