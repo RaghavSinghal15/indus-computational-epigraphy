@@ -255,77 +255,109 @@ def s2(t, c):
 
 
 # ------------------------------------------------------------------ scene 3: M1
+def _cnn(path):
+    import torch  # noqa: F401  (loaded by train_wells_cnn)
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from train_wells_cnn import load_weights
+    from indus.cnn import SignCNN
+    from indus.wells import wells_codes
+    codes = wells_codes()
+    m = SignCNN(len(codes))
+    load_weights(path, m, codes, "real_finetuned")
+    m.eval()
+    return m, codes
+
+
 def s3_setup():
-    img = seal_photo("M-1114")
-    crops, band, edges = sign_crops(img, 6)
-    boxes, signs = boxes_of("M-1114")
-    truth = list(SEALS.loc["M-1114"].signs_reading)
-    pred = [920, 2, 740, 827, 32, 740]          # v2 CNN on the forced cuts (wells_all.pt), reading order
-    return dict(img=img, band=band, edges=edges, crops=crops, boxes=boxes, truth=truth, pred=pred)
+    from indus.cnn import predict, to_input
+    from indus.real_crops import square_crop
+    models = Path(__file__).resolve().parents[1] / "data" / "processed" / "models"
+    cisi = "M-131"                                 # test seal: decent-looking cuts, but they slice signs
+    seal = SEALS.loc[cisi]
+    img = seal_photo(cisi)
+    n = seal.n_signs
+    crops, band, edges = sign_crops(img, n)        # reading order (right to left)
+    boxes, signs_ltr = boxes_of(cisi)              # left to right
+    gray = cv2.cvtColor(load_image(seal.image), cv2.COLOR_BGR2GRAY)
+    cut_m, codes = _cnn(models / "wells_all.pt")
+    hb_m, _ = _cnn(models / "wells_handbox.pt")
+    pred_cut = [codes[t[0] - 1] for t in predict(cut_m, to_input(np.stack(crops)))[0]][::-1]          # -> left to right
+    hb_crops = [square_crop(gray[y0:y1], x0, x1) for x0, y0, x1, y1 in boxes]
+    pred_hb = [codes[t[0] - 1] for t in predict(hb_m, to_input(np.stack(hb_crops)))[0]]
+    xs = [band.x0 + int(e) for e in edges]
+    cut_pieces = [img[band.y0:band.y1, a:b] for a, b in zip(xs[:-1], xs[1:])]       # left to right
+    box_pieces = [img[y0:y1, x0:x1] for x0, y0, x1, y1 in boxes]
+    return dict(img=img, band=band, xs=xs, boxes=boxes, truth=signs_ltr, pred_cut=pred_cut, pred_hb=pred_hb,
+                cut_pieces=cut_pieces, box_pieces=box_pieces)
+
+
+def _row(im, d, t, start, pieces, preds, truth, y, label, colour):
+    """A row of photo pieces (height 120) with the CNN's guess under each and a score."""
+    text(d, (760, y - 46), label, 30, FS, colour, ramp(t, start))
+    x = 760
+    right = 0
+    for k, (pc, p, tr) in enumerate(zip(pieces, preds, truth)):
+        tile = fit(to_pil(pc), h=120)
+        if tile.width > 140:
+            tile = fit(to_pil(pc), w=140)
+        a = ramp(t, start + 0.2 + k * 0.25, 0.4)
+        paste(im, tile, (x + (140 - tile.width) // 2, y + (120 - tile.height) // 2), a)
+        ok = p == tr
+        right += ok
+        g = ramp(t, start + 1.8 + k * 0.25, 0.4)
+        paste(im, glyph_rgb(p, 72, TEAL if ok else CARN), (x + 34, y + 130), g)
+        d = ImageDraw.Draw(im)
+        text(d, (x + 70, y + 206), "✓" if ok else "✗", 30, FS, TEAL if ok else CARN, g, "ma")
+        x += 150
+    text(d, (x + 20, y + 130), f"{right}/{len(truth)}", 64, F, TEAL if right == len(truth) else CARN,
+         ramp(t, start + 3.6))
+    return d
 
 
 def s3(t, c):
     im, d = base()
-    header(d, t, "M1 · Vision", "Seal photo → sign sequence")
     h = 560
     s = h / c["img"].shape[0]
-    px, py = 120, 290
-    paste(im, fit(to_pil(c["img"]), h=h), (px, py), ramp(t, 0.5))
-    d = ImageDraw.Draw(im)
+    px, py = 120, 300
     b = c["band"]
-    steps = ["1  Find the text band", "2  Cut it into n pieces", "3  A CNN names each piece",
-             "4  Sign-pair statistics fix some mistakes"]
-    for i, st in enumerate(steps):
-        text(d, (720, 300 + i * 56), st, 34, FS if i == min(3, int(max(0, t - 1) // 2.5)) else FR, INK, ramp(t, 1.0 + i * 2.5))
-    # band
-    a = ramp(t, 1.5)
-    if a > 0 and t < 15:
-        d.rectangle([px + b.x0 * s, py + b.y0 * s, px + b.x1 * s, py + b.y1 * s], outline=lerp(BG, CARN, a), width=4)
-    # cuts sweep
-    if 4.0 < t < 15:
-        for k, e in enumerate(c["edges"]):
-            aa = ramp(t, 4.0 + k * 0.25, 0.3)
-            x = px + (b.x0 + e) * s
-            d.line([(x, py + b.y0 * s), (x, py + b.y1 * s)], fill=lerp(BG, CARN, aa), width=4)
-    # crops + predictions (reading order: right to left, so show as on the seal: left to right = reversed)
-    if t > 6.5:
-        crops_vis = c["crops"][::-1]
-        pred_vis, truth_vis = c["pred"][::-1], c["truth"][::-1]
-        for k, cr in enumerate(crops_vis):
-            aa = ramp(t, 6.5 + k * 0.3, 0.4)
-            x = 720 + k * 170
-            paste(im, Image.fromarray(cr).convert("RGB").resize((140, 140)), (x, 560), aa)
-            ok = pred_vis[k] == truth_vis[k]
-            g = glyph_rgb(pred_vis[k], 90, TEAL if ok else CARN)
-            paste(im, g, (x + 25, 715), ramp(t, 8.5 + k * 0.3, 0.4))
-            d = ImageDraw.Draw(im)
-            text(d, (x + 70, 830), "✓" if ok else "✗", 40, FS, TEAL if ok else CARN, ramp(t, 9.0 + k * 0.3), "ma")
-        text(d, (720, 885), "CNN guess under each cut piece: 2 of 6 right on this seal", 28, FR, MUTED, ramp(t, 10.5))
-    # results
-    if t >= 15:
-        im, d = base()
-        header(d, 5, "M1 · Vision", "Cutting, not recognising, is the bottleneck")
-        paste(im, fit(to_pil(c["img"]), h=h), (px, py), 1)
+    if t < 17:
+        header(d, t, "M1 · Vision", "Seal photo → sign sequence")
+        paste(im, fit(to_pil(c["img"]), h=h), (px, py), ramp(t, 0.3))
         d = ImageDraw.Draw(im)
-        if t < 16.5:
-            for k, e in enumerate(c["edges"]):
-                x = px + (b.x0 + e) * s
-                d.line([(x, py + b.y0 * s), (x, py + b.y1 * s)], fill=CARN, width=4)
-        for k, (x0, y0, x1, y1) in enumerate(c["boxes"]):
-            aa = ramp(t, 16.5 + k * 0.3, 0.4)
-            d.rectangle([px + x0 * s, py + y0 * s, px + x1 * s, py + y1 * s], outline=lerp(BG, TEAL, aa), width=5)
-        bars = [("Forced cuts", 33.2, CARN, 18.5), ("Hand boxes, same CNN", 55.9, TEAL, 19.8),
-                ("Hand boxes, CNN trained on them", 73.9, (140, 210, 190), 21.2)]
-        text(d, (720, 300), "First-guess accuracy on unseen test seals", 32, FS, MUTED, ramp(t, 18))
-        for i, (lab, v, col, st) in enumerate(bars):
-            g = ease((t - st) / 1.2)
-            y = 370 + i * 140
-            text(d, (720, y), lab, 32, FR, INK, ramp(t, st, 0.4))
-            if g > 0:
-                d.rounded_rectangle([720, y + 48, 720 + int(12 * v * g), y + 98], 6, fill=col)
-                text(d, (735 + int(12 * v * g), y + 50), f"{v * g:.1f}%", 40, F, INK, 1)
-        para(d, (720, 820), "So we trained a sign detector on our boxes: detector + this CNN reads whole seals at 40.8% "
-             "sign error with no sign count, against 68% for forced cuts even when given the count.", 28, 1080, FS, TEAL, ramp(t, 23.0))
+        a = ramp(t, 1.2)
+        if a > 0 and t < 10.5:
+            d.rectangle([px + b.x0 * s, py + b.y0 * s, px + b.x1 * s, py + b.y1 * s], outline=lerp(BG, CARN, a), width=4)
+        if 2.2 < t < 10.5:
+            for k, x in enumerate(c["xs"]):
+                aa = ramp(t, 2.2 + k * 0.2, 0.3)
+                d.line([(px + x * s, py + b.y0 * s), (px + x * s, py + b.y1 * s)], fill=lerp(BG, CARN, aa), width=4)
+        text(d, (120, 905), "Find the text band, cut it into as many pieces as the seal has signs, let a CNN name each piece",
+             26, FR, MUTED, ramp(t, 1.0))
+        d = _row(im, d, t, 3.5, c["cut_pieces"], c["pred_cut"], c["truth"], 330, "Equal cuts → CNN", CARN)
+        if t > 10.5:
+            for k, (x0, y0, x1, y1) in enumerate(c["boxes"]):
+                aa = ramp(t, 10.5 + k * 0.25, 0.3)
+                d.rectangle([px + x0 * s, py + y0 * s, px + x1 * s, py + y1 * s], outline=lerp(BG, TEAL, aa), width=5)
+            d = _row(im, d, t, 11.0, c["box_pieces"], c["pred_hb"], c["truth"], 645, "Hand-drawn boxes → CNN trained on them", TEAL)
+        return im
+    header(d, 5, "M1 · Vision", "Cutting, not recognising, was the bottleneck")
+    paste(im, fit(to_pil(c["img"]), h=h), (px, py), 1)
+    d = ImageDraw.Draw(im)
+    for x0, y0, x1, y1 in c["boxes"]:
+        d.rectangle([px + x0 * s, py + y0 * s, px + x1 * s, py + y1 * s], outline=TEAL, width=5)
+    bars = [("Equal cuts", 33.2, CARN, 17.5), ("Hand boxes, same CNN", 55.9, GOLD, 18.4),
+            ("Hand boxes, CNN trained on them", 73.9, TEAL, 19.3)]
+    text(d, (760, 300), "First-guess accuracy on unseen test seals", 30, FS, MUTED, ramp(t, 17.2))
+    for i, (lab, v, col, st) in enumerate(bars):
+        g = ease((t - st) / 1.0)
+        y = 360 + i * 120
+        text(d, (760, y), lab, 30, FR, INK, ramp(t, st, 0.4))
+        if g > 0:
+            d.rounded_rectangle([760, y + 44, 760 + int(12 * v * g), y + 90], 6, fill=col)
+            text(d, (775 + int(12 * v * g), y + 46), f"{v * g:.1f}%", 38, F, INK, 1)
+    para(d, (760, 740), "So we trained a sign detector on our boxes. Detector + this CNN reads whole seals at "
+         "40.8% sign error without knowing the count, against 68% for equal cuts even when given the count.",
+         28, 1060, FS, TEAL, ramp(t, 21.5))
     return im
 
 
@@ -335,40 +367,56 @@ def s4_setup():
     split = dict(zip(SEALS.index, SEALS.split))
     train = BOXES[BOXES.cisi.map(split) == "train"]
     bank = build_bank(train)
-    donors = ["M-12", "M-232", "M-74"]
-    donors = [x for x in donors if x in set(train.cisi)] or list(train.cisi.unique()[:3])
-    donor_imgs = [(seal_photo(x), boxes_of(x)[0]) for x in donors[:3]]
-    seq = [740, 820, 2, 33]                       # a real ICIT text in reading order? pick one fully covered
+    donor = "M-131" if "M-131" in set(train.cisi) else None
+    cands = [x for x in train.cisi.unique() if len(boxes_of(x)[0]) >= 5]
+    donor = cands[3]
+    donor_img, donor_boxes = seal_photo(donor), boxes_of(donor)[0]
+    # a wall of real crops from many seals (the "bank")
+    wall = []
+    for code in list(bank.crops)[:200:7][:24]:
+        p = bank.crops[code][0]
+        wall.append(p.image)
+    # background: a wide, clean band, and the original band before painting out
+    bgs = [b for b in bank.backgrounds if 3.0 < b.image.shape[1] / b.image.shape[0] < 5.5 and b.image.shape[0] >= 60]
+    def coverage(b):          # share of the band covered by sign boxes: less = more bare stone to show
+        r = BOXES[BOXES.cisi == b.seal]
+        area = ((r.x1 - r.x0) * (r.y1 - r.y0)).sum()
+        return area / ((r.x1.max() - r.x0.min()) * (r.y1.max() - r.y0.min()))
+    bg = min(bgs, key=coverage)
+    brow = BOXES[BOXES.cisi == bg.seal]
+    simg = seal_photo(bg.seal)
+    m = 3
+    band_before = simg[max(0, brow.y0.min() - m):brow.y1.max() + m, max(0, brow.x0.min() - m):brow.x1.max() + m]
+    boxes_before = [(r.x0 - max(0, brow.x0.min() - m), r.y0 - max(0, brow.y0.min() - m),
+                     r.x1 - max(0, brow.x0.min() - m), r.y1 - max(0, brow.y0.min() - m)) for r in brow.itertuples()]
+    # a real corpus text (never on a held-out seal) whose signs all have crops
     from indus.data import load_icit_full
-    held = {tuple(s) for s, sp in zip(SEALS.signs_reading, SEALS.split) if sp != "train"}
-    texts = [t for t in load_icit_full("reading") if tuple(t) not in held and len(t) == 5 and all(s in bank.crops for s in t)]
-    seq = texts[7]
+    held = {tuple(x) for x, sp in zip(SEALS.signs_reading, SEALS.split) if sp != "train"}
+    texts = [x for x in load_icit_full("reading") if tuple(x) not in held and len(x) == 5
+             and all(s in bank.crops for s in x)]
+    seq = texts[11]
     visual = seq[::-1]
-    picks = [bank.crops[s][rng.integers(len(bank.crops[s]))] for s in visual]
-    bg = next(b for b in bank.backgrounds[10:] if b.image.shape[1] / b.image.shape[0] > 3.5)
-    hgt = 150
+    bg_mean = bg.image.mean()
+    picks = []
+    for s_ in visual:      # the crop whose stone is closest in brightness to the background
+        picks.append(min(bank.crops[s_], key=lambda p: abs(p.image.mean() - bg_mean)))
+    hgt = 160
     pieces = []
     for p in picks:
-        f = hgt * 0.92 / p.band_height
-        ph = max(8, min(hgt - 4, round(p.image.shape[0] * f)))
+        f = hgt * 0.9 / p.band_height
+        ph = max(8, min(hgt - 6, round(p.image.shape[0] * f)))
         pw = max(4, round(p.image.shape[1] * ph / p.image.shape[0]))
-        pieces.append(cv2.resize(p.image, (pw, ph)))
-    gap = 8
-    width = 30 + sum(pc.shape[1] for pc in pieces) + gap * (len(pieces) - 1) + 30
-    back = cv2.resize(bg.image, (width, hgt))
-    slots, x = [], 30
+        pieces.append(cv2.resize(p.image, (pw, ph), interpolation=cv2.INTER_AREA))
+    gap = 6
+    width = 24 + sum(pc.shape[1] for pc in pieces) + gap * (len(pieces) - 1) + 24
+    back = cv2.resize(bg.image, (width, hgt), interpolation=cv2.INTER_CUBIC)
+    slots, x = [], 24
     for pc in pieces:
-        y = (hgt - pc.shape[0]) // 2
-        slots.append((x, y))
+        slots.append((x, (hgt - pc.shape[0]) // 2))
         x += pc.shape[1] + gap
-    # the source band of the background seal, before inpainting
-    bgseal = bg.seal
-    brow = BOXES[BOXES.cisi == bgseal]
-    simg = seal_photo(bgseal)
-    band_before = simg[max(0, brow.y0.min() - 3):brow.y1.max() + 3, max(0, brow.x0.min() - 3):brow.x1.max() + 3]
-    fig = Image.open("/home/claude/indus-computational-epigraphy/reports/figures/final/composites_vs_real.png")
-    return dict(donors=donor_imgs, seq=seq, pieces=pieces, slots=slots, back=back, band_before=band_before,
-                band_after=bg.image, fig=fig)
+    fig = Image.open(Path(__file__).resolve().parents[1] / "reports/figures/final/composites_vs_real.png")
+    return dict(donor=donor_img, donor_boxes=donor_boxes, wall=wall, seq=seq, pieces=pieces, slots=slots,
+                back=back, band_before=band_before, boxes_before=boxes_before, band_after=bg.image, fig=fig)
 
 
 def blend_piece(canvas, pc, x, y):
@@ -385,76 +433,91 @@ def blend_piece(canvas, pc, x, y):
 
 def s4(t, c):
     im, d = base()
-    header(d, t, "M1 · Prof. Ashwin's suggestion", "Build new inscriptions out of real signs")
+    header(d, t if t < 9 else 5, "M1 · Prof. Ashwin's suggestion", "Build new inscriptions out of real signs")
     if t < 9:
-        text(d, (120, 270), "1  Cut every hand-boxed sign out of the training seals", 34, FS, INK, ramp(t, 0.5))
-        slot = 0
-        for k, (img, boxes) in enumerate(c["donors"]):
-            h = 300
-            s = h / img.shape[0]
-            px, py = 120 + k * 560, 360
-            th = fit(to_pil(img), h=h)
-            paste(im, th, (px, py), ramp(t, 0.8 + k * 0.3))
-            dd = ImageDraw.Draw(im)
-            for j, (x0, y0, x1, y1) in enumerate(boxes):
-                aa = ramp(t, 2.0 + k * 0.4 + j * 0.2, 0.3)
-                dd.rectangle([px + x0 * s, py + y0 * s, px + x1 * s, py + y1 * s], outline=lerp(BG, TEAL, aa), width=3)
-                # crops fly down into the bank
-                g = ease((t - 4.5 - k * 0.3 - j * 0.12) / 1.2)
-                if g > 0:
-                    crop = to_pil(img[y0:y1, x0:x1])
-                    crop = fit(crop, h=80)
-                    tx, ty = 120 + ((slot + j) % 17) * 100, 700 + ((slot + j) // 17) * 95
-                    sx, sy = px + x0 * s, py + y0 * s
-                    paste(im, crop, (int(sx + (tx - sx) * g), int(sy + (ty - sy) * g)), min(1, g * 2))
-            slot += len(boxes)
-        text(d, (120, 900), "2,240 real crops of 336 signs, from training seals only", 30, FR, MUTED, ramp(t, 6.5))
+        text(d, (120, 270), "1   Cut every hand-boxed sign out of the training seals", 34, FS, INK, ramp(t, 0.4))
+        h = 520
+        img = c["donor"]
+        s = h / img.shape[0]
+        px, py = 120, 340
+        paste(im, fit(to_pil(img), h=h), (px, py), ramp(t, 0.6))
+        d = ImageDraw.Draw(im)
+        cell, cols, gx, gy = 112, 7, 980, 340
+        for j, (x0, y0, x1, y1) in enumerate(c["donor_boxes"]):
+            aa = ramp(t, 1.4 + j * 0.3, 0.3)
+            d.rectangle([px + x0 * s, py + y0 * s, px + x1 * s, py + y1 * s], outline=lerp(BG, TEAL, aa), width=4)
+            g = ease((t - 3.4 - j * 0.25) / 1.1)
+            if g > 0:
+                crop = fit(to_pil(img[y0:y1, x0:x1]), h=cell - 12)
+                if crop.width > cell - 12:
+                    crop = fit(to_pil(img[y0:y1, x0:x1]), w=cell - 12)
+                tx, ty = gx + (j % cols) * cell, gy + (j // cols) * cell
+                sx, sy = px + x0 * s, py + y0 * s
+                paste(im, crop, (int(sx + (tx - sx) * g), int(sy + (ty - sy) * g)))
+        n0 = len(c["donor_boxes"])
+        for k, w_ in enumerate(c["wall"]):
+            j = n0 + k
+            if j >= cols * 5:
+                break
+            a = ramp(t, 5.0 + k * 0.08, 0.3)
+            crop = fit(to_pil(w_), h=cell - 12)
+            if crop.width > cell - 12:
+                crop = fit(to_pil(w_), w=cell - 12)
+            paste(im, crop, (gx + (j % cols) * cell, gy + (j // cols) * cell), a)
+        text(d, (980, 920), "2,240 real sign crops of 336 signs, training seals only", 28, FR, MUTED, ramp(t, 6.0))
         return im
     if t < 15:
-        text(d, (120, 270), "2  Paint the signs out of a real seal surface (OpenCV inpainting)", 34, FS, INK, ramp(t, 9.0))
-        before = fit(to_pil(c["band_before"]), h=220)
-        after = fit(to_pil(c["band_after"]), h=220)
-        paste(im, before, (120, 400), ramp(t, 9.3))
-        paste(im, after, (120, 400), ramp(t, 11.5, 1.5))
-        text(d, (120 + before.width + 40, 480), "→  bare stone to write on", 34, FR, MUTED, ramp(t, 12.5))
+        text(d, (120, 270), "2   Paint the signs out of a real seal surface (OpenCV inpainting)", 34, FS, INK, ramp(t, 9.0))
+        before = fit(to_pil(c["band_before"]), h=250)
+        if before.width > 1100:
+            before = fit(to_pil(c["band_before"]), w=1100)
+        sc = before.width / c["band_before"].shape[1]
+        after = to_pil(c["band_after"]).resize(before.size, Image.LANCZOS)
+        paste(im, before, (120, 340), ramp(t, 9.2))
+        dd = ImageDraw.Draw(im)
+        for x0, y0, x1, y1 in c["boxes_before"]:
+            dd.rectangle([120 + x0 * sc, 340 + y0 * sc, 120 + x1 * sc, 340 + y1 * sc], outline=lerp(BG, TEAL, ramp(t, 9.8)), width=4)
+        y2 = 340 + before.height + 60
+        paste(im, after, (120, y2), ramp(t, 11.3, 1.2))
+        text(d, (160 + before.width, 340 + before.height // 2 - 18), "real seal band, signs boxed", 30, FR, INK, ramp(t, 9.8))
+        text(d, (160 + before.width, y2 + before.height // 2 - 18), "signs painted out: bare stone", 30, FS, TEAL, ramp(t, 12.0))
         return im
     if t < 26:
-        text(d, (120, 270), "3  Paste real signs along a real corpus text", 34, FS, INK, ramp(t, 15.0))
-        # the text, as glyphs, in reading order shown right to left
-        seq = c["seq"]
-        vis = seq[::-1]
-        for i, s in enumerate(vis):
-            paste(im, glyph_rgb(s, 80, GOLD), (120 + i * 100, 340), ramp(t, 15.3 + i * 0.15))
-        text(d, (130 + len(vis) * 100, 370), "←  read right to left", 28, FR, MUTED, ramp(t, 16))
+        text(d, (120, 270), "3   Paste real signs along a real corpus text", 34, FS, INK, ramp(t, 15.0))
+        scale = min(1500 / c["back"].shape[1], 340 / c["back"].shape[0])
+        bx, by = 210, 530
+        bx = (W - round(c["back"].shape[1] * scale)) // 2
         canvas = c["back"].copy()
-        n_in = 0
         for k, (pc, (x, y)) in enumerate(zip(c["pieces"], c["slots"])):
-            if t > 17.5 + k * 1.3:
+            if t > 17.4 + k * 1.3:
                 blend_piece(canvas, pc, x, y)
-                n_in += 1
-        scale = 2.2
-        band = fit(to_pil(canvas), h=int(canvas.shape[0] * scale))
-        bx, by = 120, 520
-        paste(im, band, (bx, by), ramp(t, 16.5))
+        band = to_pil(canvas).resize((round(canvas.shape[1] * scale), round(canvas.shape[0] * scale)), Image.LANCZOS)
+        paste(im, band, (bx, by), ramp(t, 15.5))
         dd = ImageDraw.Draw(im)
-        for k, (pc, (x, y)) in enumerate(zip(c["pieces"], c["slots"])):
-            g = ease((t - 16.3 - k * 1.3) / 1.2)
-            if 0 < g < 1:       # flying sign
-                fly = fit(to_pil(pc), h=int(pc.shape[0] * scale))
-                sx, sy = 120 + k * 100, 340
+        vis = c["seq"][::-1]
+        for k, (s_, pc, (x, y)) in enumerate(zip(vis, c["pieces"], c["slots"])):
+            cx = bx + (x + pc.shape[1] / 2) * scale
+            paste(im, glyph_rgb(s_, 90, GOLD), (int(cx - 45), 360), ramp(t, 15.6 + k * 0.12))
+            g = ease((t - 16.2 - k * 1.3) / 1.2)
+            if 0 < g < 1:
+                fly = to_pil(pc).resize((round(pc.shape[1] * scale), round(pc.shape[0] * scale)), Image.LANCZOS)
+                sx, sy = cx - fly.width / 2, 360
                 tx, ty = bx + x * scale, by + y * scale
-                paste(im, fly, (int(sx + (tx - sx) * g), int(sy + (ty - sy) * g)), 1)
-            if g >= 1:
+                paste(im, fly, (int(sx + (tx - sx) * g), int(sy + (ty - sy) * g)))
+        dd = ImageDraw.Draw(im)
+        text(dd, (bx + band.width, 470), "←  read right to left", 26, FR, MUTED, ramp(t, 16.0), "ra")
+        if t > 17.4 + 1.3 * len(c["pieces"]):
+            for k, (pc, (x, y)) in enumerate(zip(c["pieces"], c["slots"])):
+                a = ramp(t, 23.0, 0.5) * (1 - ramp(t, 25.0, 0.8))
                 dd.rectangle([bx + x * scale, by + y * scale, bx + (x + pc.shape[1]) * scale, by + (y + pc.shape[0]) * scale],
-                             outline=lerp(BG, TEAL, 1 - ramp(t, 24, 1.0)), width=3)
-        if n_in == len(c["pieces"]):
-            text(d, (120, 900), "A new inscription with its exact sequence and sign boxes, for free", 32, FS, TEAL, ramp(t, 23.5))
+                             outline=lerp(BG, TEAL, a), width=4)
+            text(dd, (bx, by + band.height + 40), "A new inscription that comes with its exact sequence and sign boxes",
+                 32, FS, TEAL, ramp(t, 23.0))
         return im
     if t < 31:
         text(d, (120, 270), "5,000 composites (left) next to real seal bands (right)", 34, FS, INK, ramp(t, 26.0))
         paste(im, fit(c["fig"].convert("RGB"), w=1500), (210, 340), ramp(t, 26.2))
         return im
-    # results
     text(d, (120, 270), "Does it help a reader that needs no cutting (CRNN + CTC)?", 34, FS, INK, ramp(t, 31.0))
     rows = [("Test seals: sign error", 55.4, 54.4, "%"), ("Harappa, never trained on: sign error", 57.9, 53.2, "%"),
             ("Harappa: seals with the right sign count", 53, 65, " / 181")]
@@ -463,10 +526,10 @@ def s4(t, c):
         text(d, (120, y), lab, 32, FR, INK, ramp(t, 31.5 + i * 0.6))
         for j, (v, col, name) in enumerate([(a0, MUTED, "real bands only"), (a1, TEAL, "+ composites")]):
             g = ease((t - 32.0 - i * 0.6 - j * 0.5) / 1.0)
-            scale = 12 if unit == "%" else 10
+            k = 12 if unit == "%" else 10
             if g > 0:
-                d.rounded_rectangle([120, y + 50 + j * 50, 120 + int(scale * v * g), y + 88 + j * 50], 5, fill=col)
-                text(d, (135 + int(scale * v * g), y + 50 + j * 50), f"{v * g:.1f}{unit}" if unit == "%" else f"{int(v * g)}{unit}", 30, FS, INK, 1)
+                d.rounded_rectangle([120, y + 50 + j * 50, 120 + int(k * v * g), y + 88 + j * 50], 5, fill=col)
+                text(d, (135 + int(k * v * g), y + 50 + j * 50), f"{v * g:.1f}{unit}" if unit == "%" else f"{int(v * g)}{unit}", 30, FS, INK, 1)
                 text(d, (1500, y + 52 + j * 50), name, 26, FR, MUTED, 1)
     para(d, (120, 900), "Biggest gain on the site it never saw: composites add arrangements and backgrounds the 466 real bands lack.",
          28, 1600, FR, MUTED, ramp(t, 35.0))
