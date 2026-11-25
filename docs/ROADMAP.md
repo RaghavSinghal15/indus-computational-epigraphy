@@ -1,6 +1,6 @@
 # Roadmap: final phase (after the Oct 15 flash talk)
 
-**Status (Nov 25):** done. All P0/P1 issues are merged except the detector (#36, pipeline ready, not trained) and the composite GAN (#42, dropped). Final numbers: the results table in the README; write-up: `report/`.
+**Status (Nov 25):** done. All P0/P1 issues are merged; the composite GAN (#42) was dropped. Final numbers: the results table in the README; write-up: `report/`.
 
 Short version of what we learned since the first evaluation, what we decided, and who can pick up what. Work is tracked as GitHub issues labelled **P0** (core), **P1** (strong addition), **P2** (stretch).
 

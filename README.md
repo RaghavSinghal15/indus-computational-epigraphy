@@ -16,6 +16,7 @@ Fixed seal-level split: 466 train, 67 validation, 141 test seals, plus 181 Harap
 | M1 | Training on hand-box crops | same start and extra epochs, only the training crops differ: 73.9% top-1 / 90.1% top-5 on hand-box test crops (control 55.7%), 71.3% on Harappa; needs good boxes at test time | `reports/m1_handbox_cnn.md` |
 | M1 | Whole-band CRNN + CTC (no count, no cutting) | sign error 56.3% (T4) / 55.4% (CPU rerun) vs 68.1% for cut-and-classify with the true count | `reports/m1_crnn.md` |
 | M1 | Synthetic inscriptions from real sign crops (instructor's suggestion) | CRNN sign error with composites vs without (same seed): test 55.4% to 54.4%; Harappa 57.9% to 53.2%, correct counts 53 to 65 of 181 | `reports/m1_composites.md` |
+| M1 | Sign detector (YOLOv8n on hand boxes + composites), then the hand-box CNN: fully automatic, no count | sign error 40.8%, 16.3% of inscriptions exact (forced cuts with the true count: 68.1%); exact count on 57.4% of seals | `reports/m1_sign_detector.md` |
 | M1 | Cross-site: trained on Mohenjo-daro, tested on Harappa | 28.9% vs 29.9% in-site | `reports/m1_harappa.md` |
 | M1 | Published 94.5% protocol (40 signs, crop split) on our data | 62.5% (majority 49.9%); random crop split did not inflate it | `reports/m1_dixit_protocol.md` |
 | M2 | Frequencies, start/end signs, transitions, entropy | jar sign ends 35.2% of texts, starts 0.16%; entropy 3.31 bits read right to left vs 3.82 reversed | `reports/b1_results.md` to `b4_results.md` |
