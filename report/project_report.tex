@@ -42,7 +42,7 @@
 }]
 
 \section{Introduction}
-The Indus script (c.\ 2600--1900 BCE) is known from short texts, mostly on seals, averaging under five signs. Decipherment claims are frequent and unverifiable, so we ask a narrower question: what can standard AI methods measure about the script's structure, and how reliable is each measurement? \textbf{Input:} a seal photograph, or a sign sequence from a corpus. \textbf{Output:} the ordered sign IDs, statistics of sign order, predictions of hidden signs, and tests against null models.
+The Indus script (c.\ 2600--1900 BCE) survives in short texts, mostly on seals. Decipherment claims are frequent and unverifiable, so we ask: what can standard AI methods measure about the script's structure, and how reliable is each measurement? \textbf{Input:} a seal photograph, or a sign sequence from a corpus. \textbf{Output:} the ordered sign IDs, statistics of sign order, predictions of hidden signs, and tests against null models.
 
 \textbf{Contributions.} (i) A labelled set of 855 seal photos with 4,078 hand-checked sign boxes on a fixed seal-level split; (ii) a seal reader (M1) evaluated on unseen seals and an unseen site; (iii) synthetic inscriptions composed from real sign crops; (iv) Markov statistics (M2), masked prediction (M3) and guardrails (M4), with two extensions: how M1's errors distort M2--M4 (E1) and what a no-language process can already reproduce (E2).
 
@@ -127,7 +127,7 @@ CRNN, real + composites & \textbf{53.2} & \textbf{7.7} & \textbf{35.9} \\
 
 \textbf{M2.} The 568 sign types are Zipf-like (top 10: 33\% of tokens). The jar sign (Wells 740) ends 35.2\% of texts and begins 0.16\%. Next-sign entropy is 3.31 bits in reading order and 3.82 reversed. On the full ICIT corpus every statistic moves by under a point; by site, the jar sign ends 39.6\% of Mohenjo-daro texts but 29.0\% of Harappa texts.
 
-\textbf{M3.} Masked top-1/top-5: unigram 11.3/23.7\%, previous sign only 25.0/44.9\%, both neighbours 35.0/60.0\%. Held-out perplexity is 87.1 (unigram) and 37.8 (bigram), close to the published 68.8 and 26.7 on a different corpus~\cite{yadav2010plos}. The best of four transformer variants over three seeds reached 29.9/52.0\%, below a trigram (35.8/61.0\%).
+\textbf{M3.} Masked top-1/top-5: unigram 11.3/23.7\%, previous sign only 25.0/44.9\%, both neighbours 35.0/60.0\%. Held-out perplexity is 87.1 (unigram) and 37.8 (bigram), close to the published 68.8 and 26.7 on a different corpus~\cite{yadav2010plos}. A small transformer reached at best 29.9/52.0\%, below a trigram (35.8/61.0\%).
 
 \begin{figure}[t]
 \centering
@@ -138,12 +138,12 @@ CRNN, real + composites & \textbf{53.2} & \textbf{7.7} & \textbf{35.9} \\
 
 \textbf{M4.} Naive Bayes separates real from shuffled texts with 81.4\% accuracy (control 50.0\%); permutation tests give entropy 3.685 vs 4.715 bits and jar-final 35.2\% vs 11.1\% ($p=0.001$ for both). But Mesopotamian kudurru deity symbols, which are not writing, also pass (84.6\%), while barn-star motifs do not (50.0\%) (Fig.~\ref{fig:guard}): non-random order alone is not evidence of language.
 
-\textbf{E1.} Real-vs-shuffled accuracy falls from 82.7\% with perfect readings to 64.5\% at 60\% reading accuracy and 53.5\% at 30\%; the jar sign's final position survives longer ($p=0.005$ at 30\%). With the CNN's measured confusions at the same 31\% accuracy more structure survives (61.0\% vs 53.8\%), because a reader confuses similar signs consistently.
+\textbf{E1.} Real-vs-shuffled accuracy falls from 82.7\% (perfect readings) to 64.5\% at 60\% accuracy and 53.5\% at 30\%. With the forced-cut CNN's measured confusions at 31\% accuracy more survives (61.0\% vs 53.8\%), because a reader confuses similar signs consistently, but the masked-prediction signal is gone (top-5 43.2\% vs 41.0\% shuffled). With the hand-box CNN's confusions at its 73.9\% every signal holds: real vs shuffled 73.7\%, jar-final 26.7\% vs 10.0\%, entropy 4.25 vs 4.81 bits, masked top-5 41.6\% vs 21.3\%. Readings from good boxes are now accurate enough to support the corpus-level conclusions.
 
 \textbf{E2.} A bigram chain with no words or grammar reproduces Zipf's slope ($-0.93$), the jar-final rate (37.6\% vs 35.2\%) and similar entropy (3.00 vs 3.31 bits). Pairs cannot tell its output from real texts (49.6\%), but triples can (61.0\%, control 49.0\%); deity symbols show no such excess (50.8\%).
 
 \section{Discussion and limitations}
-The reader's limit was segmentation, not recognition: with good boxes the CNN reaches 74\%, and a detector trained on our boxes recovers much of that gap (40.8\% SER without a count, against 68.1\% for forced cuts given the count). Next: train the detector on all composites and add the bigram decoder on top. Statistics computed from automatic readings at today's accuracy would mostly describe the reader (E1). One seed and one split per experiment ($\pm$4 points on 141 seals); most of the 712 classes have few real examples; boxes for batches 7--9 were AI-assisted then checked; small control corpora are noisy (barn stars: 58.1\% on triples, control 45.7\%).
+The reader's limit was segmentation, not recognition: with good boxes the CNN reaches 74\%, and a detector trained on our boxes recovers much of that gap (40.8\% SER without a count, against 68.1\% for forced cuts given the count). E1 now passes at the hand-box CNN's accuracy; the fully automatic pipeline (40.8\% SER, with dropped and inserted signs that E1 does not model) sits near the 60\% threshold. One seed and one split per experiment ($\pm$4 points on 141 seals); most of the 712 classes have few real examples; boxes for batches 7--9 were AI-assisted then checked; small control corpora are noisy (barn stars: 58.1\% on triples, control 45.7\%).
 
 \section{Conclusion}
 Sign order in the Indus texts is strongly structured and partly predictable, and real sign crops recombined along real texts make a useful training resource. But order alone does not separate the script from non-linguistic symbols or from a simple Markov process; recurring sign groups beyond pairs are the property here that does.
