@@ -94,7 +94,7 @@ verify the original transcriptions. No Mahadevan dataset was mixed into the coun
 No training or randomness is involved, so a split or random seed is unnecessary.
 No raw files were changed.
 
-Sources: `docs/TASKS.md` (B2), `data/README.md` (provenance and exclusions),
+Sources: `data/README.md` (provenance and exclusions),
 `src/indus/data.py` (orientation/mapping), `tests/test_data.py` (jar expectation).
 Source CSV SHA-256:
 `140a61e57dfaccd15867d9a00141f180a38080141b0ad18bb4262c782024f186`.

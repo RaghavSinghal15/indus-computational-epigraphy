@@ -120,4 +120,4 @@ transcription accuracy or archaeological conclusions.
 
 Source: `data/raw/icit_1837_sequences.csv` via `indus.data.load_sequences()`.
 SHA-256: `140a61e57dfaccd15867d9a00141f180a38080141b0ad18bb4262c782024f186`.
-Local references: `docs/TASKS.md`, `data/README.md`, `src/indus/ngrams.py`.
+Local references: `data/README.md`, `src/indus/ngrams.py`.

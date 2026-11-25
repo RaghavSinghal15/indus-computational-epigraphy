@@ -29,4 +29,4 @@ Everything in `raw/` is treated as read-only. Derived files go in `processed/`, 
 ## Not in the repo, but useful
 
 - Wells sign key (what each Wells number looks like): Supplementary file `Keylist_Udeciphered_Indus.pdf` in the same PLOS S2 zip.
-- Seal photos for M1: see `docs/PLAN.md`.
+- Seal photos for M1: CISI photos via Lipi (`scripts/fetch_lipi.py`), see `data/raw/cisi_seals/README.md`.

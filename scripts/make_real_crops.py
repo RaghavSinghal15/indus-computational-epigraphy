@@ -11,7 +11,7 @@ Writes data/processed/real_crops/crops.npz with:
     view     str   (N,)          "impression" or "seal" (the seal photo, flipped back)
 
 Split (by seal, so no seal is in two parts), chosen once with fixed seeds and
-saved so every later run uses the same seals (AGENTS.md rule 7):
+saved so every later run uses the same seals:
   * test: 25% of the VERIFIED seals (data/raw/cisi_seals/test_seals.txt).
     Measured once, at the very end. Never used to choose settings.
   * val: 15% of the remaining verified seals (val_seals.txt). Used to choose

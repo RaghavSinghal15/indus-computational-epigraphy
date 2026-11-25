@@ -18,8 +18,8 @@ snapshot or predict anything from seal photographs.
 | Mean / median / mode length | 4.5504 / 4 / 3 |
 | Most frequent type | Wells 740, 902 occurrences (10.79% of tokens) |
 
-The required totals of 8,359 tokens, 568 types and 219 singletons match
-`docs/TASKS.md`. There are 361 length-three sequences, the largest length group.
+The totals of 8,359 tokens, 568 types and 219 singletons match the
+reference counts. There are 361 length-three sequences, the largest length group.
 
 ## Files and how to run
 
@@ -79,7 +79,7 @@ randomness, so no data split or random seed is needed here.
 
 ## Local sources
 
-`docs/TASKS.md` defines B1 and its reference totals. `data/README.md` documents
+`data/README.md` documents
 the corpus and its limitations. `src/indus/data.py` defines the loader.
 Source CSV SHA-256:
 `140a61e57dfaccd15867d9a00141f180a38080141b0ad18bb4262c782024f186`.
