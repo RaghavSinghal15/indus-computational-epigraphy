@@ -24,7 +24,7 @@ Fixed seal-level split: 466 train, 67 validation, 141 test seals, plus 181 Harap
 | M3 | Hide a sign, predict it | bigrams 35.0% / 60.0%; perplexity 37.8 (unigram 87.1); small transformer 29.9% (worse) | `reports/c1_masked_prediction.md`, `reports/c2_neural_m3.md` |
 | M4 | Real vs shuffled texts | Naive Bayes 81.4% (control 50%); permutation p = 0.001 | `reports/d1_guardrails.md` |
 | M4 | Same tests on non-language symbols | deity symbols also pass (84.6%), barn stars do not (50%) | `reports/m4_symbol_controls.md` |
-| E1 | Error propagation from M1 into M2-M4 | pair statistics need about 60% reading accuracy; with real CNN confusions at 31% more survives (61% vs 54%) | `reports/e1_error_propagation.md`, `reports/e1_cnn_confusions.md` |
+| E1 | Error propagation from M1 into M2-M4 | pair statistics need about 60% reading accuracy; at the forced-cut CNN's 31% they mostly fail, at the hand-box CNN's 73.9% (its own confusions) every signal survives: real vs shuffled 73.7%, masked top-5 41.6% vs 21.3% | `reports/e1_error_propagation.md`, `reports/e1_cnn_confusions.md`, `reports/e1_handbox_confusions.md` |
 | E2 | Null-model benchmark | a no-language bigram chain reproduces Zipf, the jar sign and entropy; only sign triples separate real texts (61%) | `reports/e2_null_benchmark.md` |
 
 First-phase (Oct 6) results and the plan that led here: `docs/PLAN.md`, `docs/ROADMAP.md`.

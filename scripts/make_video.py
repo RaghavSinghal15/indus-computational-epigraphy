@@ -553,7 +553,7 @@ def s6(t, c):
 # ------------------------------------------------------------------ scene 7: E1
 def s7(t, c):
     im, d = base()
-    header(d, t, "E1 · Error propagation", "How reading errors distort the statistics")
+    header(d, t, "E1 · Error propagation", "Are our readings good enough now? Yes, with good boxes")
     ox, oy, w, h = 200, 860, 1000, 520     # chart: x = reading accuracy 100 -> 30, y = NB accuracy 45..85
 
     def P(acc, v):
@@ -568,6 +568,7 @@ def s7(t, c):
     cy = P(100, 50)[1]
     d.line([(ox, cy), (ox + w, cy)], fill=lerp(BG, LINE, a), width=2)
     text(d, (ox + 12, cy - 34), "chance", 24, FR, MUTED, a)
+    text(d, (ox + 30, P(92, 79.6)[1] + 80), "random mistakes", 26, FR, CARN, ramp(t, 2.5))
     pts = [(100, 82.7), (60, 64.5), (30, 53.5)]
     for i, (acc, v) in enumerate(pts):
         g = ramp(t, 1.5 + i * 1.2)
@@ -578,14 +579,20 @@ def s7(t, c):
                 d.line([(px, py), (px + (x - px) * g, py + (y - py) * g)], fill=CARN, width=4)
             d.ellipse([x - 10, y - 10, x + 10, y + 10], fill=lerp(BG, CARN, g))
             text(d, (x + 18, y + 8 if acc == 30 else y - 40), f"{v}%", 30, FS, INK, g)
-    g = ramp(t, 6.0)
+    g = ramp(t, 5.5)
     x, y = P(31, 61.0)
-    d.ellipse([x - 12, y - 12, x + 12, y + 12], fill=lerp(BG, TEAL, g))
-    text(d, (x - 24, y - 74), "61.0% with our", 26, FS, TEAL, g, "ra")
-    text(d, (x - 24, y - 42), "CNN's real mistakes", 26, FS, TEAL, g, "ra")
-    para(d, (1380, 380), "Random errors wash the structure out fast. Our CNN confuses similar signs consistently, so more "
-         "survives, but at today's 31% accuracy most of what you would measure is the reader, not the script.",
-         30, 440, FR, INK, ramp(t, 8.0))
+    d.ellipse([x - 12, y - 12, x + 12, y + 12], fill=lerp(BG, GOLD, g))
+    text(d, (x + 22, y - 34), "61.0% forced-", 26, FS, GOLD, g)
+    text(d, (x + 22, y - 4), "cut CNN (31%)", 26, FS, GOLD, g)
+    g = ramp(t, 9.0)
+    x, y = P(73.9, 73.7)
+    d.ellipse([x - 14, y - 14, x + 14, y + 14], fill=lerp(BG, TEAL, g))
+    text(d, (x + 24, y - 64), "73.7%  hand-box CNN", 30, FS, TEAL, g)
+    text(d, (x + 24, y - 28), "(74% accurate, its real mistakes)", 26, FR, TEAL, g)
+    para(d, (1430, 360), "At 31% accuracy most of what you would measure is the reader. At our new 74%, every signal "
+         "survives: real vs shuffled 73.7%, the jar sign still ends texts, and masked prediction is twice its "
+         "shuffled control. The readings are now good enough for the structure to be the script's.",
+         28, 400, FR, INK, ramp(t, 11.0))
     return im
 
 
