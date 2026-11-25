@@ -198,6 +198,15 @@ def load_lipi_seals() -> pd.DataFrame:
 BOXES_DIR = RAW / "sign_boxes"
 
 
+def photo_signs_ltr(seal) -> list[int]:
+    """Return Wells IDs from left to right in this specific impression photograph."""
+    # Lipi transcribes L-58 as +740-550+, but this scan shows 550 on the left
+    # and the distinctive 740 jar on the right. Keep the catalogue order intact.
+    if seal.image_file == "L-58_imp_a.jpg":
+        return seal.signs_ltr[::-1]
+    return seal.signs_ltr
+
+
 def read_yolo_boxes(path: Path, width: int, height: int) -> list[tuple[int, int, int, int]]:
     """Boxes from one YOLO label file as pixel (x0, y0, x1, y1), sorted left to right.
 
@@ -233,7 +242,7 @@ def load_sign_boxes() -> pd.DataFrame:
         boxes = read_yolo_boxes(label, w, h)
         if len(boxes) != len(seal.signs_ltr):
             continue
-        for i, (box, sign) in enumerate(zip(boxes, seal.signs_ltr)):
+        for i, (box, sign) in enumerate(zip(boxes, photo_signs_ltr(seal))):
             rows.append({"cisi": b.cisi, "batch": b.batch, "image": seal.image, "pos_ltr": i, "wells": sign,
                          "x0": box[0], "y0": box[1], "x1": box[2], "y1": box[3]})
     return pd.DataFrame(rows)

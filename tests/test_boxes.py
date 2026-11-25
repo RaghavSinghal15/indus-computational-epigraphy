@@ -1,5 +1,13 @@
 """Sign-box helpers (#23)."""
-from indus.data import read_yolo_boxes
+from types import SimpleNamespace
+
+from indus.data import photo_signs_ltr, read_yolo_boxes
+
+
+def test_l58_photo_has_jar_on_right():
+    seal = SimpleNamespace(image_file="L-58_imp_a.jpg", signs_ltr=[740, 550])
+    assert photo_signs_ltr(seal) == [550, 740]
+    assert seal.signs_ltr == [740, 550]
 
 
 def test_yolo_boxes_become_pixels_sorted_left_to_right(tmp_path):
