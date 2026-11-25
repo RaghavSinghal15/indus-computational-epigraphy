@@ -18,7 +18,7 @@ Fixed seal-level split: 466 train, 67 validation, 141 test seals, plus 181 Harap
 | M1 | Synthetic inscriptions from real sign crops (instructor's suggestion) | CRNN sign error with composites vs without (same seed): test 55.4% to 54.4%; Harappa 57.9% to 53.2%, correct counts 53 to 65 of 181 | `reports/m1_composites.md` |
 | M1 | Sign detector (YOLOv8n on hand boxes + composites), then the hand-box CNN: fully automatic, no count | sign error 40.8%, 16.3% of inscriptions exact (forced cuts with the true count: 68.1%); exact count on 57.4% of seals | `reports/m1_sign_detector.md` |
 | M1 | Cross-site: trained on Mohenjo-daro, tested on Harappa | 28.9% vs 29.9% in-site | `reports/m1_harappa.md` |
-| M1 | Published 94.5% protocol (40 signs, crop split) on our data | 62.5% (majority 49.9%); random crop split did not inflate it | `reports/m1_dixit_protocol.md` |
+| M1 | Published 94.5% protocol (40 signs) on our data | forced-cut CNN 62.5% (majority 49.9%), random crop split did not inflate it; hand-box CNN on hand-box crops 90.4% (87.2% on the named signs) | `reports/m1_dixit_protocol.md`, `reports/m1_dixit_handbox.md` |
 | M2 | Frequencies, start/end signs, transitions, entropy | jar sign ends 35.2% of texts, starts 0.16%; entropy 3.31 bits read right to left vs 3.82 reversed | `reports/b1_results.md` to `b4_results.md` |
 | M2-M4 | Full ICIT corpus and per site | all statistics within 1 point; jar-final 39.6% Mohenjo-daro vs 29.0% Harappa | `reports/m2m4_full_corpus.md` |
 | M3 | Hide a sign, predict it | bigrams 35.0% / 60.0%; perplexity 37.8 (unigram 87.1); small transformer 29.9% (worse) | `reports/c1_masked_prediction.md`, `reports/c2_neural_m3.md` |
