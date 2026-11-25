@@ -222,9 +222,14 @@ def box_photo(seal: pd.Series, image_file: str | None) -> pd.Series:
 
 def photo_signs_ltr(seal) -> list[int]:
     """Return Wells IDs from left to right in this specific impression photograph."""
-    # The photos show L-16 as 4, 154; L-58 as 550, 740; and M-657 as 240, 520.
     # Match by filename because a different view may have a different order.
-    if seal.image_file in {"L-16_imp_a.jpg", "L-58_imp_a.jpg", "M-657_imp_a.jpg"}:
+    if seal.image_file in {
+        "Jk-2_imp_a.jpg",
+        "L-16_imp_a.jpg",
+        "L-58_imp_a.jpg",
+        "M-657_imp_a.jpg",
+        "M-686_imp_a.jpg",
+    }:
         return seal.signs_ltr[::-1]
     return seal.signs_ltr
 
